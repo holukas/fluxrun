@@ -1,0 +1,63 @@
+run_id=FR-20210209-225805
+
+# INSTRUMENTS
+# ===========
+
+# Site
+site=CH-AES
+
+# PROCESSING
+# ==========
+
+# Raw Data Source Folder
+rawdata_indir=A:/FLUXES/x-TEST-OUT/BICO-20201228-001845/raw_data_csv
+
+# Time Range
+rawdata_start_date=2020-06-01 13:00
+rawdata_end_date=2020-12-31 00:00
+
+# File Settings
+rawdata_filename_datetime_format=yyyymmddHHMM
+rawdata_file_compression=gzip
+
+# EddyPro Processing File
+path_selected_eddypro_processing_file=L:/Dropbox/luhk_work/programming/FLUXRUN_Flux_Calcs/fluxrun/CH-AES_2019_[LGR]_R350-A+IRGA75-A+LGR-A.eddypro
+path_found_eddypro_metadata_file=
+
+
+# OUTPUT
+# ======
+dir_out=A:/FLUXES/x-TEST-OUT
+dir_out_run=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT
+dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\raw_data_ascii
+dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\eddypro
+dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\eddypro\bin
+dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\eddypro\ini
+dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\eddypro\results
+dir_out_run_log=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\log
+dir_out_run_plots=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\plots
+dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\plots\rawdata_availability
+dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\FLUXRUN_TEST_OUT\plots\summary
+
+
+plot_availability_rawdata=1
+plot_summary=1
+
+
+# DIRECTORIES
+# ===========
+dir_fluxrun=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs
+dir_script=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun
+dir_settings=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun\settings
+dir_root=L:\Dropbox\luhk_work\programming
+dir_server_CH-AES=
+dir_server_CH-AWS=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-AWS_CrapAlv\20_sonic_ghg
+dir_server_CH-CHA=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-CHA_Chamau\20_sonic_ghg
+dir_server_CH-DAE=
+dir_server_CH-DAV=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-DAV_Davos\20_sonic_ghg
+dir_server_CH-FRU=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-FRU_Fruebuel\20_sonic_ghg
+dir_server_CH-INO=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-INO_InnoFarm\20_sonic_ghg
+dir_server_CH-LAE=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-LAE_Laegeren\20_sonic_ghg
+dir_server_CH-LAS=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-LAS_Lae-Subcanopy\20_sonic_ghg
+dir_server_CH-OE2=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-OE2_Oensingen\20_sonic_ghg
+dir_server_CH-TWE=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\US-TWE_ToolikWetland\20_sonic_ghg
