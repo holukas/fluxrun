@@ -733,7 +733,7 @@ def plot_full_output(file_to_plot, destination_folder, logger):
 #         print("Data for " + colnames[scalar] + " is empty --> no plot")
 
 
-print("Finished full_output plots!")
+# print("Finished full_output plots!")
 
 
 def availability_rawdata(rawdata_found_files_dict, rawdata_file_datefrmt, outdir, logger):
