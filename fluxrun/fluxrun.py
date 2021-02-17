@@ -62,9 +62,11 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
                                                       logger=self.logger).get()
         self.save_settings_to_file(copy_to_outdir=True)
 
-        # todo act test
-        # vis.plot_full_output(file_to_plot=r"A:\FLUXES\x-TEST-OUT\eddypro_CH-DAV_full_output_2020-08-10T221112_adv.csv",
-        #                      destination_folder=self.settings_dict['dir_out_run_plots_summary'])
+        # # todo act test
+        # vis.PlotEddyProFullOutputFile(
+        #     file_to_plot=r"C:\Users\holukas\Desktop\eddypro_CH-AES_FR-20210216-150447_full_output_2021-02-17T032737_adv.csv",
+        #     destination_folder=r"C:\Users\holukas\Desktop\_test",
+        #     logger=self.logger).run()
 
         # Search valid raw ASCII files, depending on settings
         self.settings_dict['filename_datetime_parsing_string'] = self.make_datetime_parsing_string()
@@ -111,10 +113,10 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
             file.check_if_file_in_folder(search_str='*_full_output_*.csv',
                                          folder=self.settings_dict['dir_out_run_eddypro_results'])
         if found_full_output and int(self.settings_dict['plot_summary']) == 1:
-            vis.plot_full_output(
+            vis.PlotEddyProFullOutputFile(
                 file_to_plot=filepath_full_output,
                 destination_folder=self.settings_dict['dir_out_run_plots_summary'],
-                logger=self.logger)
+                logger=self.logger).run()
 
         else:
             self.logger.info("(!)WARNING No *_full_output_* file was found. Skipping summary plots.")

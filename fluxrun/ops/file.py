@@ -7,6 +7,9 @@ import shutil
 import sys
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+
 
 def check_if_file_in_folder(search_str: str, folder: str):
     """Check if filename exists in a folder"""
@@ -291,3 +294,132 @@ class PrepareEddyProFiles:
                     break
 
         return path_found_metadata_file, required_metadata_filename
+
+
+class ReadEddyProFullOutputFile:
+    DATA_SKIP_ROWS = [0]
+    DATA_HEADER_ROWS = [0, 1]
+    DATA_HEADER_SECTION_ROWS = [0, 1, 2]
+    DATA_NA_VALUES = -9999
+    DATA_DELIMITER = ','
+    TIMESTAMP_INDEX_COLUMN = [('date', '[yyyy-mm-dd]'), ('time', '[HH:MM]')]
+    TIMESTAMP_DATETIME_FORMAT = '%Y-%m-%d %H:%M'
+    TIMESTAMP_SHOWS_START_MIDDLE_OR_END_OF_RECORD = 'end'
+
+    TIMESTAMP_OUT_NAME = ('TIMESTAMP', '[yyyy-mm-dd HH:MM:SS]')
+    PARSED_INDEX_COL = ('index', '[parsed]')
+
+    def __init__(self, filepath):
+        self.filepath = filepath
+        self.data_df = pd.DataFrame()
+        self.run()
+
+    def run(self):
+        # Check header vs data
+        more_data_cols_than_header_cols, num_missing_header_cols, \
+        header_cols_list, generated_missing_header_cols_list = \
+            self.compare_len_header_vs_data(filepath=self.filepath,
+                                            skip_rows_list=self.DATA_SKIP_ROWS,
+                                            header_rows_list=self.DATA_HEADER_ROWS)
+
+        # Read data file
+        parse_dates, date_parser = self.dateparser_settings()
+        self.data_df = self.read_file(header_cols_list=header_cols_list,
+                                      parse_dates=parse_dates,
+                                      date_parser=date_parser)
+
+        self.data_df = self.sanitize(df=self.data_df)
+        self.data_df = self.standardize_index(df=self.data_df)
+
+    def get(self):
+        return self.data_df
+
+    def sanitize(self, df):
+        # There exist certain instances where the float64 data column can contain
+        # non-numeric values that are interpreted as a float64 inf, which is basically
+        # a NaN value. To harmonize missing values inf is also set to NaN.
+        df = df.replace(float('inf'), np.nan)
+        df = df.replace(float('-inf'), np.nan)
+        return df
+
+    def standardize_index(self, df):
+        # Index name is now the same for all filetypes w/ timestamp in data
+        df.set_index([self.PARSED_INDEX_COL], inplace=True)
+        df.index.name = self.TIMESTAMP_OUT_NAME
+        # Make sure the index is datetime
+        df.index = pd.to_datetime(df.index)
+        return df
+
+    def read_file(self, header_cols_list, parse_dates, date_parser):
+        data_df = pd.read_csv(self.filepath,
+                              skiprows=self.DATA_HEADER_SECTION_ROWS,
+                              header=None,
+                              names=header_cols_list,
+                              na_values=self.DATA_NA_VALUES,
+                              encoding='utf-8',
+                              delimiter=self.DATA_DELIMITER,
+                              mangle_dupe_cols=True,
+                              keep_date_col=False,
+                              parse_dates=parse_dates,
+                              date_parser=date_parser,
+                              index_col=None,
+                              dtype=None,
+                              skip_blank_lines=True,
+                              engine='python')
+        return data_df
+
+    def dateparser_settings(self):
+        """Column settings for parsing dates / times correctly"""
+        parsed_index_col = self.PARSED_INDEX_COL
+        parse_dates = self.TIMESTAMP_INDEX_COLUMN
+        parse_dates = {parsed_index_col: parse_dates}
+        date_parser = lambda x: dt.datetime.strptime(x, self.TIMESTAMP_DATETIME_FORMAT)
+        return parse_dates, date_parser
+
+    def compare_len_header_vs_data(self, filepath, skip_rows_list, header_rows_list):
+        """
+        Check whether there are more data columns than given in the header.
+
+        If not checked, this would results in an error when reading the csv file
+        with .read_csv, because the method expects an equal number of header and
+        data columns. If this check is True, then the difference between the length
+        of the first data row and the length of the header row(s) can be used to
+        automatically generate names for the missing header columns.
+        """
+        # Check number of columns of the first data row after the header part
+        skip_num_lines = len(header_rows_list) + len(skip_rows_list)
+        first_data_row_df = pd.read_csv(filepath, skiprows=skip_num_lines,
+                                        header=None, nrows=1)
+        len_data_cols = first_data_row_df.columns.size
+
+        # Check number of columns of the header part
+        header_cols_df = pd.read_csv(filepath, skiprows=skip_rows_list,
+                                     header=header_rows_list, nrows=0)
+        len_header_cols = header_cols_df.columns.size
+
+        # Check if there are more data columns than header columns
+        if len_data_cols > len_header_cols:
+            more_data_cols_than_header_cols = True
+            num_missing_header_cols = len_data_cols - len_header_cols
+        else:
+            more_data_cols_than_header_cols = False
+            num_missing_header_cols = 0
+
+        # Generate missing header columns if necessary
+        header_cols_list = header_cols_df.columns.to_list()
+        generated_missing_header_cols_list = []
+        sfx = self.make_timestamp_microsec_suffix()
+        if more_data_cols_than_header_cols:
+            for m in list(range(1, num_missing_header_cols + 1)):
+                missing_col = (f'unknown_{m}-{sfx}', '[-unknown-]')
+                generated_missing_header_cols_list.append(missing_col)
+                header_cols_list.append(missing_col)
+
+        return more_data_cols_than_header_cols, num_missing_header_cols, \
+               header_cols_list, generated_missing_header_cols_list
+
+    def make_timestamp_microsec_suffix(self):
+        now_time_dt = dt.datetime.now()
+        now_time_str = now_time_dt.strftime("%H%M%S%f")
+        run_id = f'{now_time_str}'
+        return run_id
