@@ -14,6 +14,7 @@ from gui.gui import Ui_MainWindow
 from ops import vis, file
 from settings import _version
 
+
 # TODO displacement height file?
 
 # TODO LATER parallelize, multiprocessing?
@@ -58,13 +59,14 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         # Settings
         self.get_settings_from_gui()
+        self.set_dir_eddypro_rawdata()
         self.settings_dict = file.PrepareEddyProFiles(settings_dict=self.settings_dict,
                                                       logger=self.logger).get()
         self.save_settings_to_file(copy_to_outdir=True)
 
         # # todo act test
         # vis.PlotEddyProFullOutputFile(
-        #     file_to_plot=r"C:\Users\holukas\Desktop\eddypro_CH-AES_FR-20210216-150447_full_output_2021-02-17T032737_adv.csv",
+        #     file_to_plot=r"C:\Users\holukas\Desktop\eddypro_CH-AES_FR-20210216-150657_full_output_2021-02-17T212711_adv.csv",
         #     destination_folder=r"C:\Users\holukas\Desktop\_test",
         #     logger=self.logger).run()
 
@@ -77,16 +79,6 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
             self.logger.info("(!)ERROR No raw data files found. Please check settings.")
             sys.exit(-1)
 
-            # Get raw data files for processing, uncompress
-        if self.settings_dict['file_compression'] == 'gzip':
-            file.uncompress_gzip(settings_dict=self.settings_dict,
-                                 found_gzip_files_dict=self.rawdata_found_files_dict,
-                                 logger=self.logger)
-        elif self.settings_dict['file_compression'] == 'None':
-            file.copy_rawdata_files(settings_dict=self.settings_dict,
-                                    found_csv_files_dict=self.rawdata_found_files_dict,
-                                    logger=self.logger)
-
         # Availability heatmap for raw data files
         if self.settings_dict['plot_availability_rawdata'] == '1':
             parsing_string = file.SearchAll.make_parsing_string(settings_dict=self.settings_dict)
@@ -94,6 +86,23 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
                                      rawdata_file_datefrmt=parsing_string,
                                      outdir=self.settings_dict['dir_out_run_plots_availability_rawdata'],
                                      logger=self.logger)
+
+        # Plot stats collection from file
+        if self.settings_dict['plot_aggregates_rawdata'] == '1':
+            vis.PlotRawDataFilesAggregates(rawdata_found_files_dict=self.rawdata_found_files_dict,
+                                           settings_dict=self.settings_dict,
+                                           logger=self.logger)
+
+        # Get raw data files for processing, uncompress
+        if self.settings_dict['rawdata_file_compression'] == 'gzip':
+            file.uncompress_gzip(settings_dict=self.settings_dict,
+                                 found_gzip_files_dict=self.rawdata_found_files_dict,
+                                 logger=self.logger)
+        elif self.settings_dict['rawdata_file_compression'] == 'None':
+            pass
+            # file.copy_rawdata_files(settings_dict=self.settings_dict,
+            #                         found_csv_files_dict=self.rawdata_found_files_dict,
+            #                         logger=self.logger)
 
         # Call EddyPro processing
         rp_process_status = self.run_eddypro_cmd(cmd='eddypro_rp.exe')  # execute exe todo for linux and osx
@@ -125,6 +134,26 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         self.logger.info("=" * 60)
         self.logger.info("FluxRun finished.")
         self.logger.info("=" * 60)
+
+    def set_dir_eddypro_rawdata(self):
+        """
+        Set raw data folder for EddyPro flux calculations
+
+        Compressed files will be uncompressed and saved to the current run output folder.
+        Uncompressed files will be directly used from where they are stored.
+        """
+        if self.settings_dict['rawdata_file_compression'] == 'gzip':
+            self.settings_dict['dir_used_rawdata_ascii_files_eddypro_data_path'] = \
+                self.settings_dict['dir_out_run_rawdata_ascii_files']
+
+        elif self.settings_dict['rawdata_file_compression'] == 'None':
+            outpath = Path(self.settings_dict['dir_out_run_rawdata_ascii_files']) / 'readme.txt'
+            readme_txt = open(str(outpath), "w+")
+            readme_txt.write(f"This folder is empty because uncompressed ASCII raw data files from the "
+                             f"following folder were used for flux calculations:\n\n"
+                             f"{self.settings_dict['rawdata_indir']}")
+            self.settings_dict['dir_used_rawdata_ascii_files_eddypro_data_path'] = \
+                self.settings_dict['rawdata_indir']
 
     def run_eddypro_cmd(self, cmd: str):
         """Run eddypro_rp.exe or eddypro_fcc.exe"""
@@ -182,7 +211,7 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
                              new_val=self.dtp_processing_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm'))
         self.update_dict_key(key='filename_datetime_format',
                              new_val=self.lne_proc_filedt_format.text())
-        self.update_dict_key(key='file_compression', new_val=self.cmb_proc_rawdata_compr.currentText())
+        self.update_dict_key(key='rawdata_file_compression', new_val=self.cmb_proc_rawdata_compr.currentText())
         self.update_dict_key(key='path_selected_eddypro_processing_file',
                              new_val=self.lbl_proc_ep_procfile_selected.text())
 
@@ -191,6 +220,8 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         self.update_dict_key(key='plot_availability_rawdata',
                              new_val='1' if self.chk_output_plots_availability_rawdata.isChecked() else '0')
+        self.update_dict_key(key='plot_aggregates_rawdata',
+                             new_val='1' if self.chk_output_plots_aggregates_rawdata.isChecked() else '0')
         self.update_dict_key(key='plot_summary',
                              new_val='1' if self.chk_output_plots_summary.isChecked() else '0')
 
@@ -246,6 +277,8 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         self.set_gui_checkbox(checkbox=self.chk_output_plots_availability_rawdata,
                               state=self.settings_dict['plot_availability_rawdata'])
+        self.set_gui_checkbox(checkbox=self.chk_output_plots_aggregates_rawdata,
+                              state=self.settings_dict['plot_aggregates_rawdata'])
         self.set_gui_checkbox(checkbox=self.chk_output_plots_summary,
                               state=self.settings_dict['plot_summary'])
 

@@ -1,4 +1,4 @@
-run_id=FR-20210217-113251
+run_id=FR-20210221-182900
 
 # INSTRUMENTS
 # ===========
@@ -11,44 +11,48 @@ site=CH-AES
 
 # Raw Data Source Folder
 rawdata_indir=A:/FLUXES/x-TEST-FILES
+rawdata_file_compression=None
 
 # Time Range
-rawdata_start_date=2019-05-10 13:00
-rawdata_end_date=2019-05-23 18:00
+rawdata_start_date=2019-05-10 11:52
+rawdata_end_date=2019-05-29 11:52
 
 # File Settings
 rawdata_filename_datetime_format=yyyymmddHHMM
-rawdata_file_compression=gzip
+
 
 # EddyPro
-path_selected_eddypro_processing_file=A:/FLUXES/x-TEST-FLUXRUN-EP-SETTINGS/CH-AES_2019_[LGR]_R350-A+IRGA75-A+LGR-A.eddypro
-path_used_eddypro_processing_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro\ini\processing.eddypro
+path_selected_eddypro_processing_file=P:/Flux/RDS_calculations/INO/AES/FLUXRUN/CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
+path_used_eddypro_processing_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\ini\processing.eddypro
 
-path_found_eddypro_metadata_file=A:\FLUXES\x-TEST-FLUXRUN-EP-SETTINGS\CH-AES_2019_[LGR]_R350-A+IRGA75-A+LGR-A.eddypro
-path_used_eddypro_metadata_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro\ini\CH-AES_2019_[LGR]_R350-A+IRGA75-A+LGR-A.metadata
+path_found_eddypro_metadata_file=P:\Flux\RDS_calculations\INO\AES\FLUXRUN\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
+path_used_eddypro_metadata_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\ini\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.metadata
 
 dir_found_eddypro_app=
-path_used_eddypro_app_rp=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro\bin\eddypro_rp.exe
-path_used_eddypro_app_fcc=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro\bin\eddypro_fcc.exe
+path_used_eddypro_app_rp=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+path_used_eddypro_app_fcc=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
 dir_out=A:/FLUXES/x-TEST-OUT
-dir_out_run=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251
-dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\raw_data_ascii
+dir_out_run=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900
+dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\1-0_rawdata_files_ascii
+dir_used_rawdata_ascii_files_eddypro_data_path=A:/FLUXES/x-TEST-FILES
 
-dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro
-dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro\ini
-dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro\bin
-dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\eddypro\results
+dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations
+dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\ini
+dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\bin
+dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\results
 
-dir_out_run_log=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\log
-dir_out_run_plots=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\plots
-dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\plots\rawdata_availability
-dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210217-113251\plots\summary
+dir_out_run_log=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\0_log
+dir_out_run_plots=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-181639\plots
+dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\1-1_rawdata_plots_availability
+dir_out_run_plots_aggregates_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\1-2_rawdata_plots_aggregates
+dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-1_eddypro_flux_calculations_summary_plots
 
 
 plot_availability_rawdata=1
+plot_aggregates_rawdata=1
 plot_summary=1
 
 

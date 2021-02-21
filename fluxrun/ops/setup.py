@@ -35,28 +35,34 @@ def make_run_outdirs(settings_dict):
         print(f"Creating folder {settings_dict['dir_out_run']} ...")
         os.makedirs(settings_dict['dir_out_run'])
 
-    # Plots
-    settings_dict['dir_out_run_plots'] = settings_dict['dir_out_run'] / 'plots'
-    settings_dict['dir_out_run_plots_availability_rawdata'] = \
-        settings_dict['dir_out_run_plots'] / 'rawdata_availability'
-    settings_dict['dir_out_run_plots_summary'] = \
-        settings_dict['dir_out_run_plots'] / 'summary'
+    # Logfile
+    settings_dict['dir_out_run_log'] = settings_dict['dir_out_run'] / '0_log'
 
-    # Files
-    settings_dict['dir_out_run_rawdata_ascii_files'] = settings_dict['dir_out_run'] / 'raw_data_ascii'
-    settings_dict['dir_out_run_log'] = settings_dict['dir_out_run'] / 'log'
+    # # Plots general
+    # settings_dict['dir_out_run_plots'] = settings_dict['dir_out_run'] / 'plots'
+
+    # Raw data files
+    settings_dict['dir_out_run_rawdata_ascii_files'] = \
+        settings_dict['dir_out_run'] / '1-0_rawdata_files_ascii'
+    settings_dict['dir_out_run_plots_availability_rawdata'] = \
+        settings_dict['dir_out_run'] / '1-1_rawdata_plots_availability'
+    settings_dict['dir_out_run_plots_aggregates_rawdata'] = \
+        settings_dict['dir_out_run'] / '1-2_rawdata_plots_aggregates'
 
     # EddyPro
-    settings_dict['dir_out_run_eddypro'] = settings_dict['dir_out_run'] / 'eddypro'
+    settings_dict['dir_out_run_eddypro'] = settings_dict['dir_out_run'] / '2-0_eddypro_flux_calculations'
     settings_dict['dir_out_run_eddypro_ini'] = settings_dict['dir_out_run_eddypro'] / 'ini'
     settings_dict['dir_out_run_eddypro_bin'] = settings_dict['dir_out_run_eddypro'] / 'bin'
     settings_dict['dir_out_run_eddypro_results'] = settings_dict['dir_out_run_eddypro'] / 'results'
+    settings_dict['dir_out_run_plots_summary'] = \
+        settings_dict['dir_out_run'] / '2-1_eddypro_flux_calculations_summary_plots'
 
     # Make dirs
-    create_dirs = ['dir_out_run_plots', 'dir_out_run_plots_summary', 'dir_out_run_plots_availability_rawdata',
-                   'dir_out_run_rawdata_ascii_files', 'dir_out_run_log',
+    create_dirs = ['dir_out_run_log',
+                   'dir_out_run_rawdata_ascii_files', 'dir_out_run_plots_availability_rawdata',
+                   'dir_out_run_plots_aggregates_rawdata',
                    'dir_out_run_eddypro', 'dir_out_run_eddypro_bin', 'dir_out_run_eddypro_ini',
-                   'dir_out_run_eddypro_results']
+                   'dir_out_run_eddypro_results', 'dir_out_run_plots_summary']
     for d in create_dirs:
         if not Path.is_dir(settings_dict[d]):
             print(f"Creating folder {settings_dict[d]} ...")

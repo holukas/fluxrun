@@ -56,7 +56,7 @@ class SearchAll():
 
     def keep_valid_files(self):
         """Search all files with file id, but then keep only those that fulfil selected requirements"""
-        file_id = '*.csv.gz' if self.settings_dict['file_compression'] == 'gzip' else '*.csv'
+        file_id = '*.csv.gz' if self.settings_dict['rawdata_file_compression'] == 'gzip' else '*.csv'
         file_id = f"{self.settings_dict['site']}_{file_id}"  # Add site id to search string
         # parsing_string=self.make_parsing_string(self.settings_dict)
 
@@ -83,7 +83,7 @@ class SearchAll():
     @staticmethod
     def make_parsing_string(settings_dict):
         """Add site id and extension to parsing string"""
-        file_ext = '.csv.gz' if settings_dict['file_compression'] == 'gzip' else '.csv'
+        file_ext = '.csv.gz' if settings_dict['rawdata_file_compression'] == 'gzip' else '.csv'
         parsing_string = f"{settings_dict['site']}_" \
                          f"{settings_dict['filename_datetime_parsing_string']}{file_ext}"
         return parsing_string
@@ -148,6 +148,8 @@ class PrepareEddyProFiles:
     def update_metadata_file(self):
         """Update metadata settings"""
 
+        section_id = '[UPDATING EDDYPRO METADATA FILE]'
+
         # fill in CORRECT PATHS
         # remove backslash of path because eddypro does not like it
         with open(self.settings_dict['path_used_eddypro_metadata_file']) as input_file:
@@ -158,9 +160,16 @@ class PrepareEddyProFiles:
         file_name_new = f"file_name={Path(self.settings_dict['path_used_eddypro_metadata_file'])}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['path_used_eddypro_metadata_file'],
                             old=file_name_old, new=file_name_new)
+        self.logger.info(f"{section_id}"
+                         f"\n    Updated line:"
+                         f"\n    OLD:  {file_name_old}"
+                         f"    NEW:  {file_name_new}")
 
     def update_processing_file(self):
         """Update processing settings"""
+        section_id = '[UPDATING EDDYPRO PROCESSING FILE]'
+
+        self.logger.info(f"{section_id}  Updating file:  {self.settings_dict['path_used_eddypro_processing_file']}")
 
         # fill in CORRECT PATHS in processing.eddypro
         # remove backslash of path w/ .replace because eddypro does not like it
@@ -182,29 +191,54 @@ class PrepareEddyProFiles:
         out_path_new = f"out_path={Path(self.settings_dict['dir_out_run_eddypro_results'])}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
                             old=out_path_old, new=out_path_new)
+        self.logger.info(f"{section_id}"
+                         f"\n    Updated line:"
+                         f"\n    OLD:  {out_path_old}"
+                         f"    NEW:  {out_path_new}")
 
         proj_file_new = f"proj_file={Path(self.settings_dict['path_used_eddypro_metadata_file'])}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
                             old=proj_file_old, new=proj_file_new)
+        self.logger.info(f"{section_id}"
+                         f"\n    Updated line:"
+                         f"\n    OLD:  {proj_file_old}"
+                         f"    NEW:  {proj_file_new}")
 
         file_name_new = f"file_name={Path(self.settings_dict['path_used_eddypro_processing_file'])}\n".replace('\\',
                                                                                                                '/')
         self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
                             old=file_name_old, new=file_name_new)
+        self.logger.info(f"{section_id}"
+                         f"\n    Updated line:"
+                         f"\n    OLD:  {file_name_old}"
+                         f"    NEW:  {file_name_new}")
 
-        data_path_new = f"data_path={Path(self.settings_dict['dir_out_run_rawdata_ascii_files'])}\n".replace('\\', '/')
+        data_path_new = f"data_path={Path(self.settings_dict['dir_used_rawdata_ascii_files_eddypro_data_path'])}\n".replace(
+            '\\', '/')
         self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
                             old=data_path_old, new=data_path_new)
+        self.logger.info(f"{section_id}"
+                         f"\n    Updated line:"
+                         f"\n    OLD:  {data_path_old}"
+                         f"    NEW:  {data_path_new}")
 
         prototype_str = f"{self.settings_dict['site']}_" \
                         f"{self.settings_dict['rawdata_filename_datetime_format']}.csv"
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
                             old=file_prototype_old, new=file_prototype_new)
+        self.logger.info(f"{section_id}"
+                         f"\n    Updated line:"
+                         f"\n    OLD:  {file_prototype_old}"
+                         f"    NEW:  {file_prototype_new}")
 
         project_id_new = f"project_id={self.settings_dict['site']}_{Path(self.settings_dict['run_id'])}\n"
         self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
                             old=project_id_old, new=project_id_new)
+        self.logger.info(f"{section_id}"
+                         f"\n    Updated line:"
+                         f"\n    OLD:  {project_id_old}"
+                         f"    NEW:  {project_id_new}")
 
     def update_setting(self, filepath: str, old: str, new: str):
         for line in fileinput.input(filepath, inplace=True):

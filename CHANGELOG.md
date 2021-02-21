@@ -2,6 +2,15 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v0.3.0 - 21 Feb 2021
+- new: added option to plot aggregated raw data files. The plots show the 
+  data that is then used for flux calculations.
+- changed: folder structure is now sequential to produced output
+- changed: if 'ASCII File Compression' is set to 'None', then the raw data  
+  files will be directly used from the provided source folder, i.e. in this  
+  case the raw data files are not copied to the local run folder
+- GUI: changed location of 'ASCII File Compression'
+
 ## v0.2.0 - 17 Feb 2021
 - new: dedicated class for plotting EddyPro full_output files, adjusted code
 - new: dedicated class for reading EddyPro full_output files

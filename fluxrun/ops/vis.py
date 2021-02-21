@@ -2,6 +2,7 @@ import datetime as dt
 import os
 
 import matplotlib.dates as mdates
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -9,6 +10,7 @@ from matplotlib import dates
 from matplotlib.ticker import MultipleLocator
 
 from ops.file import ReadEddyProFullOutputFile
+from ops.file import SearchAll
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 15)
@@ -343,3 +345,162 @@ def _format_plot(self, ax, title, show_legend=True):
     font = {'family': 'sans-serif', 'size': 10}
     if show_legend:
         ax.legend(frameon=True, loc='upper right', prop=font).set_zorder(100)
+
+
+class PlotRawDataFilesAggregates:
+    section_id = "[PLOT RAW DATA FILE AGGREGATES]"
+
+    def __init__(self, rawdata_found_files_dict, settings_dict, logger):
+        self.rawdata_found_files_dict = rawdata_found_files_dict
+        self.settings_dict = settings_dict
+        self.logger = logger
+
+        self.collect_aggs()
+
+    def collect_aggs(self):
+        """Loop"""
+        filecounter = 0
+        stats_coll_df = pd.DataFrame()
+        num_files = len(self.rawdata_found_files_dict)
+        for fid, filepath in self.rawdata_found_files_dict.items():
+            filecounter += 1
+            self.file_header_for_log(fid=fid, num_files=num_files, filecounter=filecounter)
+            rawdata_filedate = self.get_filedate(fid)
+            rawdata_df = self.read_uncompr_ascii_file(filepath=filepath)
+            stats_coll_df = self.calc_rawdata_stats(rawdata_df=rawdata_df,
+                                                    rawdata_filedate=rawdata_filedate,
+                                                    stats_coll_df=stats_coll_df,
+                                                    filecounter=filecounter)
+        self.make_plot(df=stats_coll_df,
+                       outdir=self.settings_dict['dir_out_run_plots_aggregates_rawdata'])
+        print(filecounter)
+
+    def file_header_for_log(self, fid, num_files, filecounter):
+        spacer = "=" * 30
+        self.logger.info(f"{self.section_id} {spacer}")
+        self.logger.info(f"{self.section_id} File {fid} (#{filecounter} of {num_files}) ...")
+        self.logger.info(f"{self.section_id} {spacer}")
+
+    def read_uncompr_ascii_file(self, filepath):
+        self.logger.info(f"{self.section_id}    Reading file {filepath} ...")
+        import time
+        tic = time.time()
+        rawdata_df = pd.read_csv(filepath,
+                                 skiprows=None,
+                                 header=[0, 1, 2],
+                                 na_values=-9999,
+                                 encoding='utf-8',
+                                 delimiter=',',
+                                 # keep_date_col=True,
+                                 parse_dates=False,
+                                 # date_parser=None,
+                                 index_col=None,
+                                 dtype=None)
+        time_needed = time.time() - tic
+        self.logger.info(f"{self.section_id}    Finished ({time_needed:.3f}s). "
+                         f"Detected {len(rawdata_df)} rows and {rawdata_df.columns.size} columns.")
+        return rawdata_df
+
+    def calc_rawdata_stats(self, rawdata_df, stats_coll_df, rawdata_filedate, filecounter):
+        """Calculate stats for raw data"""
+        self.logger.info(f"{self.section_id}    Calculating file stats ...")
+
+        if rawdata_df.empty:
+            # In case there are no data, create df with one row of NaNs
+            rawdata_df = pd.DataFrame(index=[0], columns=rawdata_df.columns)
+
+        # Replace missing values -9999 with NaNs for correct stats calcs
+        rawdata_df.replace(-9999, np.nan, inplace=True)
+
+        rawdata_df['index'] = rawdata_filedate
+        rawdata_df.sort_index(axis=1, inplace=True)  # lexsort for better performance
+        aggs = ['count', 'min', 'max', 'mean', 'std', 'median', self.q01, self.q05, self.q95, self.q99]
+        rawdata_df = rawdata_df.groupby('index').agg(aggs)
+
+        # else:
+        #     # In case there are no data in the file, create a dataframe containing only missing
+        #     # values and add it to the stats collection.
+        #     else:
+        #         num_cols = stats_coll_df.columns.size  # Count number of columns
+        #     nan_list = []
+        #     [nan_list.append(-9999) for x in range(0, num_cols, 1)]  # Create missing values for each column
+        #     stats_df = pd.DataFrame(index=[bin_filedate], data=[nan_list],
+        #                             columns=pd.MultiIndex.from_tuples(stats_coll_df.columns))
+
+        # First file inits stats collection
+        if filecounter == 1:
+            stats_coll_df = rawdata_df.copy()
+        else:
+            stats_coll_df = stats_coll_df.append(rawdata_df)
+
+        return stats_coll_df
+
+    def make_plot(self, df, outdir):
+        """Plot aggregated values for each file"""
+        self.logger.info(f"{self.section_id} Plotting aggregated data ...")
+        df.replace(-9999, np.nan, inplace=True)
+        df.sort_index(axis=1, inplace=True)  # lexsort for better performance
+        df.sort_index(axis=0, inplace=True)
+
+        # Get only var name, units and instrument from 3-row MultiIndex,
+        # this means that the row with agg info is skipped here, but then used later during plotting
+        vars = list(zip(df.columns.get_level_values(0),
+                        df.columns.get_level_values(1),
+                        df.columns.get_level_values(2)))
+        vars = set(vars)
+
+        for var in vars:
+            self.logger.info(f"{self.section_id}    Plotting {var} ...")
+            var_df = df[var].copy()
+            gs = gridspec.GridSpec(2, 2)  # rows, cols
+            gs.update(wspace=0.1, hspace=0, left=0.03, right=0.99, top=0.99, bottom=0.01)
+            fig = plt.Figure(facecolor='white', figsize=(32, 9))
+            ax1 = fig.add_subplot(gs[0, 0])
+            ax2 = fig.add_subplot(gs[1, 0])
+
+            ax1.plot_date(var_df.index, var_df['median'], alpha=.5, c='#455A64', label='median')
+            ax1.fill_between(x=var_df.index, y1=var_df['q95'], y2=var_df['q05'],
+                             alpha=.2, color='#5f87ae', label='5-95th percentile')
+            ax1.errorbar(var_df.index, var_df['mean'], var_df['std'],
+                         marker='o', mec='black', mfc='None', color='black', capsize=0,
+                         label='mean +/- std', alpha=.2)
+            try:
+                ax1.set_ylim(var_df['q01'].min(), var_df['q99'].max())
+            except ValueError:
+                pass
+            ax2.plot_date(var_df.index, var_df['count'], alpha=1, c='#37474F', label='count')
+
+            text_args = dict(verticalalignment='top',
+                             size=14, color='black', backgroundcolor='none', zorder=100)
+            ax1.text(0.01, 0.96, f"{var[0]} {var[1]} {var[2]}", transform=ax1.transAxes, horizontalalignment='left',
+                     **text_args)
+
+            _default_format(ax=ax1, width=1, length=2, txt_ylabel=var[0], txt_ylabel_units=var[1])
+            _default_format(ax=ax2, width=1, length=2, txt_ylabel='counts')
+
+            # ahx.axhline(0, color='black', ls='-', lw=1, zorder=1)
+            font = {'family': 'sans-serif', 'size': 10}
+            ax1.legend(frameon=True, loc='upper right', prop=font).set_zorder(100)
+
+            outfile = outdir / f"{var[0]}_{var[1]}_{var[2]}"
+            fig.savefig(f"{outfile}.png", format='png', bbox_inches='tight', facecolor='w',
+                        transparent=True, dpi=150)
+
+    def get_filedate(self, fid):
+        """Get filedate from filename"""
+        parsing_string = SearchAll.make_parsing_string(settings_dict=self.settings_dict)
+        rawdata_filedate = dt.datetime.strptime(fid, parsing_string)
+        self.logger.info(f"{self.section_id}    Filedate for {fid}: {rawdata_filedate}")
+        return rawdata_filedate
+
+    def q01(self, x):
+        return x.quantile(0.01)
+
+    def q05(self, x):
+        return x.quantile(0.05)
+
+    def q95(self, x):
+        return x.quantile(0.95)
+
+    def q99(self, x):
+        return x.quantile(0.99)

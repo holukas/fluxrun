@@ -126,10 +126,12 @@ class Ui_MainWindow(object):
         grid.addWidget(header_output_plots, 4, 0, 1, 1)
         self.chk_output_plots_availability_rawdata = \
             gui_elements.add_checkbox_to_grid(label='Availability (Raw Data)', grid=grid, row=5)
+        self.chk_output_plots_aggregates_rawdata = \
+            gui_elements.add_checkbox_to_grid(label='Aggregates (Raw Data)', grid=grid, row=6)
         self.chk_output_plots_summary = \
-            gui_elements.add_checkbox_to_grid(label='Summary', grid=grid, row=6)
+            gui_elements.add_checkbox_to_grid(label='Summary (Flux Processing)', grid=grid, row=7)
 
-        grid.setRowStretch(7, 1)
+        grid.setRowStretch(8, 1)
         section.setLayout(grid)
         return section
 
@@ -180,28 +182,28 @@ class Ui_MainWindow(object):
         self.lbl_proc_rawdata_source_dir_selected = qtw.QLabel("***Please select source folder***")
         grid.addWidget(self.lbl_proc_rawdata_source_dir_selected, 3, 0, 1, 2)
 
+        # File Compression
+        self.cmb_proc_rawdata_compr = \
+            gui_elements.add_label_combobox_to_grid(label='ASCII File Compression', grid=grid, row=4,
+                                                    items=['gzip', 'None'])
+        self.cmb_proc_rawdata_compr.setToolTip(tooltips.cmb_output_compression)
+
         # File Settings
         header_proc_rawdata_file_settings = qtw.QLabel('Raw Data: File Settings')
         header_proc_rawdata_file_settings.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_proc_rawdata_file_settings, 4, 0, 1, 1)
+        grid.addWidget(header_proc_rawdata_file_settings, 5, 0, 1, 1)
         self.lne_proc_filedt_format = \
             gui_elements.add_label_lineedit_to_grid(label='Date/Time Format In File Name', grid=grid,
-                                                    row=5, value='*.X*')
+                                                    row=6, value='*.X*')
 
         # Time Range
         header_processing_time_range = qtw.QLabel('Raw Data: Time Range')
         header_processing_time_range.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_processing_time_range, 6, 0)
+        grid.addWidget(header_processing_time_range, 7, 0)
         self.dtp_processing_time_range_start = \
-            gui_elements.add_label_datetimepicker_to_grid(label='Start', grid=grid, row=7)
+            gui_elements.add_label_datetimepicker_to_grid(label='Start', grid=grid, row=8)
         self.dtp_processing_time_range_end = \
-            gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=8)
-
-        # File Compression
-        self.cmb_proc_rawdata_compr = \
-            gui_elements.add_label_combobox_to_grid(label='ASCII File Compression', grid=grid, row=9,
-                                                    items=['gzip', 'None'])
-        self.cmb_proc_rawdata_compr.setToolTip(tooltips.cmb_output_compression)
+            gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=9)
 
         # EddyPro Processing File
         header_proc_rawdata_source_dir = qtw.QLabel('EddyPro: Processing File')
