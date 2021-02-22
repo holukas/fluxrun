@@ -1,4 +1,4 @@
-run_id=FR-20210221-010538
+_run_id=FR-20210221-010538
 
 # INSTRUMENTS
 # ===========
@@ -23,32 +23,31 @@ rawdata_filename_datetime_format=yyyymmddHHMM
 
 # EddyPro
 path_selected_eddypro_processing_file=P:/Flux/RDS_calculations/INO/AES/FLUXRUN/CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
-path_used_eddypro_processing_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\ini\processing.eddypro
+_path_used_eddypro_processing_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\ini\processing.eddypro
 
-path_found_eddypro_metadata_file=P:\Flux\RDS_calculations\INO\AES\FLUXRUN\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
-path_used_eddypro_metadata_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\ini\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.metadata
+_path_found_eddypro_metadata_file=P:\Flux\RDS_calculations\INO\AES\FLUXRUN\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
+_path_used_eddypro_metadata_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\ini\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.metadata
 
-dir_found_eddypro_app=
-path_used_eddypro_app_rp=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\bin\eddypro_rp.exe
-path_used_eddypro_app_fcc=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\bin\eddypro_fcc.exe
+_path_used_eddypro_app_rp=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
 dir_out=A:/FLUXES/x-TEST-OUT
-dir_out_run=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538
-dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\raw_data_ascii
-dir_used_rawdata_ascii_files_eddypro_data_path=Z:/CH-AES_Aeschi/20_ec_fluxes/2019/in_progress/R350-LGR_FF-202101/CH-AES_FR-20210216-150447_OPENLAG/raw_data_ascii
+_dir_out_run=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538
+_dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\raw_data_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=Z:/CH-AES_Aeschi/20_ec_fluxes/2019/in_progress/R350-LGR_FF-202101/CH-AES_FR-20210216-150447_OPENLAG/raw_data_ascii
 
-dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro
-dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\ini
-dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\bin
-dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\results
+_dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro
+_dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\ini
+_dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\bin
+_dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\eddypro\results
 
-dir_out_run_log=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\log
-dir_out_run_plots=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\plots
-dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\plots\rawdata_availability
-dir_out_run_plots_aggregates_rawdata=
-dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\plots\summary
+_dir_out_run_log=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\log
+_dir_out_run_plots=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\plots
+_dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\plots\rawdata_availability
+_dir_out_run_plots_aggregates_rawdata=
+_dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-010538\plots\summary
 
 
 plot_availability_rawdata=1
@@ -58,10 +57,10 @@ plot_summary=1
 
 # DIRECTORIES
 # ===========
-dir_fluxrun=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs
-dir_script=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun
-dir_settings=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun\settings
-dir_root=L:\Dropbox\luhk_work\programming
+_dir_fluxrun=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs
+_dir_script=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun
+_dir_settings=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun\settings
+_dir_root=L:\Dropbox\luhk_work\programming
 dir_server_CH-AES=
 dir_server_CH-AWS=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-AWS_CrapAlv\20_sonic_ghg
 dir_server_CH-CHA=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-CHA_Chamau\20_sonic_ghg

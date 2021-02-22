@@ -29,7 +29,7 @@ def uncompress_gzip(settings_dict, found_gzip_files_dict, logger):
     for compr_filename, compr_filepath in found_gzip_files_dict.items():
         compr_filepath = str(compr_filepath)
         uncompr_filename = Path(compr_filename).stem
-        uncompr_filepath = Path(settings_dict['dir_out_run_rawdata_ascii_files']) / uncompr_filename
+        uncompr_filepath = Path(settings_dict['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
         import time
         tic = time.time()
         with gzip.open(compr_filepath, 'rb') as f_in:
@@ -39,67 +39,82 @@ def uncompress_gzip(settings_dict, found_gzip_files_dict, logger):
                 logger.info(f"[UNZIPPING GZIP RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
                             f"(done in {time_needed:.3f}s)")
 
+    # # Search for the now converted files and update dict of found files
+    # rawdata_found_files_dict = SearchAll(
+    #     settings_dict=settings_dict,
+    #     logger=logger,
+    #     search_in_dir=settings_dict['_dir_out_run_rawdata_ascii_files']).keep_valid_files()
+
+    # return rawdata_found_files_dict
+
 
 def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
     """Copy csv files to output folder of current run"""
     for filename, filepath in found_csv_files_dict.items():
-        destination = Path(settings_dict['dir_out_run_rawdata_ascii_files']) / filename
+        destination = Path(settings_dict['_dir_out_run_rawdata_ascii_files']) / filename
         shutil.copy(filepath, destination)
         logger.info(f"[GETTING CSV RAW DATA FILES] {filepath} --> {destination}")
 
 
 class SearchAll():
-    def __init__(self, settings_dict, logger):
-        self.settings_dict = settings_dict
+    def __init__(self, logger, search_in_dir, settings_dict, search_uncompressed=False):
         self.logger = logger
         self.valid_files_dict = {}
+        self.search_in_dir = search_in_dir
+        self.rawdata_start_date = settings_dict['rawdata_start_date']
+        self.rawdata_end_date = settings_dict['rawdata_end_date']
+
+        self.site_search_str = settings_dict['_sitefiles_search_str']
+        self.site_parse_str = settings_dict['_sitefiles_parse_str']
+
+        if search_uncompressed:
+            self.site_search_str = self.site_search_str.rstrip('.gz')
+            self.site_parse_str = self.site_parse_str.rstrip('.gz')
 
     def keep_valid_files(self):
         """Search all files with file id, but then keep only those that fulfil selected requirements"""
-        file_id = '*.csv.gz' if self.settings_dict['rawdata_file_compression'] == 'gzip' else '*.csv'
-        file_id = f"{self.settings_dict['site']}_{file_id}"  # Add site id to search string
-        # parsing_string=self.make_parsing_string(self.settings_dict)
 
-        self.valid_files_dict = self.search_all(dir=self.settings_dict['rawdata_indir'],
-                                                file_id=file_id,
+        # Search files for current site
+        self.valid_files_dict = self.search_all(dir=self.search_in_dir,
+                                                site_search_str=self.site_search_str,
                                                 logger=self.logger)
-        self.valid_files_dict = self.keep_files_within_timerange()
 
+        # Parse filedates and keep files in specified date range
+        self.valid_files_dict = self.keep_files_within_timerange(site_parse_str=self.site_parse_str)
         return self.valid_files_dict
 
     @staticmethod
-    def search_all(dir, file_id, logger):
+    def search_all(dir, site_search_str, logger):
         """Search all files in dir that match file id"""
         logger.info("Searching for files ...")
         valid_files_dict = {}
         for root, dirs, found_files in os.walk(dir):
             for idx, file in enumerate(found_files):
-                if fnmatch.fnmatch(file, file_id):
+                if fnmatch.fnmatch(file, site_search_str):
                     filepath = Path(root) / file
                     valid_files_dict[file] = filepath
-        logger.info(f"Found {len(valid_files_dict)} files matching {file_id} in {dir}")
+        logger.info(f"Found {len(valid_files_dict)} files matching {site_search_str} in {dir}")
         return valid_files_dict
 
     @staticmethod
-    def make_parsing_string(settings_dict):
+    def make_parsing_string(settings_dict, file_ext):
         """Add site id and extension to parsing string"""
-        file_ext = '.csv.gz' if settings_dict['rawdata_file_compression'] == 'gzip' else '.csv'
         parsing_string = f"{settings_dict['site']}_" \
                          f"{settings_dict['filename_datetime_parsing_string']}{file_ext}"
         return parsing_string
 
-    def keep_files_within_timerange(self):
+    def keep_files_within_timerange(self, site_parse_str):
         """Check if file date is within selected time range"""
 
-        parsing_string = self.make_parsing_string(settings_dict=self.settings_dict)
+        # site_parse_str = self.make_parsing_string(settings_dict=self.settings_dict)
 
         suffix = "[FILE TIME RANGE CHECK]"
-        run_start_date = dt.datetime.strptime(self.settings_dict['rawdata_start_date'], '%Y-%m-%d %H:%M')
-        run_end_date = dt.datetime.strptime(self.settings_dict['rawdata_end_date'], '%Y-%m-%d %H:%M')
+        run_start_date = dt.datetime.strptime(self.rawdata_start_date, '%Y-%m-%d %H:%M')
+        run_end_date = dt.datetime.strptime(self.rawdata_end_date, '%Y-%m-%d %H:%M')
         _invalid_files_dict = {}
         valid_files_dict = {}
         for filename, filepath in self.valid_files_dict.items():
-            rawdata_filedate = dt.datetime.strptime(filename, parsing_string)
+            rawdata_filedate = dt.datetime.strptime(filename, site_parse_str)
             if (rawdata_filedate < run_start_date) | (rawdata_filedate > run_end_date):
                 self.logger.info(
                     f"{suffix} Date of file ({filename}, date: {rawdata_filedate}) is outside the selected time range"
@@ -129,8 +144,8 @@ class PrepareEddyProFiles:
         self.settings_dict = settings_dict
         self.section_txt = "[EDDYPRO PROCESSING SETTINGS]"
 
-        self.dir_out_run_eddypro_ini = Path(self.settings_dict['dir_out_run_eddypro_ini'])
-        self.dir_out_run_eddypro_bin = Path(self.settings_dict['dir_out_run_eddypro_bin'])
+        self.dir_out_run_eddypro_ini = Path(self.settings_dict['_dir_out_run_eddypro_ini'])
+        self.dir_out_run_eddypro_bin = Path(self.settings_dict['_dir_out_run_eddypro_bin'])
         self.path_selected_processing_file = Path(settings_dict['path_selected_eddypro_processing_file'])
 
         self.run()
@@ -152,13 +167,13 @@ class PrepareEddyProFiles:
 
         # fill in CORRECT PATHS
         # remove backslash of path because eddypro does not like it
-        with open(self.settings_dict['path_used_eddypro_metadata_file']) as input_file:
+        with open(self.settings_dict['_path_used_eddypro_metadata_file']) as input_file:
             for line in input_file:
                 if line.startswith('file_name='):  # Output folder for EddyPro results
                     file_name_old = line
 
-        file_name_new = f"file_name={Path(self.settings_dict['path_used_eddypro_metadata_file'])}\n".replace('\\', '/')
-        self.update_setting(filepath=self.settings_dict['path_used_eddypro_metadata_file'],
+        file_name_new = f"file_name={Path(self.settings_dict['_path_used_eddypro_metadata_file'])}\n".replace('\\', '/')
+        self.update_setting(filepath=self.settings_dict['_path_used_eddypro_metadata_file'],
                             old=file_name_old, new=file_name_new)
         self.logger.info(f"{section_id}"
                          f"\n    Updated line:"
@@ -169,11 +184,11 @@ class PrepareEddyProFiles:
         """Update processing settings"""
         section_id = '[UPDATING EDDYPRO PROCESSING FILE]'
 
-        self.logger.info(f"{section_id}  Updating file:  {self.settings_dict['path_used_eddypro_processing_file']}")
+        self.logger.info(f"{section_id}  Updating file:  {self.settings_dict['_path_used_eddypro_processing_file']}")
 
         # fill in CORRECT PATHS in processing.eddypro
         # remove backslash of path w/ .replace because eddypro does not like it
-        with open(self.settings_dict['path_used_eddypro_processing_file']) as input_file:
+        with open(self.settings_dict['_path_used_eddypro_processing_file']) as input_file:
             for line in input_file:
                 if line.startswith('out_path='):  # Output folder for EddyPro results
                     out_path_old = line
@@ -188,34 +203,34 @@ class PrepareEddyProFiles:
                 elif line.startswith('project_id='):  # For raw data file search
                     project_id_old = line
 
-        out_path_new = f"out_path={Path(self.settings_dict['dir_out_run_eddypro_results'])}\n".replace('\\', '/')
-        self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
+        out_path_new = f"out_path={Path(self.settings_dict['_dir_out_run_eddypro_results'])}\n".replace('\\', '/')
+        self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=out_path_old, new=out_path_new)
         self.logger.info(f"{section_id}"
                          f"\n    Updated line:"
                          f"\n    OLD:  {out_path_old}"
                          f"    NEW:  {out_path_new}")
 
-        proj_file_new = f"proj_file={Path(self.settings_dict['path_used_eddypro_metadata_file'])}\n".replace('\\', '/')
-        self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
+        proj_file_new = f"proj_file={Path(self.settings_dict['_path_used_eddypro_metadata_file'])}\n".replace('\\', '/')
+        self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=proj_file_old, new=proj_file_new)
         self.logger.info(f"{section_id}"
                          f"\n    Updated line:"
                          f"\n    OLD:  {proj_file_old}"
                          f"    NEW:  {proj_file_new}")
 
-        file_name_new = f"file_name={Path(self.settings_dict['path_used_eddypro_processing_file'])}\n".replace('\\',
-                                                                                                               '/')
-        self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
+        file_name_new = f"file_name={Path(self.settings_dict['_path_used_eddypro_processing_file'])}\n".replace('\\',
+                                                                                                                '/')
+        self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=file_name_old, new=file_name_new)
         self.logger.info(f"{section_id}"
                          f"\n    Updated line:"
                          f"\n    OLD:  {file_name_old}"
                          f"    NEW:  {file_name_new}")
 
-        data_path_new = f"data_path={Path(self.settings_dict['dir_used_rawdata_ascii_files_eddypro_data_path'])}\n".replace(
+        data_path_new = f"data_path={Path(self.settings_dict['_dir_used_rawdata_ascii_files_eddypro_data_path'])}\n".replace(
             '\\', '/')
-        self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
+        self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=data_path_old, new=data_path_new)
         self.logger.info(f"{section_id}"
                          f"\n    Updated line:"
@@ -225,15 +240,15 @@ class PrepareEddyProFiles:
         prototype_str = f"{self.settings_dict['site']}_" \
                         f"{self.settings_dict['rawdata_filename_datetime_format']}.csv"
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
-        self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
+        self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=file_prototype_old, new=file_prototype_new)
         self.logger.info(f"{section_id}"
                          f"\n    Updated line:"
                          f"\n    OLD:  {file_prototype_old}"
                          f"    NEW:  {file_prototype_new}")
 
-        project_id_new = f"project_id={self.settings_dict['site']}_{Path(self.settings_dict['run_id'])}\n"
-        self.update_setting(filepath=self.settings_dict['path_used_eddypro_processing_file'],
+        project_id_new = f"project_id={self.settings_dict['site']}_{Path(self.settings_dict['_run_id'])}\n"
+        self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=project_id_old, new=project_id_new)
         self.logger.info(f"{section_id}"
                          f"\n    Updated line:"
@@ -248,7 +263,7 @@ class PrepareEddyProFiles:
         """Copy app files to run folder, e.g. Windows exe"""
 
         # Operating system
-        dir_app = Path(self.settings_dict['dir_script']) / 'eddypro_app'
+        dir_app = Path(self.settings_dict['_dir_script']) / 'eddypro_app'
         if os.name == 'nt':
             os_subdir = 'windows'
         else:
@@ -260,23 +275,23 @@ class PrepareEddyProFiles:
         for root, dirs, found_files in os.walk(dir_app):
             for idx, file in enumerate(found_files):
                 filepath = Path(root) / file
-                shutil.copy(filepath, self.settings_dict['dir_out_run_eddypro_bin'])
+                shutil.copy(filepath, self.settings_dict['_dir_out_run_eddypro_bin'])
 
         # Set path to executables
-        self.settings_dict['path_used_eddypro_app_rp'] = \
-            Path(self.settings_dict['dir_out_run_eddypro_bin']) / 'eddypro_rp.exe'
-        self.settings_dict['path_used_eddypro_app_fcc'] = \
-            Path(self.settings_dict['dir_out_run_eddypro_bin']) / 'eddypro_fcc.exe'
+        self.settings_dict['_path_used_eddypro_app_rp'] = \
+            Path(self.settings_dict['_dir_out_run_eddypro_bin']) / 'eddypro_rp.exe'
+        self.settings_dict['_path_used_eddypro_app_fcc'] = \
+            Path(self.settings_dict['_dir_out_run_eddypro_bin']) / 'eddypro_fcc.exe'
 
         # Check if files available
-        if not Path(self.settings_dict['path_used_eddypro_app_rp']).is_file():
+        if not Path(self.settings_dict['_path_used_eddypro_app_rp']).is_file():
             self.logger(f"(!)ERROR eddypro_rp.exe was not found "
-                        f"in folder {self.settings_dict['dir_out_run_eddypro_bin']}")
+                        f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
-        if not Path(self.settings_dict['path_used_eddypro_app_fcc']).is_file():
+        if not Path(self.settings_dict['_path_used_eddypro_app_fcc']).is_file():
             self.logger(f"(!)ERROR eddypro_fcc was not found "
-                        f"in folder {self.settings_dict['dir_out_run_eddypro_bin']}")
+                        f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
     def prepare_processing_file(self):
@@ -289,8 +304,8 @@ class PrepareEddyProFiles:
                          f"Copied file to {path_used_processing_file} ...")
         self.logger.info(f"{self.section_txt} [PROCESSING FILE] "
                          f"Used in this run: {path_used_processing_file} ...")
-        self.settings_dict['path_used_eddypro_processing_file'] = path_used_processing_file
-        self.settings_dict['path_found_eddypro_metadata_file'] = self.path_selected_processing_file
+        self.settings_dict['_path_used_eddypro_processing_file'] = path_used_processing_file
+        self.settings_dict['_path_found_eddypro_metadata_file'] = self.path_selected_processing_file
 
     def prepare_metadata_file(self):
         """Search metadata file and copy to run folder"""
@@ -303,7 +318,7 @@ class PrepareEddyProFiles:
             shutil.copy(path_found_metadata_file, path_used_metadata_file)
             self.logger.info(f"{self.section_txt} [METADATA FILE] Copied file to {path_used_metadata_file}")
             self.logger.info(f"{self.section_txt} [METADATA FILE] Used in this run: {path_used_metadata_file}")
-            self.settings_dict['path_used_eddypro_metadata_file'] = path_used_metadata_file
+            self.settings_dict['_path_used_eddypro_metadata_file'] = path_used_metadata_file
 
         else:
             self.logger.info(f"{self.section_txt} [METADATA FILE] "

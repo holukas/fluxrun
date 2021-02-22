@@ -1,75 +1,82 @@
-run_id=FR-20210221-182900
+_run_id=FR-20210223-001820
+
 
 # INSTRUMENTS
 # ===========
 
-# Site
+## Site
 site=CH-AES
+
 
 # PROCESSING
 # ==========
 
-# Raw Data Source Folder
-rawdata_indir=A:/FLUXES/x-TEST-FILES
+## Raw Data Source Folder
+rawdata_indir=A:/FLUXES/x-TEST-OUT/CH-AES_FR-20210222-235551/1-0_rawdata_files_ascii
 rawdata_file_compression=None
 
-# Time Range
-rawdata_start_date=2019-05-10 11:52
-rawdata_end_date=2019-05-29 11:52
+## Time Range
+rawdata_start_date=2019-01-01 00:01
+rawdata_end_date=2019-12-31 23:59
 
-# File Settings
+## File Settings
 rawdata_filename_datetime_format=yyyymmddHHMM
+_sitefiles_search_str=CH-AES_*.csv
+_sitefiles_parse_str=CH-AES_%Y%m%d%H%M.csv
 
-
-# EddyPro
+## EddyPro
 path_selected_eddypro_processing_file=P:/Flux/RDS_calculations/INO/AES/FLUXRUN/CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
-path_used_eddypro_processing_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\ini\processing.eddypro
-
-path_found_eddypro_metadata_file=P:\Flux\RDS_calculations\INO\AES\FLUXRUN\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
-path_used_eddypro_metadata_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\ini\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.metadata
-
-dir_found_eddypro_app=
-path_used_eddypro_app_rp=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
-path_used_eddypro_app_fcc=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
+_path_used_eddypro_processing_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\ini\processing.eddypro
+_path_found_eddypro_metadata_file=P:\Flux\RDS_calculations\INO\AES\FLUXRUN\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
+_path_used_eddypro_metadata_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\ini\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.metadata
+_path_used_eddypro_app_rp=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
+
+## Output Folder
 dir_out=A:/FLUXES/x-TEST-OUT
-dir_out_run=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900
-dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\1-0_rawdata_files_ascii
-dir_used_rawdata_ascii_files_eddypro_data_path=A:/FLUXES/x-TEST-FILES
+_dir_out_run=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820
+_dir_out_run_log=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\0_log
+_dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\1-0_rawdata_files_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=A:/FLUXES/x-TEST-OUT/CH-AES_FR-20210222-235551/1-0_rawdata_files_ascii
+_dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\1-1_rawdata_plots_availability
+_dir_out_run_plots_aggregates_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\1-2_rawdata_plots_aggregates
+_dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations
+_dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\ini
+_dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\bin
+_dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\results
+_dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-1_eddypro_flux_calculations_summary_plots
 
-dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations
-dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\ini
-dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\bin
-dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-0_eddypro_flux_calculations\results
-
-dir_out_run_log=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\0_log
-dir_out_run_plots=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-181639\plots
-dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\1-1_rawdata_plots_availability
-dir_out_run_plots_aggregates_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\1-2_rawdata_plots_aggregates
-dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210221-182900\2-1_eddypro_flux_calculations_summary_plots
-
-
+## Plots
 plot_availability_rawdata=1
 plot_aggregates_rawdata=1
 plot_summary=1
 
 
-# DIRECTORIES
-# ===========
-dir_fluxrun=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs
-dir_script=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun
-dir_settings=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun\settings
-dir_root=L:\Dropbox\luhk_work\programming
+# _SCRIPT
+# =======
+
+## General
+_dir_root=L:\Dropbox\luhk_work\programming
+_dir_fluxrun=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs
+_dir_script=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun
+_dir_settings=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun\settings
+
+
+
+# _SERVER DIRECTORIES
+# ===================
+# currently not used
 dir_server_CH-AES=
-dir_server_CH-AWS=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-AWS_CrapAlv\20_sonic_ghg
-dir_server_CH-CHA=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-CHA_Chamau\20_sonic_ghg
+dir_server_CH-AWS=
+dir_server_CH-CHA=
 dir_server_CH-DAE=
-dir_server_CH-DAV=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-DAV_Davos\20_sonic_ghg
-dir_server_CH-FRU=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-FRU_Fruebuel\20_sonic_ghg
-dir_server_CH-INO=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-INO_InnoFarm\20_sonic_ghg
-dir_server_CH-LAE=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-LAE_Laegeren\20_sonic_ghg
-dir_server_CH-LAS=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-LAS_Lae-Subcanopy\20_sonic_ghg
-dir_server_CH-OE2=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\CH-OE2_Oensingen\20_sonic_ghg
-dir_server_CH-TWE=\\green.ethz.ch\share-green-gl-archive-1-$\FluxData\US-TWE_ToolikWetland\20_sonic_ghg
+dir_server_CH-DAV=
+dir_server_CH-FRU=
+dir_server_CH-INO=
+dir_server_CH-LAE=
+dir_server_CH-LAS=
+dir_server_CH-OE2=
+dir_server_CH-TWE=

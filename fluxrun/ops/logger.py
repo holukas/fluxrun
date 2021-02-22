@@ -4,8 +4,8 @@ from pathlib import Path
 
 
 def setup_logger(settings_dict):
-    logfile_name = f"{settings_dict['run_id']}.log"
-    logfile_path = settings_dict['dir_out_run_log'] / logfile_name
+    logfile_name = f"{settings_dict['_run_id']}.log"
+    logfile_path = settings_dict['_dir_out_run_log'] / logfile_name
     logger = create_logger(logfile_path=logfile_path, name='main_logger')
     return logger
 

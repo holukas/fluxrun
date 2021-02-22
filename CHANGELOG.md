@@ -2,6 +2,10 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v0.4.0 - 23 Feb 2021
+- changed: plots now generated strictly from *uncompressed* raw data files
+- changed: structure of .settings file
+
 ## v0.3.0 - 21 Feb 2021
 - new: added option to plot aggregated raw data files. The plots show the 
   data that is then used for flux calculations.

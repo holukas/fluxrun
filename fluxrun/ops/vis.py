@@ -350,10 +350,11 @@ def _format_plot(self, ax, title, show_legend=True):
 class PlotRawDataFilesAggregates:
     section_id = "[PLOT RAW DATA FILE AGGREGATES]"
 
-    def __init__(self, rawdata_found_files_dict, settings_dict, logger):
+    def __init__(self, rawdata_found_files_dict, settings_dict, logger, rawdata_file_datefrmt):
         self.rawdata_found_files_dict = rawdata_found_files_dict
         self.settings_dict = settings_dict
         self.logger = logger
+        self.rawdata_file_datefrmt = rawdata_file_datefrmt
 
         self.collect_aggs()
 
@@ -372,7 +373,7 @@ class PlotRawDataFilesAggregates:
                                                     stats_coll_df=stats_coll_df,
                                                     filecounter=filecounter)
         self.make_plot(df=stats_coll_df,
-                       outdir=self.settings_dict['dir_out_run_plots_aggregates_rawdata'])
+                       outdir=self.settings_dict['_dir_out_run_plots_aggregates_rawdata'])
         print(filecounter)
 
     def file_header_for_log(self, fid, num_files, filecounter):
@@ -488,8 +489,7 @@ class PlotRawDataFilesAggregates:
 
     def get_filedate(self, fid):
         """Get filedate from filename"""
-        parsing_string = SearchAll.make_parsing_string(settings_dict=self.settings_dict)
-        rawdata_filedate = dt.datetime.strptime(fid, parsing_string)
+        rawdata_filedate = dt.datetime.strptime(fid, self.rawdata_file_datefrmt)
         self.logger.info(f"{self.section_id}    Filedate for {fid}: {rawdata_filedate}")
         return rawdata_filedate
 

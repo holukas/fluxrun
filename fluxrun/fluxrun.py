@@ -62,54 +62,58 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         self.set_dir_eddypro_rawdata()
         self.settings_dict = file.PrepareEddyProFiles(settings_dict=self.settings_dict,
                                                       logger=self.logger).get()
+        self.make_parsing_strings()
         self.save_settings_to_file(copy_to_outdir=True)
 
-        # # todo act test
-        # vis.PlotEddyProFullOutputFile(
-        #     file_to_plot=r"C:\Users\holukas\Desktop\eddypro_CH-AES_FR-20210216-150657_full_output_2021-02-17T212711_adv.csv",
-        #     destination_folder=r"C:\Users\holukas\Desktop\_test",
-        #     logger=self.logger).run()
-
         # Search valid raw ASCII files, depending on settings
-        self.settings_dict['filename_datetime_parsing_string'] = self.make_datetime_parsing_string()
-        self.rawdata_found_files_dict = file.SearchAll(settings_dict=self.settings_dict,
-                                                       logger=self.logger).keep_valid_files()
+        self.rawdata_found_files_dict = file.SearchAll(
+            settings_dict=self.settings_dict,
+            logger=self.logger,
+            search_in_dir=self.settings_dict['rawdata_indir']) \
+            .keep_valid_files()
 
         if not self.rawdata_found_files_dict:
             self.logger.info("(!)ERROR No raw data files found. Please check settings.")
             sys.exit(-1)
 
-        # Availability heatmap for raw data files
-        if self.settings_dict['plot_availability_rawdata'] == '1':
-            parsing_string = file.SearchAll.make_parsing_string(settings_dict=self.settings_dict)
-            vis.availability_rawdata(rawdata_found_files_dict=self.rawdata_found_files_dict,
-                                     rawdata_file_datefrmt=parsing_string,
-                                     outdir=self.settings_dict['dir_out_run_plots_availability_rawdata'],
-                                     logger=self.logger)
-
-        # Plot stats collection from file
-        if self.settings_dict['plot_aggregates_rawdata'] == '1':
-            vis.PlotRawDataFilesAggregates(rawdata_found_files_dict=self.rawdata_found_files_dict,
-                                           settings_dict=self.settings_dict,
-                                           logger=self.logger)
-
-        # Get raw data files for processing, uncompress
+        # Get raw data files for processing, uncompress if needed
         if self.settings_dict['rawdata_file_compression'] == 'gzip':
             file.uncompress_gzip(settings_dict=self.settings_dict,
                                  found_gzip_files_dict=self.rawdata_found_files_dict,
                                  logger=self.logger)
+            # Files were uncompressed, search those files
+            self.rawdata_found_files_dict = file.SearchAll(
+                settings_dict=self.settings_dict,
+                logger=self.logger,
+                search_in_dir=self.settings_dict['_dir_used_rawdata_ascii_files_eddypro_data_path'],
+                search_uncompressed=True) \
+                .keep_valid_files()
         elif self.settings_dict['rawdata_file_compression'] == 'None':
+            # In this case files are already uncompressed
             pass
-            # file.copy_rawdata_files(settings_dict=self.settings_dict,
-            #                         found_csv_files_dict=self.rawdata_found_files_dict,
-            #                         logger=self.logger)
+            # file.copy_rawdata_files(...)
+
+        # Availability heatmap for *uncompressed* raw data files
+        if self.settings_dict['plot_availability_rawdata'] == '1':
+            vis.availability_rawdata(rawdata_found_files_dict=self.rawdata_found_files_dict,
+                                     rawdata_file_datefrmt=self.settings_dict['_sitefiles_parse_str'].rstrip('.gz'),
+                                     outdir=self.settings_dict['_dir_out_run_plots_availability_rawdata'],
+                                     logger=self.logger)
+
+        # Plot stats for *uncompressed* raw data files
+        if self.settings_dict['plot_aggregates_rawdata'] == '1':
+            vis.PlotRawDataFilesAggregates(
+                rawdata_found_files_dict=self.rawdata_found_files_dict,
+                settings_dict=self.settings_dict,
+                logger=self.logger,
+                rawdata_file_datefrmt=self.settings_dict['_sitefiles_parse_str'].rstrip('.gz'))
 
         # Call EddyPro processing
         rp_process_status = self.run_eddypro_cmd(cmd='eddypro_rp.exe')  # execute exe todo for linux and osx
 
         # Check if EddyPro full_output file was already generated
         found_full_output, _ = file.check_if_file_in_folder(search_str='*_full_output_*.csv',
-                                                            folder=self.settings_dict['dir_out_run_eddypro_results'])
+                                                            folder=self.settings_dict['_dir_out_run_eddypro_results'])
         if found_full_output:
             self.logger.info("(!)WARNING EddyPro RP already generated a full_output file. FCC will be skipped. "
                              "This is not necessarily bad.")
@@ -120,11 +124,11 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         # Plot summary
         found_full_output, filepath_full_output = \
             file.check_if_file_in_folder(search_str='*_full_output_*.csv',
-                                         folder=self.settings_dict['dir_out_run_eddypro_results'])
+                                         folder=self.settings_dict['_dir_out_run_eddypro_results'])
         if found_full_output and int(self.settings_dict['plot_summary']) == 1:
             vis.PlotEddyProFullOutputFile(
                 file_to_plot=filepath_full_output,
-                destination_folder=self.settings_dict['dir_out_run_plots_summary'],
+                destination_folder=self.settings_dict['_dir_out_run_plots_summary'],
                 logger=self.logger).run()
 
         else:
@@ -135,6 +139,28 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         self.logger.info("FluxRun finished.")
         self.logger.info("=" * 60)
 
+    def make_parsing_strings(self):
+        """Make parsing strings to parse info from raw data filenames"""
+        self.settings_dict['filename_datetime_parsing_string'] = self.make_datetime_parsing_string()
+
+        # Add site id to search strings
+        file_ext = '.csv.gz' if self.settings_dict['rawdata_file_compression'] == 'gzip' else '.csv'
+        self.settings_dict['_sitefiles_search_str'] = f"{self.settings_dict['site']}_*{file_ext}"
+        self.settings_dict['_sitefiles_parse_str'] = f"{self.settings_dict['site']}_" \
+                                                     f"{self.settings_dict['filename_datetime_parsing_string']}" \
+                                                     f"{file_ext}"
+
+    def make_datetime_parsing_string(self):
+        """Parse filename for datetime info"""
+        _parsing_string = self.settings_dict['filename_datetime_format']
+        _parsing_string = _parsing_string.replace('yyyy', '%Y')
+        _parsing_string = _parsing_string.replace('mm', '%m')
+        _parsing_string = _parsing_string.replace('dd', '%d')
+        _parsing_string = _parsing_string.replace('HH', '%H')
+        _parsing_string = _parsing_string.replace('MM', '%M')
+        # _parsing_string = f"{self.settings_dict['site']}_{_parsing_string}"  # Add site id
+        return _parsing_string
+
     def set_dir_eddypro_rawdata(self):
         """
         Set raw data folder for EddyPro flux calculations
@@ -143,22 +169,22 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         Uncompressed files will be directly used from where they are stored.
         """
         if self.settings_dict['rawdata_file_compression'] == 'gzip':
-            self.settings_dict['dir_used_rawdata_ascii_files_eddypro_data_path'] = \
-                self.settings_dict['dir_out_run_rawdata_ascii_files']
+            self.settings_dict['_dir_used_rawdata_ascii_files_eddypro_data_path'] = \
+                self.settings_dict['_dir_out_run_rawdata_ascii_files']
 
         elif self.settings_dict['rawdata_file_compression'] == 'None':
-            outpath = Path(self.settings_dict['dir_out_run_rawdata_ascii_files']) / 'readme.txt'
+            outpath = Path(self.settings_dict['_dir_out_run_rawdata_ascii_files']) / 'readme.txt'
             readme_txt = open(str(outpath), "w+")
             readme_txt.write(f"This folder is empty because uncompressed ASCII raw data files from the "
                              f"following folder were used for flux calculations:\n\n"
                              f"{self.settings_dict['rawdata_indir']}")
-            self.settings_dict['dir_used_rawdata_ascii_files_eddypro_data_path'] = \
+            self.settings_dict['_dir_used_rawdata_ascii_files_eddypro_data_path'] = \
                 self.settings_dict['rawdata_indir']
 
     def run_eddypro_cmd(self, cmd: str):
         """Run eddypro_rp.exe or eddypro_fcc.exe"""
 
-        os.chdir(self.settings_dict['dir_out_run_eddypro_bin'])  # go to eddypro bin folder
+        os.chdir(self.settings_dict['_dir_out_run_eddypro_bin'])  # go to eddypro bin folder
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE)  # call cmd command
         while process.poll() is None:
             # This blocks until it receives a newline.
@@ -180,17 +206,6 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
             self.logger.info(f"[EDDYPRO LOG] (!)ERROR {cmd} encountered a problem.")
         self.logger.info("*" * 30)
         return process_status
-
-    def make_datetime_parsing_string(self):
-        """Parse filename for datetime info"""
-        _parsing_string = self.settings_dict['filename_datetime_format']
-        _parsing_string = _parsing_string.replace('yyyy', '%Y')
-        _parsing_string = _parsing_string.replace('mm', '%m')
-        _parsing_string = _parsing_string.replace('dd', '%d')
-        _parsing_string = _parsing_string.replace('HH', '%H')
-        _parsing_string = _parsing_string.replace('MM', '%M')
-        # _parsing_string = f"{self.settings_dict['site']}_{_parsing_string}"  # Add site id
-        return _parsing_string
 
     def update_dict_key(self, key, new_val):
         """ Updates key in Dict with new_val """
@@ -227,11 +242,11 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
     def update_dict_dir_settings(self, dir_script, dir_settings):
         """Update dir info for current run"""
-        self.settings_dict['run_id'] = self.run_id
-        self.settings_dict['dir_script'] = os.path.join(os.path.dirname(dir_script))
-        self.settings_dict['dir_settings'] = dir_settings
-        self.settings_dict['dir_fluxrun'] = Path(self.settings_dict['dir_script']).parents[0]
-        self.settings_dict['dir_root'] = Path(self.settings_dict['dir_script']).parents[1]
+        self.settings_dict['_run_id'] = self.run_id
+        self.settings_dict['_dir_script'] = os.path.join(os.path.dirname(dir_script))
+        self.settings_dict['_dir_settings'] = dir_settings
+        self.settings_dict['_dir_fluxrun'] = Path(self.settings_dict['_dir_script']).parents[0]
+        self.settings_dict['_dir_root'] = Path(self.settings_dict['_dir_script']).parents[1]
 
         # Update dirs that can be changed in the gui
         self.settings_dict['rawdata_indir'] = \
@@ -320,8 +335,8 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
     def save_settings_to_file(self, copy_to_outdir=False):
         """Save settings dict to settings file """
-        old_settings_file = os.path.join(self.settings_dict['dir_settings'], 'FluxRun.settings')
-        new_settings_file = os.path.join(self.settings_dict['dir_settings'], 'FluxRun.settingsTemp')
+        old_settings_file = os.path.join(self.settings_dict['_dir_settings'], 'FluxRun.settings')
+        new_settings_file = os.path.join(self.settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
         with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
             for line in infile:  # cycle through all lines in settings file
                 if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
@@ -337,7 +352,7 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         if copy_to_outdir:
             # Save a copy of the settings file also in the output dir
-            run_settings_file_path = Path(self.settings_dict['dir_out_run']) / 'FluxRun.settings'
+            run_settings_file_path = Path(self.settings_dict['_dir_out_run']) / 'FluxRun.settings'
             copyfile(old_settings_file, run_settings_file_path)
             pass
 
