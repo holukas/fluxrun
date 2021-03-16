@@ -328,7 +328,10 @@ class PrepareEddyProFiles:
             sys.exit()
 
     def search_required_metadata_file(self):
-        """Search for metadata file in same dir as the selected processing file"""
+        """
+        Search for metadata file in same dir (same location, no subdirs considered)
+        as the selected processing file
+        """
         dir_selected_eddypro_processing_file = self.path_selected_processing_file.parent
         required_metadata_filename = self.path_selected_processing_file.stem + ".metadata"
         path_found_metadata_file = None
@@ -336,11 +339,11 @@ class PrepareEddyProFiles:
         self.logger.info(f"{self.section_txt} [METADATA FILE] "
                          f"Searching for file {required_metadata_filename} "
                          f"in {dir_selected_eddypro_processing_file} ...")
-        for root, dirs, found_files in os.walk(dir_selected_eddypro_processing_file):
-            for idx, file in enumerate(found_files):
-                if file == required_metadata_filename:
-                    path_found_metadata_file = Path(root) / file
-                    break
+
+        for found_file in os.listdir(dir_selected_eddypro_processing_file):
+            if found_file == required_metadata_filename:
+                path_found_metadata_file = Path(dir_selected_eddypro_processing_file) / found_file
+                break
 
         return path_found_metadata_file, required_metadata_filename
 

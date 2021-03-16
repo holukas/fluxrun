@@ -2,6 +2,10 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v0.5.0 - 16 Mar 2021
+- bug: removed bug where another .metadata file, found in a subfolder in the
+  .eddypro file folder, would be used (os.walk took it too far)
+
 ## v0.4.0 - 23 Feb 2021
 - changed: plots now generated strictly from *uncompressed* raw data files
 - changed: structure of .settings file

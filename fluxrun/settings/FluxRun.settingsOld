@@ -1,57 +1,57 @@
-_run_id=FR-20210223-001820
+_run_id=FR-20210316-171308
 
 
 # INSTRUMENTS
 # ===========
 
 ## Site
-site=CH-AES
+site=CH-OE2
 
 
 # PROCESSING
 # ==========
 
 ## Raw Data Source Folder
-rawdata_indir=A:/FLUXES/x-TEST-OUT/CH-AES_FR-20210222-235551/1-0_rawdata_files_ascii
-rawdata_file_compression=None
+rawdata_indir=F:/x-TESTS/INO_OE2_test/test_raw
+rawdata_file_compression=gzip
 
 ## Time Range
-rawdata_start_date=2019-01-01 00:01
-rawdata_end_date=2019-12-31 23:59
+rawdata_start_date=2019-08-09 13:00
+rawdata_end_date=2019-08-26 13:00
 
 ## File Settings
 rawdata_filename_datetime_format=yyyymmddHHMM
-_sitefiles_search_str=CH-AES_*.csv
-_sitefiles_parse_str=CH-AES_%Y%m%d%H%M.csv
+_sitefiles_search_str=CH-OE2_*.csv.gz
+_sitefiles_parse_str=CH-OE2_%Y%m%d%H%M.csv.gz
 
 ## EddyPro
-path_selected_eddypro_processing_file=P:/Flux/RDS_calculations/INO/AES/FLUXRUN/CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
-_path_used_eddypro_processing_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\ini\processing.eddypro
-_path_found_eddypro_metadata_file=P:\Flux\RDS_calculations\INO\AES\FLUXRUN\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
-_path_used_eddypro_metadata_file=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\ini\CH-AES_2019_[IRGA75]_R350-A+IRGA75-A+LGR-A_OPENLAG.metadata
-_path_used_eddypro_app_rp=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
-_path_used_eddypro_app_fcc=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
+path_selected_eddypro_processing_file=F:/x-TESTS/INO_OE2_test/CH-OE2_2019_[LGR]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
+_path_used_eddypro_processing_file=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations\ini\processing.eddypro
+_path_found_eddypro_metadata_file=F:\x-TESTS\INO_OE2_test\CH-OE2_2019_[LGR]_R350-A+IRGA75-A+LGR-A_OPENLAG.eddypro
+_path_used_eddypro_metadata_file=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations\ini\CH-OE2_2019_[LGR]_R350-A+IRGA75-A+LGR-A_OPENLAG.metadata
+_path_used_eddypro_app_rp=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
 
 ## Output Folder
-dir_out=A:/FLUXES/x-TEST-OUT
-_dir_out_run=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820
-_dir_out_run_log=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\0_log
-_dir_out_run_rawdata_ascii_files=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\1-0_rawdata_files_ascii
-_dir_used_rawdata_ascii_files_eddypro_data_path=A:/FLUXES/x-TEST-OUT/CH-AES_FR-20210222-235551/1-0_rawdata_files_ascii
-_dir_out_run_plots_availability_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\1-1_rawdata_plots_availability
-_dir_out_run_plots_aggregates_rawdata=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\1-2_rawdata_plots_aggregates
-_dir_out_run_eddypro=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations
-_dir_out_run_eddypro_ini=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\ini
-_dir_out_run_eddypro_bin=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\bin
-_dir_out_run_eddypro_results=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-0_eddypro_flux_calculations\results
-_dir_out_run_plots_summary=A:\FLUXES\x-TEST-OUT\CH-AES_FR-20210223-001820\2-1_eddypro_flux_calculations_summary_plots
+dir_out=F:/x-TESTS/INO_OE2_test
+_dir_out_run=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308
+_dir_out_run_log=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\0_log
+_dir_out_run_rawdata_ascii_files=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\1-0_rawdata_files_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\1-0_rawdata_files_ascii
+_dir_out_run_plots_availability_rawdata=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\1-1_rawdata_plots_availability
+_dir_out_run_plots_aggregates_rawdata=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\1-2_rawdata_plots_aggregates
+_dir_out_run_eddypro=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations
+_dir_out_run_eddypro_ini=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations\ini
+_dir_out_run_eddypro_bin=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations\bin
+_dir_out_run_eddypro_results=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-0_eddypro_flux_calculations\results
+_dir_out_run_plots_summary=F:\x-TESTS\INO_OE2_test\CH-OE2_FR-20210316-171308\2-1_eddypro_flux_calculations_summary_plots
 
 ## Plots
-plot_availability_rawdata=1
-plot_aggregates_rawdata=1
+plot_availability_rawdata=0
+plot_aggregates_rawdata=0
 plot_summary=1
 
 
