@@ -2,6 +2,9 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.0.1 - 12 Aug 2021
+- updated version number and dates in code
+
 ## v1.0 - 12 Aug 2021
 - update: now using EddyPro v7.0.7
 - update: new, slimmer conda environment `FLUXRUN` with updated pandas,  
