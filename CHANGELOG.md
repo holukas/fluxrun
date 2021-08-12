@@ -2,12 +2,21 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.0 - XXX
+- update: now using EddyPro v7.0.7
+- update: new, slimmer conda environment `FLUXRUN` with updated pandas,  
+  numpy, matplotlib and pyqt
+- code: plots are now explicitely closed after saving to avoid the  
+  "More than 20 figures have been opened." warning in matplotlib
+- added: info about used EddyPro version in sidebar
+
 ## v0.5.0 - 16 Mar 2021
 - bug: removed bug where another .metadata file, found in a subfolder in the
   .eddypro file folder, would be used (os.walk took it too far)
 
 ## v0.4.0 - 23 Feb 2021
 - changed: plots now generated strictly from *uncompressed* raw data files
+- updated: new, slimmer conda environment `FLUXRUN` 
 - changed: structure of .settings file
 
 ## v0.3.0 - 21 Feb 2021

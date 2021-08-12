@@ -120,8 +120,8 @@ class PlotEddyProFullOutputFile:
                 # ax1.plot_date(y.index.to_pydatetime(), y, 'o-', color='#5f87ae', linewidth=0.2, markersize=3, markeredgecolor='#5f87ae')  # http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot_date
                 ax1.plot_date(y.index.to_pydatetime(), y, '-', color='#5f87ae',
                               linewidth=0.3)  # http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot_date
-                plt.axhline(y.quantile(0.05), color='red', alpha=0.25)
-                plt.axhline(y.quantile(0.95), color='red', alpha=0.25)
+                ax1.axhline(y.quantile(0.05), color='red', alpha=0.25)
+                ax1.axhline(y.quantile(0.95), color='red', alpha=0.25)
                 ax1.set_xlabel("DAY/MONTH", size=label_size)
                 ax1.set_ylabel(units, size=label_size)
                 ax1.set_title(f"{var} time series with 5/95 percentiles", size=heading_size,
@@ -130,7 +130,7 @@ class PlotEddyProFullOutputFile:
                 # plt.setp(ax1.xaxis.get_majorticklabels(), rotation=0)
                 ax1.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
                 # ax1.xaxis.set_major_locator(dates.WeekdayLocator(byweekday=1, interval=1))
-                plt.ylim(qua1, qua2)
+                ax1.set_ylim(qua1, qua2)
 
                 # DAILY AVG SCATTER
                 ax4 = plt.subplot2grid((4, 4), (2, 0), colspan=2)
@@ -139,12 +139,12 @@ class PlotEddyProFullOutputFile:
                 daily_std = y.resample('D').std()
                 # daily_avg = daily_avg[daily_count > 10]
                 # daily_std = daily_std[daily_count > 10]
-                plt.scatter(daily_avg.index.to_pydatetime(), daily_avg, c='#f78b31', edgecolor='#f78b31', alpha=1, s=4)
-                plt.errorbar(daily_avg.index.to_pydatetime(), daily_avg, alpha=0.2, yerr=daily_std, capsize=0,
+                ax4.scatter(daily_avg.index.to_pydatetime(), daily_avg, c='#f78b31', edgecolor='#f78b31', alpha=1, s=4)
+                ax4.errorbar(daily_avg.index.to_pydatetime(), daily_avg, alpha=0.2, yerr=daily_std, capsize=0,
                              ls='none',
                              color='#f78b31', elinewidth=2)
                 # plt.fill_between(daily_std.index, daily_avg - daily_std, daily_avg + daily_std, color='k', alpha=0.1)
-                plt.axhline(0, color='grey', alpha=0.5)
+                ax4.axhline(0, color='grey', alpha=0.5)
                 ax4.set_xlabel("DAY/MONTH", size=label_size)
                 ax4.set_ylabel(units, size=label_size)
                 ax4.set_title(f"{var} daily average with std", size=heading_size,
@@ -152,7 +152,7 @@ class PlotEddyProFullOutputFile:
                 ax4.tick_params(axis='both', labelsize=label_size)
                 plt.setp(ax4.xaxis.get_majorticklabels(), rotation=0)
                 ax4.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
-                plt.ylim(qua1, qua2)
+                ax4.set_ylim(qua1, qua2)
                 # plt.ylim(-10, 10)
 
                 # HISTOGRAM
@@ -160,7 +160,7 @@ class PlotEddyProFullOutputFile:
                     ax2 = plt.subplot2grid((4, 4), (3, 0), colspan=2)
                     # y.hist(color='#5b9bd5', bins=10)
                     # y_hist = y[y > qua1]
-                    plt.hist(y, bins=10, range=(qua1, qua2), color='#5b9bd5', edgecolor='#497CDD')
+                    ax2.hist(y, bins=10, range=(qua1, qua2), color='#5b9bd5', edgecolor='#497CDD')
                     # plt.xlim(qua1, qua2)
                     ax2.set_xlabel(units, size=label_size)
                     ax2.set_ylabel("counts", size=label_size)
@@ -182,28 +182,31 @@ class PlotEddyProFullOutputFile:
                 ax5.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
                 # ax5.xaxis.set_major_locator(dates.MonthLocator())
                 ax5.yaxis.grid()
-                plt.axhline(0, color='black', alpha=0.8)
+                ax5.axhline(0, color='black', alpha=0.8)
 
                 # HOURLY AVERAGE
                 ax6 = plt.subplot2grid((4, 4), (3, 2), colspan=1, rowspan=1)
                 hourly_avg = y.groupby(y.index.hour).mean()
                 hourly_std = y.groupby(y.index.hour).std()
-                hourly_avg.plot()
-                plt.fill_between(hourly_avg.index, hourly_avg - hourly_std, hourly_avg + hourly_std, color='k',
+                ax6.plot(hourly_avg)
+                ax6.fill_between(hourly_avg.index, hourly_avg - hourly_std, hourly_avg + hourly_std, color='k',
                                  alpha=0.1)
+                # hourly_avg.plot()
+                # plt.fill_between(hourly_avg.index, hourly_avg - hourly_std, hourly_avg + hourly_std, color='k',
+                #                  alpha=0.1)
                 ax6.set_xlabel("hour", size=label_size)
                 ax6.set_ylabel(units, size=label_size)
                 ax6.set_title(f"{var} diurnal cycle with std", size=heading_size,
                               backgroundcolor='#ffc532')
                 ax6.tick_params(axis='both', labelsize=label_size)
                 plt.setp(ax6.xaxis.get_majorticklabels(), rotation=0)
-                plt.axhline(0, color='black', alpha=0.8)
-                plt.xlim(0, 23)
+                ax6.axhline(0, color='black', alpha=0.8)
+                ax6.set_xlim(0, 23)
                 if hourly_avg.min() < 0:
                     factor = 1.2
                 else:
                     factor = 0.8
-                plt.ylim(hourly_avg.min() * factor, hourly_avg.max() * 1.2)
+                ax6.set_ylim(hourly_avg.min() * factor, hourly_avg.max() * 1.2)
                 majorLocator = MultipleLocator(2)
                 ax6.xaxis.set_major_locator(majorLocator)
 
@@ -222,7 +225,7 @@ class PlotEddyProFullOutputFile:
                 plot_name = os.path.join(self.plot_folder, plot_name)
                 self.logger.info(f"    --> Saving plot {plot_name} ...")
                 plt.savefig(plot_name + '.png', dpi=150)
-                plt.close()
+                plt.close(fig)
 
             else:
                 self.logger.info(f"Data for {col} are empty --> no plot")

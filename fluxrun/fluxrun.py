@@ -8,10 +8,8 @@ from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
 from PyQt5 import QtWidgets as qtw
 
-import ops.logger
-import ops.setup
+import ops
 from gui.gui import Ui_MainWindow
-from ops import vis, file
 from settings import _version
 
 
@@ -27,7 +25,7 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         super(FluxRun, self).__init__(parent)
         self.setupUi(self)
 
-        self.run_id = ops.setup.generate_run_id()
+        self.run_id = ops.setup_fr.generate_run_id()
 
         # Detect Folders
         dir_script = os.path.abspath(__file__)  # Dir of this file
@@ -36,9 +34,9 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         # Read Settings: File --> Dict
         self.settings_dict = \
-            ops.setup.read_settings_file_to_dict(dir_settings=dir_settings,
-                                                 file='FluxRun.settings',
-                                                 reset_paths=False)
+            ops.setup_fr.read_settings_file_to_dict(dir_settings=dir_settings,
+                                                    file='FluxRun.settings',
+                                                    reset_paths=False)
 
         # Update dir settings in dict, for current run
         self.update_dict_dir_settings(dir_script=dir_script, dir_settings=dir_settings)
@@ -52,7 +50,7 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
     def run(self):
 
         # Outdirs and logger
-        self.settings_dict = ops.setup.make_run_outdirs(settings_dict=self.settings_dict)
+        self.settings_dict = ops.setup_fr.make_run_outdirs(settings_dict=self.settings_dict)
         self.logger = ops.logger.setup_logger(settings_dict=self.settings_dict)
         self.logger.info(f"Run ID: {self.run_id}")
         self.logger.info(f"FluxRun Version: {_version.__version__} / {_version.__date__}")
@@ -60,13 +58,13 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         # Settings
         self.get_settings_from_gui()
         self.set_dir_eddypro_rawdata()
-        self.settings_dict = file.PrepareEddyProFiles(settings_dict=self.settings_dict,
-                                                      logger=self.logger).get()
+        self.settings_dict = ops.file.PrepareEddyProFiles(settings_dict=self.settings_dict,
+                                                          logger=self.logger).get()
         self.make_parsing_strings()
         self.save_settings_to_file(copy_to_outdir=True)
 
         # Search valid raw ASCII files, depending on settings
-        self.rawdata_found_files_dict = file.SearchAll(
+        self.rawdata_found_files_dict = ops.file.SearchAll(
             settings_dict=self.settings_dict,
             logger=self.logger,
             search_in_dir=self.settings_dict['rawdata_indir']) \
@@ -78,11 +76,11 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         # Get raw data files for processing, uncompress if needed
         if self.settings_dict['rawdata_file_compression'] == 'gzip':
-            file.uncompress_gzip(settings_dict=self.settings_dict,
-                                 found_gzip_files_dict=self.rawdata_found_files_dict,
-                                 logger=self.logger)
+            ops.file.uncompress_gzip(settings_dict=self.settings_dict,
+                                     found_gzip_files_dict=self.rawdata_found_files_dict,
+                                     logger=self.logger)
             # Files were uncompressed, search those files
-            self.rawdata_found_files_dict = file.SearchAll(
+            self.rawdata_found_files_dict = ops.file.SearchAll(
                 settings_dict=self.settings_dict,
                 logger=self.logger,
                 search_in_dir=self.settings_dict['_dir_used_rawdata_ascii_files_eddypro_data_path'],
@@ -95,14 +93,14 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         # Availability heatmap for *uncompressed* raw data files
         if self.settings_dict['plot_availability_rawdata'] == '1':
-            vis.availability_rawdata(rawdata_found_files_dict=self.rawdata_found_files_dict,
-                                     rawdata_file_datefrmt=self.settings_dict['_sitefiles_parse_str'].rstrip('.gz'),
-                                     outdir=self.settings_dict['_dir_out_run_plots_availability_rawdata'],
-                                     logger=self.logger)
+            ops.vis.availability_rawdata(rawdata_found_files_dict=self.rawdata_found_files_dict,
+                                         rawdata_file_datefrmt=self.settings_dict['_sitefiles_parse_str'].rstrip('.gz'),
+                                         outdir=self.settings_dict['_dir_out_run_plots_availability_rawdata'],
+                                         logger=self.logger)
 
         # Plot stats for *uncompressed* raw data files
         if self.settings_dict['plot_aggregates_rawdata'] == '1':
-            vis.PlotRawDataFilesAggregates(
+            ops.vis.PlotRawDataFilesAggregates(
                 rawdata_found_files_dict=self.rawdata_found_files_dict,
                 settings_dict=self.settings_dict,
                 logger=self.logger,
@@ -112,8 +110,9 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         rp_process_status = self.run_eddypro_cmd(cmd='eddypro_rp.exe')  # execute exe todo for linux and osx
 
         # Check if EddyPro full_output file was already generated
-        found_full_output, _ = file.check_if_file_in_folder(search_str='*_full_output_*.csv',
-                                                            folder=self.settings_dict['_dir_out_run_eddypro_results'])
+        found_full_output, _ = ops.file.check_if_file_in_folder(search_str='*_full_output_*.csv',
+                                                                folder=self.settings_dict[
+                                                                    '_dir_out_run_eddypro_results'])
         if found_full_output:
             self.logger.info("(!)WARNING EddyPro RP already generated a full_output file. FCC will be skipped. "
                              "This is not necessarily bad.")
@@ -123,10 +122,10 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
         # Plot summary
         found_full_output, filepath_full_output = \
-            file.check_if_file_in_folder(search_str='*_full_output_*.csv',
-                                         folder=self.settings_dict['_dir_out_run_eddypro_results'])
+            ops.file.check_if_file_in_folder(search_str='*_full_output_*.csv',
+                                             folder=self.settings_dict['_dir_out_run_eddypro_results'])
         if found_full_output and int(self.settings_dict['plot_summary']) == 1:
-            vis.PlotEddyProFullOutputFile(
+            ops.vis.PlotEddyProFullOutputFile(
                 file_to_plot=filepath_full_output,
                 destination_folder=self.settings_dict['_dir_out_run_plots_summary'],
                 logger=self.logger).run()
