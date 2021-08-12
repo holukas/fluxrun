@@ -1,5 +1,5 @@
 __version__ = "1.0"
-__date__ = "XX XXX 2021"
+__date__ = "12 Aug 2021"
 __link_source_code__ = "https://gitlab.ethz.ch/holukas/fluxrun"
 __link_releases__ = "https://gitlab.ethz.ch/holukas/fluxrun/-/releases"
 __link_wiki__ = "https://gitlab.ethz.ch/holukas/fluxrun/-/wikis/home"
