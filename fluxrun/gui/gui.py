@@ -158,7 +158,8 @@ class Ui_MainWindow(object):
         grid.addWidget(header_instr_time_range, 1, 0)
         self.cmb_instr_site_selection = \
             gui_elements.add_label_combobox_to_grid(label='Select Site', grid=grid, row=2,
-                                                    items=['CH-AES', 'CH-AWS', 'CH-CHA', 'CH-DAE', 'CH-DAV', 'CH-FRU',
+                                                    items=['CH-AES', 'CH-AWS', 'CH-CHA', 'CH-DAE',
+                                                           'CH-DAV', 'CH-DAS', 'CH-FRU',
                                                            'CH-INO', 'CH-LAE', 'CH-LAS', 'CH-OE2'])
 
         grid.setRowStretch(3, 1)

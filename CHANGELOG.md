@@ -2,6 +2,9 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.0.2 - 5 Oct 2021
+- added `CH-DAS` to site selection
+
 ## v1.0.1 - 12 Aug 2021
 - updated version number and dates in code
 
