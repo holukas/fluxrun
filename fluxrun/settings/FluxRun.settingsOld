@@ -1,57 +1,57 @@
-_run_id=FR-20210812-132720
+_run_id=FR-20211211-174149
 
 
 # INSTRUMENTS
 # ===========
 
 ## Site
-site=CH-CHA
+site=CH-AWS
 
 
 # PROCESSING
 # ==========
 
 ## Raw Data Source Folder
-rawdata_indir=M:/Downloads/temp/raw
+rawdata_indir=F:/01-NEW/AWS-FP2021/IRGA72/2020_1/CH-AWS_2020_1_BICO-20211205-193642/raw_data_ascii
 rawdata_file_compression=gzip
 
 ## Time Range
-rawdata_start_date=2021-08-03 07:00
-rawdata_end_date=2021-08-03 19:00
+rawdata_start_date=2019-12-31 00:01
+rawdata_end_date=2020-12-31 23:59
 
 ## File Settings
 rawdata_filename_datetime_format=yyyymmddHHMM
-_sitefiles_search_str=CH-CHA_*.csv.gz
-_sitefiles_parse_str=CH-CHA_%Y%m%d%H%M.csv.gz
+_sitefiles_search_str=CH-AWS_*.csv.gz
+_sitefiles_parse_str=CH-AWS_%Y%m%d%H%M.csv.gz
 
 ## EddyPro
-path_selected_eddypro_processing_file=M:/Downloads/temp/CH-CHA_[IRGA75]_R350-A+IRGA75-A+LGR-A.eddypro
-_path_used_eddypro_processing_file=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations\ini\processing.eddypro
-_path_found_eddypro_metadata_file=M:\Downloads\temp\CH-CHA_[IRGA75]_R350-A+IRGA75-A+LGR-A.eddypro
-_path_used_eddypro_metadata_file=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations\ini\CH-CHA_[IRGA75]_R350-A+IRGA75-A+LGR-A.metadata
-_path_used_eddypro_app_rp=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
-_path_used_eddypro_app_fcc=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
+path_selected_eddypro_processing_file=F:/01-NEW/AWS-FP2021/IRGA72/2020_1/CH-AWS_2020_[IRGA72]_HS50-A+IRGA72-A_OPENLAG.eddypro
+_path_used_eddypro_processing_file=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations\ini\processing.eddypro
+_path_found_eddypro_metadata_file=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_2020_[IRGA72]_HS50-A+IRGA72-A_OPENLAG.eddypro
+_path_used_eddypro_metadata_file=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations\ini\CH-AWS_2020_[IRGA72]_HS50-A+IRGA72-A_OPENLAG.metadata
+_path_used_eddypro_app_rp=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
 
 ## Output Folder
-dir_out=M:/Downloads/temp
-_dir_out_run=M:\Downloads\temp\CH-CHA_FR-20210812-132720
-_dir_out_run_log=M:\Downloads\temp\CH-CHA_FR-20210812-132720\0_log
-_dir_out_run_rawdata_ascii_files=M:\Downloads\temp\CH-CHA_FR-20210812-132720\1-0_rawdata_files_ascii
-_dir_used_rawdata_ascii_files_eddypro_data_path=M:\Downloads\temp\CH-CHA_FR-20210812-132720\1-0_rawdata_files_ascii
-_dir_out_run_plots_availability_rawdata=M:\Downloads\temp\CH-CHA_FR-20210812-132720\1-1_rawdata_plots_availability
-_dir_out_run_plots_aggregates_rawdata=M:\Downloads\temp\CH-CHA_FR-20210812-132720\1-2_rawdata_plots_aggregates
-_dir_out_run_eddypro=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations
-_dir_out_run_eddypro_ini=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations\ini
-_dir_out_run_eddypro_bin=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations\bin
-_dir_out_run_eddypro_results=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-0_eddypro_flux_calculations\results
-_dir_out_run_plots_summary=M:\Downloads\temp\CH-CHA_FR-20210812-132720\2-1_eddypro_flux_calculations_summary_plots
+dir_out=F:/01-NEW/AWS-FP2021/IRGA72/2020_1
+_dir_out_run=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951
+_dir_out_run_log=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\0_log
+_dir_out_run_rawdata_ascii_files=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\1-0_rawdata_files_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\1-0_rawdata_files_ascii
+_dir_out_run_plots_availability_rawdata=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\1-1_rawdata_plots_availability
+_dir_out_run_plots_aggregates_rawdata=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\1-2_rawdata_plots_aggregates
+_dir_out_run_eddypro=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations
+_dir_out_run_eddypro_ini=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations\ini
+_dir_out_run_eddypro_bin=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations\bin
+_dir_out_run_eddypro_results=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-0_eddypro_flux_calculations\results
+_dir_out_run_plots_summary=F:\01-NEW\AWS-FP2021\IRGA72\2020_1\CH-AWS_FR-20211211-173951\2-1_eddypro_flux_calculations_summary_plots
 
 ## Plots
-plot_availability_rawdata=0
-plot_aggregates_rawdata=0
+plot_availability_rawdata=1
+plot_aggregates_rawdata=1
 plot_summary=1
 
 
@@ -59,10 +59,10 @@ plot_summary=1
 # =======
 
 ## General
-_dir_root=L:\Dropbox\luhk_work\programming
-_dir_fluxrun=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs
-_dir_script=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun
-_dir_settings=L:\Dropbox\luhk_work\programming\FLUXRUN_Flux_Calcs\fluxrun\settings
+_dir_root=C:\Users\user\Dropbox\luhk_work\20 - CODING
+_dir_fluxrun=C:\Users\user\Dropbox\luhk_work\20 - CODING\24 - FLUXRUN
+_dir_script=C:\Users\user\Dropbox\luhk_work\20 - CODING\24 - FLUXRUN\fluxrun
+_dir_settings=C:\Users\user\Dropbox\luhk_work\20 - CODING\24 - FLUXRUN\fluxrun\settings
 
 
 

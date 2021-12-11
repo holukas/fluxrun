@@ -2,6 +2,9 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.0.3 - 11 Dec 2021
+- update: now using EddyPro v7.0.8
+
 ## v1.0.2 - 5 Oct 2021
 - added `CH-DAS` to site selection
 
