@@ -306,7 +306,8 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         self.lbl_link_releases.linkActivated.connect(self.link)
         self.lbl_link_source_code.linkActivated.connect(self.link)
         self.lbl_link_license.linkActivated.connect(self.link)
-        self.lbl_link_help.linkActivated.connect(self.link)
+        self.lbl_link_changelog.linkActivated.connect(self.link)
+        self.lbl_link_ep_changelog.linkActivated.connect(self.link)
 
         # Processing
         self.btn_proc_rawdata_source_dir.clicked.connect(lambda: self.select_dir(

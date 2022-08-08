@@ -89,9 +89,9 @@ class Ui_MainWindow(object):
             link_txt='Source Code', link_str=info.__link_source_code__, grid=grid, row=7)
         self.lbl_link_license = gui_elements.add_label_link_to_grid(
             link_txt='License', link_str=info.__license__, grid=grid, row=8)
-        self.lbl_link_help = gui_elements.add_label_link_to_grid(
-            link_txt='Help', link_str=info.__link_wiki__, grid=grid, row=9)
-        self.lbl_link_help = gui_elements.add_label_link_to_grid(
+        self.lbl_link_changelog = gui_elements.add_label_link_to_grid(
+            link_txt='Changelog', link_str=info.__link_changelog__, grid=grid, row=9)
+        self.lbl_link_ep_changelog = gui_elements.add_label_link_to_grid(
             link_txt='EddyPro Changelog', link_str=info.__link_ep_changelog__, grid=grid, row=10)
 
         grid.addWidget(label_image, 0, 0)

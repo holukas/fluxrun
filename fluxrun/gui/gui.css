@@ -12,7 +12,7 @@ QFrame[labelClass="section_bg_output"] {background-color: white; padding: 20px; 
 QFrame[labelClass="section_bg_controls"] {background-color: white; padding: 20px; margin: 10px;}
 
 
-QComboBox{border: 1px solid #B0BEC5; padding: 10px; background: #ECEFF1; color: #424242; font-weight: bold;}  /* blue grey 200, 50, grey 800 */
+QComboBox{border: 1px solid #B0BEC5; padding: 10px; background: #ECEFF1; color: #424242; font-weight: bold; min-width: 150px;}  /* blue grey 200, 50, grey 800 */
 QComboBox:disabled{color: #BDBDBD; background-color: transparent;}  /* grey 400, grey 50 */
 QComboBox QAbstractItemView {border: 0; selection-background-color: #CFD8DC; selection-color: #424242; margin: 5px; padding: 5px;}
 

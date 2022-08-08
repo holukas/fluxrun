@@ -2,6 +2,11 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.0.4 - 8 Aug 2022
+- updated EddyPro version to v7.0.9
+- updated links in sidebar
+- comboboxes are now minimum width 150px to avoid cutting off text elements
+
 ## v1.0.3 - 11 Dec 2021
 - update: now using EddyPro v7.0.8
 
