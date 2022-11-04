@@ -6,6 +6,7 @@ import os
 import shutil
 import sys
 from pathlib import Path
+from shutil import copyfile
 
 import numpy as np
 import pandas as pd
@@ -285,12 +286,12 @@ class PrepareEddyProFiles:
 
         # Check if files available
         if not Path(self.settings_dict['_path_used_eddypro_app_rp']).is_file():
-            self.logger(f"(!)ERROR eddypro_rp.exe was not found "
+            self.logger.info(f"(!)ERROR eddypro_rp.exe was not found "
                         f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
         if not Path(self.settings_dict['_path_used_eddypro_app_fcc']).is_file():
-            self.logger(f"(!)ERROR eddypro_fcc was not found "
+            self.logger.info(f"(!)ERROR eddypro_fcc was not found "
                         f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
@@ -475,3 +476,29 @@ class ReadEddyProFullOutputFile:
         now_time_str = now_time_dt.strftime("%H%M%S%f")
         run_id = f'{now_time_str}'
         return run_id
+
+
+def save_settings_to_file(settings_dict: dict, copy_to_outdir=False):
+    """Save settings dict to settings file """
+    old_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settings')
+    new_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
+    with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
+        for line in infile:  # cycle through all lines in settings file
+            if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
+                line_id, line_setting = line.strip().split('=')
+                line = '{}={}\n'.format(line_id, settings_dict[line_id])  # insert setting from dict
+            outfile.write(line)
+    try:
+        os.remove(old_settings_file + 'Old')
+    except:
+        pass
+    os.rename(old_settings_file, old_settings_file + 'Old')
+    os.rename(new_settings_file, old_settings_file)
+
+    if copy_to_outdir:
+        # Save a copy of the settings file also in the output dir
+        run_settings_file_path = Path(settings_dict['_dir_out_run']) / 'FluxRun.settings'
+        copyfile(old_settings_file, run_settings_file_path)
+        pass
+
+    # return settings_dict

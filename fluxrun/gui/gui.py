@@ -238,10 +238,8 @@ class Ui_MainWindow(object):
         grid.addWidget(header_ctr_controls, 0, 0)
 
         # Buttons
-        self.btn_ctr_save = \
-            gui_elements.add_button_to_grid(label='Save Settings', grid=grid, row=1)
         self.btn_ctr_run = \
-            gui_elements.add_button_to_grid(label='Run', grid=grid, row=2)
+            gui_elements.add_button_to_grid(label='Run', grid=grid, row=1)
 
         grid.setRowStretch(3, 1)
         section.setLayout(grid)

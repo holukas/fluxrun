@@ -1,8 +1,8 @@
+import datetime as dt
 import os
 import subprocess
 import sys
 from pathlib import Path
-from shutil import copyfile
 
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtGui as qtg
@@ -10,58 +10,46 @@ from PyQt5 import QtWidgets as qtw
 
 import ops
 from gui.gui import Ui_MainWindow
+from ops import cli, file
+from ops.setup_fr import generate_run_id, set_outdirs, make_outdirs
 from settings import _version
 
 
 # TODO displacement height file?
-
 # TODO LATER parallelize, multiprocessing?
-# import multiprocessing as mp
-# print("Number of processors: ", mp.cpu_count())
 
+class FluxRunEngine():
 
-class FluxRun(qtw.QMainWindow, Ui_MainWindow):
-    def __init__(self, parent=None):
-        super(FluxRun, self).__init__(parent)
-        self.setupUi(self)
+    def __init__(
+            self,
+            settings_dict: dict):
+        self.settings_dict = settings_dict
 
-        self.run_id = ops.setup_fr.generate_run_id()
+        self.update_settings()
 
-        # Detect Folders
-        dir_script = os.path.abspath(__file__)  # Dir of this file
-        dir_settings = Path(
-            os.path.join(os.path.dirname(dir_script))) / 'settings'  # Preload settings dir to load settings file
-
-        # Read Settings: File --> Dict
-        self.settings_dict = \
-            ops.setup_fr.read_settings_file_to_dict(dir_settings=dir_settings,
-                                                    file='FluxRun.settings',
-                                                    reset_paths=False)
-
-        # Update dir settings in dict, for current run
-        self.update_dict_dir_settings(dir_script=dir_script, dir_settings=dir_settings)
-
-        # Fill-In Settings: Dict --> GUI
-        self.show_settings_in_gui()
-
-        # Connect GUI elements
-        self.connections()
+    def update_settings(self):
+        """Update automatically derived settings"""
+        self.settings_dict['_run_id'] = generate_run_id()
+        _script = os.path.abspath(__file__)  # Dir of this file
+        self.settings_dict['_dir_script'] = os.path.dirname(_script)
+        self.settings_dict['_dir_settings'] = \
+            Path(os.path.join(self.settings_dict['_dir_script'])) / 'settings'
+        self.settings_dict['_dir_fluxrun'] = Path(self.settings_dict['_dir_script']).parents[0]
+        self.settings_dict['_dir_root'] = Path(self.settings_dict['_dir_script']).parents[1]
+        self.settings_dict = set_outdirs(settings_dict=self.settings_dict)
+        self.make_parsing_strings()
+        self.set_dir_eddypro_rawdata()
+        make_outdirs(settings_dict=self.settings_dict)
 
     def run(self):
 
-        # Outdirs and logger
-        self.settings_dict = ops.setup_fr.make_run_outdirs(settings_dict=self.settings_dict)
+        # Logger
         self.logger = ops.logger.setup_logger(settings_dict=self.settings_dict)
-        self.logger.info(f"Run ID: {self.run_id}")
+        self.logger.info(f"Run ID: {self.settings_dict['_run_id']}")
         self.logger.info(f"FluxRun Version: {_version.__version__} / {_version.__date__}")
 
-        # Settings
-        self.get_settings_from_gui()
-        self.set_dir_eddypro_rawdata()
-        self.settings_dict = ops.file.PrepareEddyProFiles(settings_dict=self.settings_dict,
-                                                          logger=self.logger).get()
-        self.make_parsing_strings()
-        self.save_settings_to_file(copy_to_outdir=True)
+        self.settings_dict = ops.file.PrepareEddyProFiles(settings_dict=self.settings_dict, logger=self.logger).get()
+        file.save_settings_to_file(settings_dict=self.settings_dict, copy_to_outdir=True)
 
         # Search valid raw ASCII files, depending on settings
         self.rawdata_found_files_dict = ops.file.SearchAll(
@@ -138,6 +126,32 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         self.logger.info("FluxRun finished.")
         self.logger.info("=" * 60)
 
+    def run_eddypro_cmd(self, cmd: str):
+        """Run eddypro_rp.exe or eddypro_fcc.exe"""
+
+        os.chdir(self.settings_dict['_dir_out_run_eddypro_bin'])  # go to eddypro bin folder
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE)  # call cmd command
+        while process.poll() is None:
+            # This blocks until it receives a newline.
+            line = process.stdout.readline().decode('utf-8').replace('\r\n', '')
+            if 'processing new flux averaging period' in line:
+                self.logger.info("-" * 60)  # to better see the different days in the output
+            else:
+                self.logger.info(f"[EDDYPRO LOG] [{cmd}] {line}")
+        # When the subprocess terminates there might be unconsumed output that still needs to be processed.
+        self.logger.info(process.stdout.read().decode('utf-8').replace('\r\n', ''))
+        process_status = process.wait()  # Wait for cmd to terminate. Get return returncode
+
+        # CHECK IF FINISHED SUCCESSFULLY
+        self.logger.info("*" * 30)
+        self.logger.info(f"[EDDYPRO LOG] {cmd} return code: {process_status}")
+        if process_status == 0:
+            self.logger.info(f"[EDDYPRO LOG] {cmd} finished successfully.")
+        else:
+            self.logger.info(f"[EDDYPRO LOG] (!)ERROR {cmd} encountered a problem.")
+        self.logger.info("*" * 30)
+        return process_status
+
     def make_parsing_strings(self):
         """Make parsing strings to parse info from raw data filenames"""
         self.settings_dict['filename_datetime_parsing_string'] = self.make_datetime_parsing_string()
@@ -151,7 +165,7 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
 
     def make_datetime_parsing_string(self):
         """Parse filename for datetime info"""
-        _parsing_string = self.settings_dict['filename_datetime_format']
+        _parsing_string = self.settings_dict['rawdata_filename_datetime_format']
         _parsing_string = _parsing_string.replace('yyyy', '%Y')
         _parsing_string = _parsing_string.replace('mm', '%m')
         _parsing_string = _parsing_string.replace('dd', '%d')
@@ -180,36 +194,49 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
             self.settings_dict['_dir_used_rawdata_ascii_files_eddypro_data_path'] = \
                 self.settings_dict['rawdata_indir']
 
-    def run_eddypro_cmd(self, cmd: str):
-        """Run eddypro_rp.exe or eddypro_fcc.exe"""
 
-        os.chdir(self.settings_dict['_dir_out_run_eddypro_bin'])  # go to eddypro bin folder
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE)  # call cmd command
-        while process.poll() is None:
-            # This blocks until it receives a newline.
-            line = process.stdout.readline().decode('utf-8').replace('\r\n', '')
-            if 'processing new flux averaging period' in line:
-                self.logger.info("-" * 60)  # to better see the different days in the output
-            else:
-                self.logger.info(f"[EDDYPRO LOG] [{cmd}] {line}")
-        # When the subprocess terminates there might be unconsumed output that still needs to be processed.
-        self.logger.info(process.stdout.read().decode('utf-8').replace('\r\n', ''))
-        process_status = process.wait()  # Wait for cmd to terminate. Get return returncode
+class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(FluxRunGUI, self).__init__(parent)
+        self.setupUi(self)
 
-        # CHECK IF FINISHED SUCCESSFULLY
-        self.logger.info("*" * 30)
-        self.logger.info(f"[EDDYPRO LOG] {cmd} return code: {process_status}")
-        if process_status == 0:
-            self.logger.info(f"[EDDYPRO LOG] {cmd} finished successfully.")
-        else:
-            self.logger.info(f"[EDDYPRO LOG] (!)ERROR {cmd} encountered a problem.")
-        self.logger.info("*" * 30)
-        return process_status
+        # Detect Folders
+        dir_script = os.path.abspath(__file__)  # Dir of this file
+        dir_settings = Path(
+            os.path.join(os.path.dirname(dir_script))) / 'settings'  # Preload settings dir to load settings file
+
+        # Read previous settings: File --> Dict
+        self.settings_dict = \
+            ops.setup_fr.read_settings_file_to_dict(dir_settings=dir_settings,
+                                                    file='FluxRun.settings',
+                                                    reset_paths=False)
+        self.reset_derived_settings()
+
+        # Fill-In Settings: Dict --> GUI
+        self.show_settings_in_gui()
+
+        # Connect GUI elements
+        self.connections()
+
+    def run(self):
+        """Call FluxRunEngine for calculations"""
+        self.get_settings_from_gui()
+
+        fluxrunengine = FluxRunEngine(settings_dict=self.settings_dict)
+        fluxrunengine.run()
+
+    def reset_derived_settings(self):
+        """
+        Reset all settings that are constructed from GUI settings
+        """
+        for key, val in self.settings_dict.items():
+            if str(key).startswith('_'):
+                self.settings_dict[key] = ""
 
     def update_dict_key(self, key, new_val):
         """ Updates key in Dict with new_val """
         self.settings_dict[key] = new_val
-        ('{}: {}'.format(key, self.settings_dict[key]))
+        # ('{}: {}'.format(key, self.settings_dict[key]))
 
     def get_settings_from_gui(self):
         """Read settings from GUI and store in dict"""
@@ -223,14 +250,14 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
                              new_val=self.dtp_processing_time_range_start.dateTime().toString('yyyy-MM-dd hh:mm'))
         self.update_dict_key(key='rawdata_end_date',
                              new_val=self.dtp_processing_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm'))
-        self.update_dict_key(key='filename_datetime_format',
+        self.update_dict_key(key='rawdata_filename_datetime_format',
                              new_val=self.lne_proc_filedt_format.text())
         self.update_dict_key(key='rawdata_file_compression', new_val=self.cmb_proc_rawdata_compr.currentText())
         self.update_dict_key(key='path_selected_eddypro_processing_file',
-                             new_val=self.lbl_proc_ep_procfile_selected.text())
+                             new_val=Path(self.lbl_proc_ep_procfile_selected.text()))
 
         # Output
-        self.update_dict_key(key='dir_out', new_val=self.lbl_output_folder.text())
+        self.update_dict_key(key='dir_out', new_val=Path(self.lbl_output_folder.text()))
 
         self.update_dict_key(key='plot_availability_rawdata',
                              new_val='1' if self.chk_output_plots_availability_rawdata.isChecked() else '0')
@@ -238,20 +265,6 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
                              new_val='1' if self.chk_output_plots_aggregates_rawdata.isChecked() else '0')
         self.update_dict_key(key='plot_summary',
                              new_val='1' if self.chk_output_plots_summary.isChecked() else '0')
-
-    def update_dict_dir_settings(self, dir_script, dir_settings):
-        """Update dir info for current run"""
-        self.settings_dict['_run_id'] = self.run_id
-        self.settings_dict['_dir_script'] = os.path.join(os.path.dirname(dir_script))
-        self.settings_dict['_dir_settings'] = dir_settings
-        self.settings_dict['_dir_fluxrun'] = Path(self.settings_dict['_dir_script']).parents[0]
-        self.settings_dict['_dir_root'] = Path(self.settings_dict['_dir_script']).parents[1]
-
-        # Update dirs that can be changed in the gui
-        self.settings_dict['rawdata_indir'] = \
-            self.dir_fluxrun if not self.settings_dict['rawdata_indir'] else self.settings_dict['rawdata_indir']
-        self.settings_dict['dir_out'] = \
-            self.dir_fluxrun if not self.settings_dict['dir_out'] else self.settings_dict['dir_out']
 
     def set_gui_combobox(self, combobox, find_text):
         idx = combobox.findText(find_text, qtc.Qt.MatchContains)
@@ -325,38 +338,7 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
             update_label=self.lbl_output_folder, dialog_txt='Select Output Folder'))
 
         # Controls
-        self.btn_ctr_save.clicked.connect(lambda: self.save_settings())
         self.btn_ctr_run.clicked.connect(lambda: self.run())
-
-    def save_settings(self):
-        """Get selected settings from GUI elements, store in dict and save to file"""
-        self.get_settings_from_gui()
-        self.save_settings_to_file()
-
-    def save_settings_to_file(self, copy_to_outdir=False):
-        """Save settings dict to settings file """
-        old_settings_file = os.path.join(self.settings_dict['_dir_settings'], 'FluxRun.settings')
-        new_settings_file = os.path.join(self.settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
-        with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
-            for line in infile:  # cycle through all lines in settings file
-                if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
-                    line_id, line_setting = line.strip().split('=')
-                    line = '{}={}\n'.format(line_id, self.settings_dict[line_id])  # insert setting from dict
-                outfile.write(line)
-        try:
-            os.remove(old_settings_file + 'Old')
-        except:
-            pass
-        os.rename(old_settings_file, old_settings_file + 'Old')
-        os.rename(new_settings_file, old_settings_file)
-
-        if copy_to_outdir:
-            # Save a copy of the settings file also in the output dir
-            run_settings_file_path = Path(self.settings_dict['_dir_out_run']) / 'FluxRun.settings'
-            copyfile(old_settings_file, run_settings_file_path)
-            pass
-
-        # return settings_dict
 
     def select_dir(self, start_dir, dir_setting, update_label, dialog_txt):
         """ Select directory, update dict and label"""
@@ -372,12 +354,97 @@ class FluxRun(qtw.QMainWindow, Ui_MainWindow):
         update_label.setText(self.settings_dict[filesetting][0])  # Update gui
 
 
-def main():
-    app = qtw.QApplication(sys.argv)
-    fluxrun = FluxRun()
-    fluxrun.show()
-    app.exec_()
+class FluxRunFolder:
+    """
+    Run FLUXRUN in specified folder without GUI
+
+    This starts FluxRunEngine.
+    """
+
+    def __init__(self, folder: str, days: int = None):
+        self.folder = Path(folder)
+        self.days = days
+
+        self.settings_dict = {}
+
+    def _update_settings_from_args(self, settings_dict: dict) -> dict:
+        """Update settings according to given args"""
+        if self.days:
+            settings_dict = self._days_from_arg(settings_dict=settings_dict)
+        return settings_dict
+
+    def _days_from_arg(self, settings_dict: dict) -> dict:
+        """Set new start and end date according to DAYS arg"""
+        # Get current time, subtract number of days
+        _currentdate = dt.datetime.now().date()
+        _newstartdate = _currentdate - dt.timedelta(days=self.days)
+
+        # Define new start date
+        _newstartdatetime = dt.datetime(year=_newstartdate.year, month=_newstartdate.month,
+                                        day=_newstartdate.day, hour=0, minute=0)
+        _newstartdatetime = _newstartdatetime.strftime('%Y-%m-%d %H:%M')  # As string
+
+        # Define new end date (now)
+        _newenddatetime = dt.datetime.now()
+        _newenddatetime = _newenddatetime.strftime('%Y-%m-%d %H:%M')
+
+        # Update dict
+        settings_dict['rawdata_start_date'] = _newstartdatetime
+        settings_dict['rawdata_end_date'] = _newenddatetime
+
+        return settings_dict
+
+    def run(self):
+        settingsfilefound = self.search_settingsfile()
+
+        if not settingsfilefound:
+            print(f"(!)ERROR: No 'FluxRun.settings' file found. Please make sure it is in folder '{self.folder}'")
+            sys.exit()
+
+        # Read Settings: File --> Dict
+        self.settings_dict = \
+            ops.setup_fr.read_settings_file_to_dict(dir_settings=self.folder,
+                                                    file='FluxRun.settings',
+                                                    reset_paths=False)
+
+        self.settings_dict = self._update_settings_from_args(settings_dict=self.settings_dict)
+
+        self.execute_in_folder()
+
+    def search_settingsfile(self):
+        files = os.listdir(self.folder)
+        settingsfilefound = True if 'FluxRun.settings' in files else False
+        return settingsfilefound
+
+    def execute_in_folder(self):
+        bicoengine = FluxRunEngine(settings_dict=self.settings_dict)
+        bicoengine.run()
+
+
+def main(args):
+    abspath = Path(os.path.abspath(__file__)).parent  # directory of bico.py
+    os.chdir(abspath)
+    wd = os.getcwd()
+    print(f"Working directory: {wd}")
+
+    # Run FLUXRUN w/o GUI
+    if args.folder:
+        days = args.days if args.days else None
+        bicofromfolder = FluxRunFolder(folder=args.folder, days=days)
+        bicofromfolder.run()
+
+    # Run FLUXRUN with GUI
+    if args.gui:
+        app = qtw.QApplication(sys.argv)
+        fluxrunfromgui = FluxRunGUI()
+        fluxrunfromgui.show()
+        app.exec_()
+
+    else:
+        print("Please add arg how FLUXRUN should be executed. Add '-h' for help.")
 
 
 if __name__ == '__main__':
-    main()
+    args = cli.get_args()
+    args = cli.validate_args(args)
+    main(args)

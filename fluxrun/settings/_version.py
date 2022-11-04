@@ -1,5 +1,5 @@
-__version__ = "1.0.4"
-__date__ = "8 Aug 2022"
+__version__ = "1.1.0"
+__date__ = "3 Nov 2022"
 __link_source_code__ = "https://gitlab.ethz.ch/flux/fluxrun"
 __link_releases__ = "https://gitlab.ethz.ch/flux/fluxrun/-/releases"
 __link_changelog__ = "https://gitlab.ethz.ch/flux/fluxrun/-/blob/master/CHANGELOG.md"
