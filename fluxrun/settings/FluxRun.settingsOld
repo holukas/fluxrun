@@ -1,53 +1,53 @@
-_run_id=FR-20221104-012711
+_run_id=FR-20221218-133643
 
 
 # INSTRUMENTS
 # ===========
 
 ## Site
-site=CH-FRU
+site=CH-DAV
 
 
 # PROCESSING
 # ==========
 
 ## Raw Data Source Folder
-rawdata_indir=L:/Dropbox/luhk_work/20 - CODING/23 - FLUX/fluxrun/_tests/XXX2
-rawdata_file_compression=gzip
+rawdata_indir=F:/01-NEW/IRGACOMP/DAV/NON-ICOS/2013_2__IRGA7572/fluxrun/IRGA72_CH-DAV_FR-20221215-173345_OPENLAG/1-0_rawdata_files_ascii
+rawdata_file_compression=None
 
 ## Time Range
-rawdata_start_date=2022-10-31 00:00
-rawdata_end_date=2022-11-04 01:27
+rawdata_start_date=2012-12-31 00:01
+rawdata_end_date=2017-01-01 00:01
 
 ## File Settings
 rawdata_filename_datetime_format=yyyymmddHHMM
-_sitefiles_search_str=CH-FRU_*.csv.gz
-_sitefiles_parse_str=CH-FRU_%Y%m%d%H%M.csv.gz
+_sitefiles_search_str=CH-DAV_*.csv
+_sitefiles_parse_str=CH-DAV_%Y%m%d%H%M.csv
 
 ## EddyPro
-path_selected_eddypro_processing_file=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_2022_[IRGA75]_R350-A+IRGA75-A.eddypro
-_path_used_eddypro_processing_file=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations\ini\processing.eddypro
-_path_found_eddypro_metadata_file=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_2022_[IRGA75]_R350-A+IRGA75-A.eddypro
-_path_used_eddypro_metadata_file=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations\ini\CH-FRU_2022_[IRGA75]_R350-A+IRGA75-A.metadata
-_path_used_eddypro_app_rp=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
-_path_used_eddypro_app_fcc=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
+path_selected_eddypro_processing_file=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_2013_2_[IRGA75]_R350-A+IRGA75-A+IRGA72-B_OPENLAG.eddypro
+_path_used_eddypro_processing_file=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations\ini\processing.eddypro
+_path_found_eddypro_metadata_file=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_2013_2_[IRGA75]_R350-A+IRGA75-A+IRGA72-B_OPENLAG.eddypro
+_path_used_eddypro_metadata_file=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations\ini\CH-DAV_2013_2_[IRGA75]_R350-A+IRGA75-A+IRGA72-B_OPENLAG.metadata
+_path_used_eddypro_app_rp=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
 
 ## Output Folder
-dir_out=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2
-_dir_out_run=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711
-_dir_out_run_log=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\0_log
-_dir_out_run_rawdata_ascii_files=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\1-0_rawdata_files_ascii
-_dir_used_rawdata_ascii_files_eddypro_data_path=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\1-0_rawdata_files_ascii
-_dir_out_run_plots_availability_rawdata=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\1-1_rawdata_plots_availability
-_dir_out_run_plots_aggregates_rawdata=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\1-2_rawdata_plots_aggregates
-_dir_out_run_eddypro=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations
-_dir_out_run_eddypro_ini=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations\ini
-_dir_out_run_eddypro_bin=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations\bin
-_dir_out_run_eddypro_results=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-0_eddypro_flux_calculations\results
-_dir_out_run_plots_summary=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20221104-012711\2-1_eddypro_flux_calculations_summary_plots
+dir_out=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun
+_dir_out_run=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643
+_dir_out_run_log=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\0_log
+_dir_out_run_rawdata_ascii_files=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\1-0_rawdata_files_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=F:/01-NEW/IRGACOMP/DAV/NON-ICOS/2013_2__IRGA7572/fluxrun/IRGA72_CH-DAV_FR-20221215-173345_OPENLAG/1-0_rawdata_files_ascii
+_dir_out_run_plots_availability_rawdata=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\1-1_rawdata_plots_availability
+_dir_out_run_plots_aggregates_rawdata=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\1-2_rawdata_plots_aggregates
+_dir_out_run_eddypro=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations
+_dir_out_run_eddypro_ini=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations\ini
+_dir_out_run_eddypro_bin=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations\bin
+_dir_out_run_eddypro_results=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-0_eddypro_flux_calculations\results
+_dir_out_run_plots_summary=F:\01-NEW\IRGACOMP\DAV\NON-ICOS\2013_2__IRGA7572\fluxrun\CH-DAV_FR-20221218-133643\2-1_eddypro_flux_calculations_summary_plots
 
 ## Plots
 plot_availability_rawdata=1
@@ -59,7 +59,7 @@ plot_summary=1
 # =======
 
 ## General
-_dir_root=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX
-_dir_fluxrun=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun
-_dir_script=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\fluxrun
-_dir_settings=L:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\fluxrun\settings
+_dir_root=F:\Dropbox\luhk_work\20 - CODING\23 - FLUX
+_dir_fluxrun=F:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun
+_dir_script=F:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\fluxrun
+_dir_settings=F:\Dropbox\luhk_work\20 - CODING\23 - FLUX\fluxrun\fluxrun\settings

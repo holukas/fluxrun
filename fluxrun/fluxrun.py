@@ -38,8 +38,8 @@ class FluxRunEngine():
         self.settings_dict['_dir_root'] = Path(self.settings_dict['_dir_script']).parents[1]
         self.settings_dict = set_outdirs(settings_dict=self.settings_dict)
         self.make_parsing_strings()
-        self.set_dir_eddypro_rawdata()
         make_outdirs(settings_dict=self.settings_dict)
+        self.set_dir_eddypro_rawdata()
 
     def run(self):
 

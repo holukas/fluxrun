@@ -2,6 +2,15 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.1.1 - 18 Dec 2022
+
+- Fixed bug where calculations from previously uncompressed `.csv.gz` files would not
+  work. `fluxrun` tried to write an informal `readme.txt` to the output folder of the
+  current run, but the folder did not yet exist. Output folders are now created before
+  the EddyPro raw data folder is set in `fluxrun.FluxRunEngine.update_settings`.
+    - `make_outdirs(settings_dict=self.settings_dict)` now comes first
+    - `self.set_dir_eddypro_rawdata()` now comes second
+
 ## v1.1 - 4 Nov 2022
 
 - Refactored code
