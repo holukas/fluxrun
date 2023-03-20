@@ -2,6 +2,13 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.2.0 - 20 Mar 2023
+
+- Now using `poetry` as dependency manager
+- Removed `setup.py`, not needed with `poetry`
+- Removed `environment.yml`, not needed with `poetry`
+- Removed `start_fluxrun.py`, GUI is now started with CLI `-g` flag
+
 ## v1.1.1 - 18 Dec 2022
 
 - Fixed bug where calculations from previously uncompressed `.csv.gz` files would not

@@ -287,12 +287,12 @@ class PrepareEddyProFiles:
         # Check if files available
         if not Path(self.settings_dict['_path_used_eddypro_app_rp']).is_file():
             self.logger.info(f"(!)ERROR eddypro_rp.exe was not found "
-                        f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
+                             f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
         if not Path(self.settings_dict['_path_used_eddypro_app_fcc']).is_file():
             self.logger.info(f"(!)ERROR eddypro_fcc was not found "
-                        f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
+                             f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
     def prepare_processing_file(self):
@@ -370,7 +370,7 @@ class ReadEddyProFullOutputFile:
     def run(self):
         # Check header vs data
         more_data_cols_than_header_cols, num_missing_header_cols, \
-        header_cols_list, generated_missing_header_cols_list = \
+            header_cols_list, generated_missing_header_cols_list = \
             self.compare_len_header_vs_data(filepath=self.filepath,
                                             skip_rows_list=self.DATA_SKIP_ROWS,
                                             header_rows_list=self.DATA_HEADER_ROWS)
@@ -469,7 +469,7 @@ class ReadEddyProFullOutputFile:
                 header_cols_list.append(missing_col)
 
         return more_data_cols_than_header_cols, num_missing_header_cols, \
-               header_cols_list, generated_missing_header_cols_list
+            header_cols_list, generated_missing_header_cols_list
 
     def make_timestamp_microsec_suffix(self):
         now_time_dt = dt.datetime.now()

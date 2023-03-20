@@ -10,7 +10,6 @@ from matplotlib import dates
 from matplotlib.ticker import MultipleLocator
 
 from ops.file import ReadEddyProFullOutputFile
-from ops.file import SearchAll
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 15)

@@ -83,6 +83,3 @@ def generate_run_id():
     run_id = time.strftime("%Y%m%d-%H%M%S")
     run_id = f"FR-{run_id}"
     return run_id
-
-
-

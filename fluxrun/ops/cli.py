@@ -1,5 +1,4 @@
 import argparse
-from pathlib import Path
 
 
 def validate_args(args):
@@ -45,7 +44,6 @@ def get_args():
     # parser.add_argument('-a', '--avoidduplicates', action='store_true',
     #                     help="Avoid duplicates: skip files that share the same filename as a file that is already "
     #                          "available in FOLDER.")
-
 
     args = parser.parse_args()
     return args
