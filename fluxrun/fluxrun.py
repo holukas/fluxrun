@@ -108,7 +108,16 @@ class FluxRunEngine():
         if rp_process_status == 0 and found_full_output == False:
             fcc_process_status = self.run_eddypro_cmd(cmd='eddypro_fcc.exe')  # execute exe todo for linux and osx
 
-        # Plot summary
+        self._plot_summary()
+        self._delete_uncompressed_ascii_files()
+
+        self.logger.info("\n\n\n")
+        self.logger.info("=" * 60)
+        self.logger.info("FluxRun finished.")
+        self.logger.info("=" * 60)
+
+    def _plot_summary(self):
+        """Generate summary plots"""
         found_full_output, filepath_full_output = \
             ops.file.check_if_file_in_folder(search_str='*_full_output_*.csv',
                                              folder=self.settings_dict['_dir_out_run_eddypro_results'])
@@ -117,14 +126,36 @@ class FluxRunEngine():
                 file_to_plot=filepath_full_output,
                 destination_folder=self.settings_dict['_dir_out_run_plots_summary'],
                 logger=self.logger).run()
-
         else:
             self.logger.info("(!)WARNING No *_full_output_* file was found. Skipping summary plots.")
 
-        self.logger.info("\n\n\n")
-        self.logger.info("=" * 60)
-        self.logger.info("FluxRun finished.")
-        self.logger.info("=" * 60)
+
+    def _delete_uncompressed_ascii_files(self):
+        """Delete uncompressed (unzipped) ASCII files that were used for flux processing"""
+        if int(self.settings_dict['delete_uncompressed_ascii_after_processing']) == 1:
+            uncompressed_ascii_files = ops.file.SearchAll(
+                settings_dict=self.settings_dict,
+                logger=self.logger,
+                search_in_dir=self.settings_dict['_dir_out_run_rawdata_ascii_files'],
+                search_uncompressed=True) \
+                .keep_valid_files()
+
+            # Convert to list
+            deletepaths = []
+            for filename, filepath in uncompressed_ascii_files.items():
+                deletepaths.append(filepath)
+
+            # Keep the last file
+            deletepaths = list(deletepaths)[:-1]
+
+            # Make sure there are CSVs only
+            deletelist = []
+            [deletelist.append(x) for x in deletepaths if x.suffix == '.csv']
+
+            # Delete files
+            for filepath in deletelist:
+                self.logger.info(f"Deleting uncompressed (unzipped) ASCII file: {filepath}) ...")
+                os.remove(filepath)
 
     def run_eddypro_cmd(self, cmd: str):
         """Run eddypro_rp.exe or eddypro_fcc.exe"""
@@ -266,6 +297,9 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         self.update_dict_key(key='plot_summary',
                              new_val='1' if self.chk_output_plots_summary.isChecked() else '0')
 
+        self.update_dict_key(key='delete_uncompressed_ascii_after_processing',
+                             new_val='1' if self.chk_output_afterprocessing_delete_ascii_rawdata.isChecked() else '0')
+
     def set_gui_combobox(self, combobox, find_text):
         idx = combobox.findText(find_text, qtc.Qt.MatchContains)
         if idx >= 0:
@@ -308,6 +342,9 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
                               state=self.settings_dict['plot_aggregates_rawdata'])
         self.set_gui_checkbox(checkbox=self.chk_output_plots_summary,
                               state=self.settings_dict['plot_summary'])
+
+        self.set_gui_checkbox(checkbox=self.chk_output_afterprocessing_delete_ascii_rawdata,
+                              state=self.settings_dict['delete_uncompressed_ascii_after_processing'])
 
     def link(self, link_str):
         """Call hyperlink from label, opens in browser"""

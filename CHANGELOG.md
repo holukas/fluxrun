@@ -2,6 +2,15 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.3.0 - 2 Apr 2023
+
+- New setting in `Output` > `After Processing` > `Delete uncompressed raw data ASCII`:
+  if selected, the uncompressed raw data files (ASCII) are deleted after finished flux
+  calculations. The *compressed* raw data ASCII files are not affected by this setting.
+  Background: for EddyPro flux calculations, the zipped files are uncompressed to regular
+  ASCII files. These uncompressed files are not required for long-term storage because they
+  take up a lot of disk space. For storage, we keep the zipped (compressed) ASCII files.
+
 ## v1.2.0 - 20 Mar 2023
 
 - Now using `poetry` as dependency manager

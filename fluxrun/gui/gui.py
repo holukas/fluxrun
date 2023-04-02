@@ -137,7 +137,14 @@ class Ui_MainWindow(object):
         self.chk_output_plots_summary = \
             gui_elements.add_checkbox_to_grid(label='Summary (Flux Processing)', grid=grid, row=7)
 
-        grid.setRowStretch(8, 1)
+        # After processing
+        header_output_plots = qtw.QLabel('After Processing')
+        header_output_plots.setProperty('labelClass', 'header_2')
+        grid.addWidget(header_output_plots, 8, 0, 1, 1)
+        self.chk_output_afterprocessing_delete_ascii_rawdata = \
+            gui_elements.add_checkbox_to_grid(label='Delete uncompressed raw data ASCII', grid=grid, row=9)
+
+        grid.setRowStretch(10, 1)
         section.setLayout(grid)
         return section
 
