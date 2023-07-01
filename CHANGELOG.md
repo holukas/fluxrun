@@ -2,6 +2,11 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.3.1 - 1 Jul 2023
+
+- Updated poetry.lock file 
+- Updated version number, was wrong in last release, should have been v1.3.0 in toml
+
 ## v1.3.0 - 2 Apr 2023
 
 - New setting in `Output` > `After Processing` > `Delete uncompressed raw data ASCII`:
