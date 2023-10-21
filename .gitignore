@@ -1,9 +1,8 @@
 # Custom
 dist/
-_archive/
-_raw_photoshop/
-_tests/
-example/
+/.idea/
+/_tests/
+/_raw_photoshop/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
