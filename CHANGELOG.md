@@ -2,6 +2,10 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.3.2 | 21 Oct 2023
+
+- Moved repo to GitLab: https://github.com/holukas/fluxrun
+
 ## v1.3.1 - 1 Jul 2023
 
 - Updated poetry.lock file 
