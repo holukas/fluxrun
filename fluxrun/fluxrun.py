@@ -129,7 +129,6 @@ class FluxRunEngine():
         else:
             self.logger.info("(!)WARNING No *_full_output_* file was found. Skipping summary plots.")
 
-
     def _delete_uncompressed_ascii_files(self):
         """Delete uncompressed (unzipped) ASCII files that were used for flux processing"""
         if int(self.settings_dict['delete_uncompressed_ascii_after_processing']) == 1:
@@ -185,14 +184,42 @@ class FluxRunEngine():
 
     def make_parsing_strings(self):
         """Make parsing strings to parse info from raw data filenames"""
+
+        # Assemble search strings
+
+        file_ext = Path(self.settings_dict['rawdata_filename_datetime_format']).suffix
+
+        if not file_ext:
+            # If no file extension given in setting 'rawdata_filename_datetime_format',
+            # the by default '.csv' is used
+            if self.settings_dict['rawdata_file_compression'] == 'gzip':
+                file_ext_search = '.csv.gz'
+                file_ext_parsing = '.csv.gz'
+            else:
+                file_ext_search = '.csv'
+                file_ext_parsing = '.csv'
+
+        else:
+            if self.settings_dict['rawdata_file_compression'] == 'gzip':
+                file_ext_search = f'{file_ext}.gz'
+                file_ext_parsing = '.gz'
+            else:
+                # File extension already given in setting 'rawdata_filename_datetime_format'
+                file_ext_search = file_ext
+                file_ext_parsing = ''
+
+        self.settings_dict['_sitefiles_search_str'] = f"{self.settings_dict['site']}_*{file_ext_search}"
+        # print(self.settings_dict['_sitefiles_search_str'])
+
+        # Convert given parsing string to a string containing datetime characters that Python understands, e.g. %Y
         self.settings_dict['filename_datetime_parsing_string'] = self.make_datetime_parsing_string()
 
-        # Add site id to search strings
-        file_ext = '.csv.gz' if self.settings_dict['rawdata_file_compression'] == 'gzip' else '.csv'
-        self.settings_dict['_sitefiles_search_str'] = f"{self.settings_dict['site']}_*{file_ext}"
+        # Construct exact parsing string
         self.settings_dict['_sitefiles_parse_str'] = f"{self.settings_dict['site']}_" \
                                                      f"{self.settings_dict['filename_datetime_parsing_string']}" \
-                                                     f"{file_ext}"
+                                                     f"{file_ext_parsing}"
+        # print(self.settings_dict['_sitefiles_parse_str'])
+        # print(self.settings_dict['_sitefiles_parse_str'])
 
     def make_datetime_parsing_string(self):
         """Parse filename for datetime info"""

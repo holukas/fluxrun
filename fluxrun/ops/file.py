@@ -34,6 +34,7 @@ def uncompress_gzip(settings_dict, found_gzip_files_dict, logger):
         import time
         tic = time.time()
         with gzip.open(compr_filepath, 'rb') as f_in:
+            logger.info(f"Trying to unzip file {compr_filepath} ...")
             with open(uncompr_filepath, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
                 time_needed = time.time() - tic
@@ -238,8 +239,14 @@ class PrepareEddyProFiles:
                          f"\n    OLD:  {data_path_old}"
                          f"    NEW:  {data_path_new}")
 
+        # If no file extension was given in setting 'rawdata_filename_datetime_format',
+        # the file extension will default to '.csv'. Otherwise, the given file extension
+        # is used.
+        file_ext = Path(self.settings_dict['rawdata_filename_datetime_format']).suffix
+        file_ext = '.csv' if not file_ext else ''
+
         prototype_str = f"{self.settings_dict['site']}_" \
-                        f"{self.settings_dict['rawdata_filename_datetime_format']}.csv"
+                        f"{self.settings_dict['rawdata_filename_datetime_format']}{file_ext}"
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=file_prototype_old, new=file_prototype_new)

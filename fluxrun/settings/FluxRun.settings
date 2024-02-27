@@ -1,4 +1,4 @@
-_run_id=FR-20230402-204148
+_run_id=FR-20240227-140551
 
 
 # INSTRUMENTS
@@ -12,50 +12,50 @@ site=CH-FRU
 # ==========
 
 ## Raw Data Source Folder
-rawdata_indir=F:/Sync/luhk_work/20 - CODING/23 - FLUX/fluxrun/_tests/XXX2
-rawdata_file_compression=gzip
+rawdata_indir=F:/01-NEW/CH-FRU-FF202401/2023_rECord/raw_data_ascii_rECord_filesWithAGC/raw_data_ascii_rECord_filesWithAGC
+rawdata_file_compression=None
 
 ## Time Range
-rawdata_start_date=2022-01-01 00:01
-rawdata_end_date=2022-12-31 23:59
+rawdata_start_date=2023-01-01 00:01
+rawdata_end_date=2023-12-31 23:59
 
 ## File Settings
-rawdata_filename_datetime_format=yyyymmddHHMM
-_sitefiles_search_str=CH-FRU_*.csv.gz
-_sitefiles_parse_str=CH-FRU_%Y%m%d%H%M.csv.gz
+rawdata_filename_datetime_format=ec_yyyymmdd-HHMM_withAGC.dat
+_sitefiles_search_str=CH-FRU_*.dat
+_sitefiles_parse_str=CH-FRU_ec_%Y%m%d-%H%M_withAGC.dat
 
 ## EddyPro
-path_selected_eddypro_processing_file=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_2022_[IRGA75]_R350-A+IRGA75-A.eddypro
-_path_used_eddypro_processing_file=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations\ini\processing.eddypro
-_path_found_eddypro_metadata_file=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_2022_[IRGA75]_R350-A+IRGA75-A.eddypro
-_path_used_eddypro_metadata_file=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations\ini\CH-FRU_2022_[IRGA75]_R350-A+IRGA75-A.metadata
-_path_used_eddypro_app_rp=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
-_path_used_eddypro_app_fcc=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
+path_selected_eddypro_processing_file=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_2023_rECord_[IRGA75]_R350-R1+IRGA75-R1.eddypro
+_path_used_eddypro_processing_file=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations\ini\processing.eddypro
+_path_found_eddypro_metadata_file=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_2023_rECord_[IRGA75]_R350-R1+IRGA75-R1.eddypro
+_path_used_eddypro_metadata_file=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations\ini\CH-FRU_2023_rECord_[IRGA75]_R350-R1+IRGA75-R1.metadata
+_path_used_eddypro_app_rp=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
 
 ## Output Folder
-dir_out=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2
-_dir_out_run=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148
-_dir_out_run_log=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\0_log
-_dir_out_run_rawdata_ascii_files=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\1-0_rawdata_files_ascii
-_dir_used_rawdata_ascii_files_eddypro_data_path=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\1-0_rawdata_files_ascii
-_dir_out_run_plots_availability_rawdata=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\1-1_rawdata_plots_availability
-_dir_out_run_plots_aggregates_rawdata=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\1-2_rawdata_plots_aggregates
-_dir_out_run_eddypro=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations
-_dir_out_run_eddypro_ini=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations\ini
-_dir_out_run_eddypro_bin=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations\bin
-_dir_out_run_eddypro_results=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-0_eddypro_flux_calculations\results
-_dir_out_run_plots_summary=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\_tests\XXX2\CH-FRU_FR-20230402-204148\2-1_eddypro_flux_calculations_summary_plots
+dir_out=F:\01-NEW\CH-FRU-FF202401\2023_rECord
+_dir_out_run=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551
+_dir_out_run_log=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\0_log
+_dir_out_run_rawdata_ascii_files=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\1-0_rawdata_files_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=F:/01-NEW/CH-FRU-FF202401/2023_rECord/raw_data_ascii_rECord_filesWithAGC/raw_data_ascii_rECord_filesWithAGC
+_dir_out_run_plots_availability_rawdata=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\1-1_rawdata_plots_availability
+_dir_out_run_plots_aggregates_rawdata=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\1-2_rawdata_plots_aggregates
+_dir_out_run_eddypro=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations
+_dir_out_run_eddypro_ini=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations\ini
+_dir_out_run_eddypro_bin=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations\bin
+_dir_out_run_eddypro_results=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-0_eddypro_flux_calculations\results
+_dir_out_run_plots_summary=F:\01-NEW\CH-FRU-FF202401\2023_rECord\CH-FRU_FR-20240227-140551\2-1_eddypro_flux_calculations_summary_plots
 
 ## Plots
 plot_availability_rawdata=1
-plot_aggregates_rawdata=1
+plot_aggregates_rawdata=0
 plot_summary=1
 
 ## After Processing
-delete_uncompressed_ascii_after_processing=1
+delete_uncompressed_ascii_after_processing=0
 
 
 # _SCRIPT

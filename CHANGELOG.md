@@ -2,13 +2,34 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.4.0 | 27 Feb 2024
+
+- Added: it is now possible to give a specific file extension in the GUI
+  setting `Raw Data: File Settings` > `Date/Time Format In File name`. In case no file extension is given, `fluxrun`
+  assumes `.csv` as the default file extension.
+    - Example 1: For *uncompressed* files named using a format like named `CH-FRU_ec_20230509-0930_withAGC.dat`, the
+      respective entry is `ec_yyyymmdd-HHMM_withAGC.dat`. The site name `CH-FRU_` is added automatically during
+      processing and must not be added in this setting.
+    - Example 2: For *uncompressed* files named using a format like named `CH-FRU_202305090930.csv`, the respective
+      entry is `yyyymmddHHMM` (same as in earlier version). The site name `CH-FRU_` is added automatically during
+      processing and must not be added in this setting. The file extension `.csv` is assumed since no specific file
+      extension is given.
+    - Example 3: For *compressed* files named using a format like named `CH-FRU_ec_20230509-0930_withAGC.dat.gz`, the
+      respective entry is `ec_yyyymmdd-HHMM_withAGC.dat`. The suffix `.gz` is automatically added to the given file
+      extension.
+    - Example 4: For *compressed* files named using a format like named `CH-FRU_202305090930.csv.gz`, the respective
+      entry is `yyyymmddHHMM` (same as in earlier version).
+- Added: During unzipping of gzip files, the logger now also displays the name of the file before unzipping
+  is started. This way it is easier to identify files for which unzipping does not work, e.g., due to
+  corrupted binary files (irregular structure). (`fluxrun.ops.file.uncompress_gzip`)
+
 ## v1.3.2 | 21 Oct 2023
 
 - Moved repo to GitLab: https://github.com/holukas/fluxrun
 
 ## v1.3.1 - 1 Jul 2023
 
-- Updated poetry.lock file 
+- Updated poetry.lock file
 - Updated version number, was wrong in last release, should have been v1.3.0 in toml
 
 ## v1.3.0 - 2 Apr 2023

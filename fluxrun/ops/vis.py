@@ -376,7 +376,7 @@ class PlotRawDataFilesAggregates:
                                                     filecounter=filecounter)
         self.make_plot(df=stats_coll_df,
                        outdir=self.settings_dict['_dir_out_run_plots_aggregates_rawdata'])
-        print(filecounter)
+        # print(filecounter)
 
     def file_header_for_log(self, fid, num_files, filecounter):
         spacer = "=" * 30
@@ -434,7 +434,8 @@ class PlotRawDataFilesAggregates:
         if filecounter == 1:
             stats_coll_df = rawdata_df.copy()
         else:
-            stats_coll_df = stats_coll_df.append(rawdata_df)
+            # stats_coll_df = stats_coll_df.append(rawdata_df)
+            stats_coll_df = pd.concat([stats_coll_df, rawdata_df], axis=0)
 
         return stats_coll_df
 
