@@ -2,6 +2,12 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.4.1 | XX Mar 2024
+
+- Added new sites `CH-FOR`, `CH-HON` and `CH-TAN` in site selection menu
+- Added info about default setting in GUI: `Date/Time Format In File Name (default: yyyymmddHHMM)`
+- Updated links in sidebar to GitLab locations
+
 ## v1.4.0 | 27 Feb 2024
 
 - Added: it is now possible to give a specific file extension in the GUI
