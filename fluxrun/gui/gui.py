@@ -87,12 +87,12 @@ class Ui_MainWindow(object):
             link_txt='Releases', link_str=info.__link_releases__, grid=grid, row=6)
         self.lbl_link_source_code = gui_elements.add_label_link_to_grid(
             link_txt='Source Code', link_str=info.__link_source_code__, grid=grid, row=7)
-        self.lbl_link_license = gui_elements.add_label_link_to_grid(
-            link_txt='License', link_str=info.__license__, grid=grid, row=8)
+        # self.lbl_link_license = gui_elements.add_label_link_to_grid(
+        #     link_txt='License', link_str=info.__license__, grid=grid, row=8)
         self.lbl_link_changelog = gui_elements.add_label_link_to_grid(
-            link_txt='Changelog', link_str=info.__link_changelog__, grid=grid, row=9)
+            link_txt='Changelog', link_str=info.__link_changelog__, grid=grid, row=8)
         self.lbl_link_ep_changelog = gui_elements.add_label_link_to_grid(
-            link_txt='EddyPro Changelog', link_str=info.__link_ep_changelog__, grid=grid, row=10)
+            link_txt='EddyPro Changelog', link_str=info.__link_ep_changelog__, grid=grid, row=9)
 
         grid.addWidget(label_image, 0, 0)
         grid.addWidget(qtw.QLabel(), 1, 0)
@@ -101,7 +101,7 @@ class Ui_MainWindow(object):
         grid.addWidget(label_txt3, 4, 0)
         grid.addWidget(label_txt4, 5, 0)
 
-        grid.setRowStretch(11, 1)
+        grid.setRowStretch(10, 1)
         section.setLayout(grid)
         return section
 
@@ -166,8 +166,10 @@ class Ui_MainWindow(object):
         self.cmb_instr_site_selection = \
             gui_elements.add_label_combobox_to_grid(label='Select Site', grid=grid, row=2,
                                                     items=['CH-AES', 'CH-AWS', 'CH-CHA', 'CH-DAE',
-                                                           'CH-DAV', 'CH-DAS', 'CH-FRU',
-                                                           'CH-INO', 'CH-LAE', 'CH-LAS', 'CH-OE2'])
+                                                           'CH-DAV', 'CH-DAS', 'CH-FOR', 'CH-FRU',
+                                                           'CH-HON', 'CH-INO', 'CH-LAE', 'CH-LAS',
+                                                           'CH-OE2', 'CH-TAN'])
+        self.cmb_instr_site_selection.setMaxVisibleItems(99)
 
         grid.setRowStretch(3, 1)
         section.setLayout(grid)
@@ -207,7 +209,8 @@ class Ui_MainWindow(object):
         header_proc_rawdata_file_settings.setProperty('labelClass', 'header_2')
         grid.addWidget(header_proc_rawdata_file_settings, 5, 0, 1, 1)
         self.lne_proc_filedt_format = \
-            gui_elements.add_label_lineedit_to_grid(label='Date/Time Format In File Name', grid=grid,
+            gui_elements.add_label_lineedit_to_grid(label='Date/Time Format In File Name '
+                                                          '(default: yyyymmddHHMM)', grid=grid,
                                                     row=6, value='*.X*')
 
         # Time Range
