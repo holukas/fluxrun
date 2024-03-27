@@ -2,7 +2,7 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
-## v1.4.1 | XX Mar 2024
+## v1.4.1 | 27 Mar 2024
 
 - Added new sites `CH-FOR`, `CH-HON` and `CH-TAN` in site selection menu
 - Now showing all sites when clicking on site selection drop-down menu
