@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "fluxrun"
-version = "v1.4.0"
-description = ""
+version = "v1.4.1"
+description = "Python wrapper for EddyPro flux calculations"
 authors = ["holukas <lukas.hoertnagl@usys.ethz.ch>"]
 
 [tool.poetry.dependencies]
