@@ -14,17 +14,17 @@
 - Added: it is now possible to give a specific file extension in the GUI
   setting `Raw Data: File Settings` > `Date/Time Format In File name`. In case no file extension is given, `fluxrun`
   assumes `.csv` as the default file extension.
-    - Example 1: For *uncompressed* files named using a format like named `CH-FRU_ec_20230509-0930_withAGC.dat`, the
+    - Example 1: For *uncompressed* files named using a format like `CH-FRU_ec_20230509-0930_withAGC.dat`, the
       respective entry is `ec_yyyymmdd-HHMM_withAGC.dat`. The site name `CH-FRU_` is added automatically during
       processing and must not be added in this setting.
-    - Example 2: For *uncompressed* files named using a format like named `CH-FRU_202305090930.csv`, the respective
+    - Example 2: For *uncompressed* files named using a format like `CH-FRU_202305090930.csv`, the respective
       entry is `yyyymmddHHMM` (same as in earlier version). The site name `CH-FRU_` is added automatically during
       processing and must not be added in this setting. The file extension `.csv` is assumed since no specific file
       extension is given.
-    - Example 3: For *compressed* files named using a format like named `CH-FRU_ec_20230509-0930_withAGC.dat.gz`, the
+    - Example 3: For *compressed* files named using a format like `CH-FRU_ec_20230509-0930_withAGC.dat.gz`, the
       respective entry is `ec_yyyymmdd-HHMM_withAGC.dat`. The suffix `.gz` is automatically added to the given file
       extension.
-    - Example 4: For *compressed* files named using a format like named `CH-FRU_202305090930.csv.gz`, the respective
+    - Example 4: For *compressed* files named using a format like `CH-FRU_202305090930.csv.gz`, the respective
       entry is `yyyymmddHHMM` (same as in earlier version).
 - Added: During unzipping of gzip files, the logger now also displays the name of the file before unzipping
   is started. This way it is easier to identify files for which unzipping does not work, e.g., due to
