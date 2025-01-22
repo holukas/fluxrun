@@ -258,7 +258,7 @@ def availability_rawdata(rawdata_found_files_dict, rawdata_file_datefrmt, outdir
     agg_plot_df['month'] = agg_plot_df.index.month
     agg_plot_df['year'] = agg_plot_df.index.year
     agg_plot_df['year-month'] = agg_plot_df.index.strftime('%Y-%m')
-    agg_plot_df = agg_plot_df.pivot("year-month", "day", "filesize")
+    agg_plot_df = agg_plot_df.pivot(index="year-month", columns="day", values="filesize")
     days = [str(xx) for xx in agg_plot_df.columns]
     months = [str(yy) for yy in agg_plot_df.index]
 
