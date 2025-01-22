@@ -5,12 +5,11 @@ description = "Python wrapper for EddyPro flux calculations"
 authors = ["holukas <lukas.hoertnagl@usys.ethz.ch>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
-pandas = "^1.5.3"
-PyQt5 = "^5.15.9"
-matplotlib = "^3.7.1"
-
-[tool.poetry.dev-dependencies]
+python = ">=3.9,<3.10"
+#PyQt5 = "==5.15.11"
+# error in poetry, use: poetry run pip install PyQt5==5.15.11
+matplotlib = "==3.9.4"
+pandas = "==2.2.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
