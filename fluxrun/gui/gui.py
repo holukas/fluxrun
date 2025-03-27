@@ -67,16 +67,16 @@ class Ui_MainWindow(object):
 
         label_txt = qtw.QLabel("FluxRun")
         label_txt.setProperty('labelClass', 'header_3')
-        label_txt.setAlignment(qtc.Qt.AlignCenter | qtc.Qt.AlignVCenter)
+        label_txt.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
         label_txt2 = qtw.QLabel("Wrapper for EddyPro flux calculations")
-        label_txt2.setAlignment(qtc.Qt.AlignCenter | qtc.Qt.AlignVCenter)
+        label_txt2.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
         label_txt3 = qtw.QLabel(f"v{info.__version__} / {info.__date__}")
-        label_txt3.setAlignment(qtc.Qt.AlignCenter | qtc.Qt.AlignVCenter)
+        label_txt3.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
         label_txt4 = qtw.QLabel(f"using EddyPro v{info.__ep_version__}")
-        label_txt4.setAlignment(qtc.Qt.AlignCenter | qtc.Qt.AlignVCenter)
+        label_txt4.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
         # Links
         # self.lbl_link_releases = qtw.QLabel(f"<a href='{info.__link_releases__}'>Releases</a>\n")

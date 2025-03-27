@@ -24,7 +24,7 @@ def add_label_lineedit_to_grid(label, grid, row, value, only_int=False):
     lbl = qtw.QLabel(label)
     lineedit = qtw.QLineEdit(value)
     lineedit.setProperty('labelClass', 'section_bg_raw_bin')
-    lineedit.setAlignment(qtc.Qt.AlignCenter | qtc.Qt.AlignVCenter)
+    lineedit.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
     if only_int:
         onlyIntegers = QIntValidator()
         lineedit.setValidator(onlyIntegers)
@@ -48,6 +48,6 @@ def add_button_to_grid(label, grid, row, colspan=1):
 def add_label_link_to_grid(link_txt, link_str, grid, row, colspan=1):
     label_link = qtw.QLabel(f"<a href='{link_str}'>{link_txt}</a>\n")
     label_link.setProperty('labelClass', 'label_link')
-    label_link.setAlignment(qtc.Qt.AlignCenter | qtc.Qt.AlignVCenter)
+    label_link.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
     grid.addWidget(label_link, row, 0, 1, colspan)
     return label_link
