@@ -2,6 +2,14 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v1.5.0 | XX Jan 2025
+
+- Now using PyQt6 for GUI
+- Updated code for PyQt6
+- Updated env
+- Used Python version in dev is now `3.11.11`
+- Fixed bug in pandas `.pivot()` method, small issue due to the updated pandas version
+
 ## v1.4.1 | 27 Mar 2024
 
 - Added new sites `CH-FOR`, `CH-HON` and `CH-TAN` in site selection menu

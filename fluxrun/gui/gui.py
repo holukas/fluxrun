@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import sys
 
-from PyQt5 import QtCore as qtc
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtWidgets as qtw
-from PyQt5.QtGui import QPixmap
+from PyQt6 import QtCore as qtc
+from PyQt6 import QtGui as qtg
+from PyQt6 import QtWidgets as qtw
+from PyQt6.QtGui import QPixmap
 
 import settings._version as info
 from gui import gui_elements
