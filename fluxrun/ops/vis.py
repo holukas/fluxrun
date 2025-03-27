@@ -388,8 +388,11 @@ class PlotRawDataFilesAggregates:
         self.logger.info(f"{self.section_id}    Reading file {filepath} ...")
         import time
         tic = time.time()
+        # TODO check settings hier weiter
         rawdata_df = pd.read_csv(filepath,
-                                 skiprows=None,
+                                 skiprows=[0],
+                                 # skiprows=None,
+                                 # header=[0],
                                  header=[0, 1, 2],
                                  na_values=-9999,
                                  encoding='utf-8',
