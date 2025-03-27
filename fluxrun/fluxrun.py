@@ -18,12 +18,14 @@ from settings import _version
 # TODO displacement height file?
 # TODO LATER parallelize, multiprocessing?
 
-class FluxRunEngine():
+class FluxRunEngine:
 
     def __init__(
             self,
             settings_dict: dict):
         self.settings_dict = settings_dict
+
+        self.logger = None
 
         self.update_settings()
 
@@ -45,8 +47,8 @@ class FluxRunEngine():
 
         # Logger
         self.logger = ops.logger.setup_logger(settings_dict=self.settings_dict)
-        self.logger.info(f"Run ID: {self.settings_dict['_run_id']}")
-        self.logger.info(f"FluxRun Version: {_version.__version__} / {_version.__date__}")
+        self.logger.info(f"\n\nRun ID: {self.settings_dict['_run_id']}")
+        self.logger.info(f"FluxRun Version: {_version.__version__} / {_version.__date__}\n\n")
 
         self.settings_dict = ops.file.PrepareEddyProFiles(settings_dict=self.settings_dict, logger=self.logger).get()
         file.save_settings_to_file(settings_dict=self.settings_dict, copy_to_outdir=True)
