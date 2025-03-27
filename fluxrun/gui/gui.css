@@ -2,47 +2,42 @@ QWidget[accessibleName="mainwindow"]{background-color: white;}
 
 QLabel {color: #263238;}  /* bluegray 900 */
 QLabel[labelClass="header_1"] {font-size: 18pt; padding: 0.5em 0 0.2em 0; font-weight: bold;}
-QLabel[labelClass="header_2"] {font-size: 14pt; padding: 0.5em 0 0.2em 0; margin-left: 0px;}
-/*QLabel[labelClass="header_3"] {font-weight: bold;}*/
-/*QLabel[labelClass="bold"] {font-weight: bold; margin-left: 20px;}*/
-/*QLabel[labelClass="label_link"] {padding: 5px;}*/
+QLabel[labelClass="header_2"] {font-size: 14pt; padding: 0.5em 0 0.2em 0; margin-left: 0px; font-weight: bold;}
 
-/*QFrame{}*/
-/*QFrame[labelClass="section_bg_instruments"] {background-color: white; padding: 20px; margin: 10px;}*/
-/*QFrame[labelClass="section_bg_processing"] {background-color: white; padding: 20px; margin: 10px;}*/
-/*QFrame[labelClass="section_bg_output"] {background-color: white; padding: 20px; margin: 10px;}*/
-/*QFrame[labelClass="section_bg_controls"] {background-color: white; padding: 20px; margin: 10px;}*/
+QComboBox{border: 1px solid #B0BEC5; padding: 10px; background: #ECEFF1; color: #263238; font-weight: bold; min-width: 150px;}  /* blue grey 200, 50, grey 800 */
+QComboBox:hover {background-color: #ffc159;}
+QComboBox QListView { background-color: white; color: #263238}
+QComboBox QListView::item:hover {background-color: #CFD8DC; color: #263238;}  /* Hover color */
+/*QComboBox:disabled{color: #BDBDBD; background-color: transparent;}  !* grey 400, grey 50 *!*/
+/*QComboBox QAbstractItemView {border: 0; selection-background-color: #CFD8DC; selection-color: #424242; margin: 5px; padding: 5px;}*/
 
-
-QComboBox{border: 1px solid #B0BEC5; padding: 10px; background: #ECEFF1; color: #424242; font-weight: bold; min-width: 150px;}  /* blue grey 200, 50, grey 800 */
-QComboBox:disabled{color: #BDBDBD; background-color: transparent;}  /* grey 400, grey 50 */
-QComboBox QAbstractItemView {border: 0; selection-background-color: #CFD8DC; selection-color: #424242; margin: 5px; padding: 5px;}
-
-/*QPushButton{background-color:#eceff1; border: 1px solid #455a64; padding: 10px; max-width: 150px;*/
-/*	font-weight: bold; color: #455a64;}  !* bluegray 50, 700 *!*/
-/*QPushButton:hover{background-color: #ffca28;}  !* amber 400 *!*/
-/*QPushButton:pressed{background-color: white;}*/
+QPushButton{background-color:#eceff1; border: 1px solid #455a64; padding: 10px; font-weight: bold; color: #455a64;}
+QPushButton:hover{background-color: #ffc159;}
+QPushButton:pressed{background-color: white;}
 /*QPushButton:disabled{color: gray; border-color: gray;}*/
-
-/*QRadioButton {}*/
-/*QRadioButton::indicator {width: 12px; height: 12px; border-radius: 8px;}*/
-/*QRadioButton::indicator:checked {background-color: #455a64; border: 2px solid white;}  !* bluegray 700 *!*/
-/*QRadioButton::indicator:unchecked {background-color: white; border: 2px solid #455a64;}  !* bluegray 700 *!*/
-
 
 QCheckBox{color: #263238;}
 QCheckBox[labelClass="checkbox_active"]{color: red;}
 QCheckBox::indicator {border: none; height: 35px; width: 35px;}
-QCheckBox::indicator:hover {}
 QCheckBox::indicator:checked {image: url("images/switch1_on.png");}
 QCheckBox::indicator:unchecked {image: url("images/switch1_off.png");}
 
+/*QFrame{}*/
+/*QFrame[labelClass="section_bg_instruments"] {background-color: white; padding: 20px; margin: 10px;}*/
+/*QFrame[labelClass="section_bg_processing"] {background-color: white; padding: 20px; margin: 10px;}*/
+QFrame[labelClass="section_bg_output"] {background-color: whitesmoke; padding: 20px; margin: 10px; border-right: 1px solid #5a5a5a;}
+/*QFrame[labelClass="section_bg_controls"] {background-color: white; padding: 20px; margin: 10px;}*/
 
-/*QLineEdit {font-weight: bold; text-align: middle; padding: 10px; max-width: 200px;}*/
+
+QLineEdit {font-weight: bold; text-align: middle; padding: 10px; max-width: 200px; background-color:  #eceff1; color: #263238; border: 1px solid #455a64;}
+QLineEdit:hover {background-color: #ffc159;}
+QDateTimeEdit {border: 1px solid #455a64; color: #263238; font-weight: bold; background: #eceff1; padding: 5px;}
+QDateTimeEdit:hover {background-color: #ffc159;}
+
 /*QLineEdit[labelClass="section_bg_raw_bin"] {border: 2px solid #456268; background: #cee6f0; color: #456268;}*/
 /*QLineEdit:disabled {background: gray;}*/
 /*	*/
-/*QDateTimeEdit {border: 2px solid #456268; color: #456268; font-weight: bold; background: #cee6f0; padding: 5px;}*/
+
 
 
 /*!* COMBO BOX*!	*/

@@ -3,17 +3,19 @@ from PyQt6 import QtWidgets as qtw
 from PyQt6.QtGui import QIntValidator
 
 
+
 def add_label_combobox_to_grid(label, grid, row, items: list, col: int = 0):
     lbl = qtw.QLabel(label)
     cmb = qtw.QComboBox()
     cmb.addItems(items)
     grid.addWidget(lbl, row, col)
-    grid.addWidget(cmb, row, col+1)
+    grid.addWidget(cmb, row, col + 1)
     return cmb
 
 
 def add_label_datetimepicker_to_grid(label, grid, row):
     lbl = qtw.QLabel(label)
+    # lbl.setAlignment(qtc.Qt.AlignmentFlag.AlignRight | qtc.Qt.AlignmentFlag.AlignVCenter)
     datetimepicker = qtw.QDateTimeEdit()
     grid.addWidget(lbl, row, 0)
     grid.addWidget(datetimepicker, row, 1)

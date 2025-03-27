@@ -76,8 +76,8 @@ class Ui_MainWindow(object):
         label_image = qtw.QLabel()
         label_image.setPixmap(QPixmap('images/logo_FLUXRUN1_256px.png'))
 
-        label_txt = qtw.QLabel("FluxRun")
-        label_txt.setProperty('labelClass', 'header_3')
+        label_txt = qtw.QLabel("fluxrun")
+        label_txt.setProperty('labelClass', 'header_1')
         label_txt.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
         label_txt2 = qtw.QLabel("Wrapper for EddyPro flux calculations")
@@ -127,7 +127,7 @@ class Ui_MainWindow(object):
 
         # SITE
         header_instr_instruments = qtw.QLabel('Site')
-        header_instr_instruments.setProperty('labelClass', 'header_1')
+        header_instr_instruments.setProperty('labelClass', 'header_2')
         grid.addWidget(header_instr_instruments, 0, 0)
         self.cmb_instr_site_selection = \
             gui_elements.add_label_combobox_to_grid(
@@ -141,7 +141,7 @@ class Ui_MainWindow(object):
 
         # RAW DATA
         header_proc = qtw.QLabel('Raw Data')
-        header_proc.setProperty('labelClass', 'header_1')
+        header_proc.setProperty('labelClass', 'header_2')
         grid.addWidget(header_proc, 3, 0)
 
         # RAW DATA: Source folder for raw data
@@ -171,8 +171,8 @@ class Ui_MainWindow(object):
             gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=8)
 
         # PROCESSING SETTINGS: EddyPro Processing File
-        header_proc = qtw.QLabel('Processing')
-        header_proc.setProperty('labelClass', 'header_1')
+        header_proc = qtw.QLabel('Flux Processing Settings')
+        header_proc.setProperty('labelClass', 'header_2')
         grid.addWidget(header_proc, 9, 0)
 
         header_proc_rawdata_source_dir = qtw.QLabel('Select EddyPro processing file (*.eddypro)')
@@ -184,7 +184,7 @@ class Ui_MainWindow(object):
 
         # Main Header
         header_output_output = qtw.QLabel('Output')
-        header_output_output.setProperty('labelClass', 'header_1')
+        header_output_output.setProperty('labelClass', 'header_2')
         grid.addWidget(header_output_output, 11, 0)
 
         # Output folder
@@ -210,7 +210,7 @@ class Ui_MainWindow(object):
 
         # Buttons
         self.btn_ctr_run = \
-            gui_elements.add_button_to_grid(label='Run', grid=grid, row=20, col=0, colspan=3)
+            gui_elements.add_button_to_grid(label='Run', grid=grid, row=20, col=2, colspan=1)
 
         # End section
         section.setLayout(grid)
