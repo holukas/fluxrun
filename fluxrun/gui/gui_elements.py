@@ -1,6 +1,6 @@
-from PyQt5 import QtCore as qtc
-from PyQt5 import QtWidgets as qtw
-from PyQt5.QtGui import QIntValidator
+from PyQt6 import QtCore as qtc
+from PyQt6 import QtWidgets as qtw
+from PyQt6.QtGui import QIntValidator
 
 
 def add_label_combobox_to_grid(label, grid, row, items: list):

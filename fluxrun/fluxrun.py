@@ -3,10 +3,11 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-
-from PyQt5 import QtCore as qtc
-from PyQt5 import QtGui as qtg
-from PyQt5 import QtWidgets as qtw
+import PyQt6
+import PyQt6.QtCore
+from PyQt6 import QtCore as qtc
+from PyQt6 import QtGui as qtg
+from PyQt6 import QtWidgets as qtw
 
 import ops
 from gui.gui import Ui_MainWindow
