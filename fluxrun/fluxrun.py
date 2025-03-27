@@ -3,8 +3,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-import PyQt6
-import PyQt6.QtCore
+
 from PyQt6 import QtCore as qtc
 from PyQt6 import QtGui as qtg
 from PyQt6 import QtWidgets as qtw
@@ -329,7 +328,7 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
                              new_val='1' if self.chk_output_afterprocessing_delete_ascii_rawdata.isChecked() else '0')
 
     def set_gui_combobox(self, combobox, find_text):
-        idx = combobox.findText(find_text, qtc.Qt.MatchContains)
+        idx = combobox.findText(find_text, qtc.Qt.MatchFlag.MatchContains)
         if idx >= 0:
             combobox.setCurrentIndex(idx)
 
@@ -503,7 +502,7 @@ def main(args):
         app = qtw.QApplication(sys.argv)
         fluxrunfromgui = FluxRunGUI()
         fluxrunfromgui.show()
-        app.exec_()
+        app.exec()
 
     else:
         print("Please add arg how FLUXRUN should be executed. Add '-h' for help.")
