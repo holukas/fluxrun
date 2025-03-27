@@ -3,12 +3,12 @@ from PyQt6 import QtWidgets as qtw
 from PyQt6.QtGui import QIntValidator
 
 
-def add_label_combobox_to_grid(label, grid, row, items: list):
+def add_label_combobox_to_grid(label, grid, row, items: list, col: int = 0):
     lbl = qtw.QLabel(label)
     cmb = qtw.QComboBox()
     cmb.addItems(items)
-    grid.addWidget(lbl, row, 0)
-    grid.addWidget(cmb, row, 1)
+    grid.addWidget(lbl, row, col)
+    grid.addWidget(cmb, row, col+1)
     return cmb
 
 
@@ -39,9 +39,9 @@ def add_checkbox_to_grid(label, grid, row):
     return checkbox
 
 
-def add_button_to_grid(label, grid, row, colspan=1):
+def add_button_to_grid(label, grid, row, col: int = 0, colspan=1):
     button = qtw.QPushButton(label)
-    grid.addWidget(button, row, 0, 1, colspan)
+    grid.addWidget(button, row, col, 1, colspan)
     return button
 
 
