@@ -1,17 +1,19 @@
-[tool.poetry]
+[project]
 name = "fluxrun"
-version = "v1.5.0"
+version = "1.5.0"
 description = "Python wrapper for EddyPro flux calculations"
-authors = ["holukas <lukas.hoertnagl@usys.ethz.ch>"]
+authors = [
+    {name = "Lukas Hörtnagl",email = "holukas@ethz.ch"}
+]
+readme = "README.md"
+requires-python = ">=3.11, <3.12"
+dependencies = [
+    "pandas (>=2.2.3,<3.0.0)",
+    "pyqt6 (>=6.8.1,<7.0.0)",
+    "matplotlib (>=3.10.1,<4.0.0)"
+]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<4.0"
-#PyQt5 = "==5.15.11"
-# error in poetry, use: poetry run pip install PyQt5==5.15.11
-matplotlib = ">=3.9.4"
-pandas = ">=2.2.3"
-pyqt6 = ">=6.8.1"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
