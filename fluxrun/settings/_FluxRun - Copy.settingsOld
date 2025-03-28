@@ -1,0 +1,68 @@
+_run_id=FR-20250328-213331
+
+
+# INSTRUMENTS
+# ===========
+
+## Site
+site=CH-FRU
+
+
+# PROCESSING
+# ==========
+
+## Raw Data Source Folder
+rawdata_indir=F:/Sync/luhk_work/CURRENT/FRU_rECord_test/IN
+rawdata_file_compression=gzip
+
+## Time Range
+rawdata_start_date=2023-12-31 01:00
+rawdata_end_date=2025-12-31 23:59
+
+## File Settings
+rawdata_filename_datetime_format=ec_yyyymmdd-HHMM
+_sitefiles_search_str=CH-FRU_*.csv.gz
+_sitefiles_parse_str=CH-FRU_ec_%Y%m%d-%H%M.csv.gz
+
+## EddyPro
+path_selected_eddypro_processing_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\updated_settings.eddypro
+_path_used_eddypro_processing_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations\ini\processing.eddypro
+_path_found_eddypro_metadata_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\updated_settings.eddypro
+_path_used_eddypro_metadata_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations\ini\updated_settings.metadata
+_path_used_eddypro_app_rp=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
+
+# OUTPUT
+# ======
+
+## Output Folder
+dir_out=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT
+_dir_out_run=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331
+_dir_out_run_log=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\0_log
+_dir_out_run_rawdata_ascii_files=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\1-0_rawdata_files_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\1-0_rawdata_files_ascii
+_dir_out_run_plots_availability_rawdata=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\1-1_rawdata_plots_availability
+_dir_out_run_plots_aggregates_rawdata=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\1-2_rawdata_plots_aggregates
+_dir_out_run_eddypro=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations
+_dir_out_run_eddypro_ini=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations\ini
+_dir_out_run_eddypro_bin=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations\bin
+_dir_out_run_eddypro_results=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-0_eddypro_flux_calculations\results
+_dir_out_run_plots_summary=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-213331\2-1_eddypro_flux_calculations_summary_plots
+
+## Plots
+plot_availability_rawdata=1
+plot_aggregates_rawdata=0
+plot_summary=1
+
+## After Processing
+delete_uncompressed_ascii_after_processing=0
+
+
+# _SCRIPT
+# =======
+
+## General
+_dir_root=F:\Sync\luhk_work\20 - CODING\23 - FLUX
+_dir_fluxrun=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun
+_dir_script=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\fluxrun
+_dir_settings=F:\Sync\luhk_work\20 - CODING\23 - FLUX\fluxrun\fluxrun\settings

@@ -1,4 +1,4 @@
-_run_id=FR-20250328-150417
+_run_id=FR-20250328-215751
 
 
 # INSTRUMENTS
@@ -12,42 +12,45 @@ site=CH-FRU
 # ==========
 
 ## Raw Data Source Folder
-rawdata_indir=F:/Sync/luhk_work/CURRENT/FRU_rECord_test/OUT/ascii
-rawdata_file_compression=None
+rawdata_indir=F:/Sync/luhk_work/CURRENT/FRU_rECord_test/IN
+rawdata_file_compression=gzip
 
 ## Time Range
 rawdata_start_date=2023-12-31 01:00
 rawdata_end_date=2025-12-31 23:59
 
+## Header Format
+rawdata_header_format=3-row header (bico files)
+
 ## File Settings
 rawdata_filename_datetime_format=ec_yyyymmdd-HHMM
-_sitefiles_search_str=CH-FRU_*.csv
-_sitefiles_parse_str=CH-FRU_ec_%Y%m%d-%H%M.csv
+_sitefiles_search_str=CH-FRU_*.csv.gz
+_sitefiles_parse_str=CH-FRU_ec_%Y%m%d-%H%M.csv.gz
 
 ## EddyPro
 path_selected_eddypro_processing_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\updated_settings.eddypro
-_path_used_eddypro_processing_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations\ini\processing.eddypro
+_path_used_eddypro_processing_file=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations\ini\processing.eddypro
 _path_found_eddypro_metadata_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\updated_settings.eddypro
-_path_used_eddypro_metadata_file=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations\ini\updated_settings.metadata
-_path_used_eddypro_app_rp=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
-_path_used_eddypro_app_fcc=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
+_path_used_eddypro_metadata_file=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations\ini\updated_settings.metadata
+_path_used_eddypro_app_rp=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations\bin\eddypro_rp.exe
+_path_used_eddypro_app_fcc=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations\bin\eddypro_fcc.exe
 
 # OUTPUT
 # ======
 
 ## Output Folder
-dir_out=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT
-_dir_out_run=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417
-_dir_out_run_log=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\0_log
-_dir_out_run_rawdata_ascii_files=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\1-0_rawdata_files_ascii
-_dir_used_rawdata_ascii_files_eddypro_data_path=F:/Sync/luhk_work/CURRENT/FRU_rECord_test/OUT/ascii
-_dir_out_run_plots_availability_rawdata=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\1-1_rawdata_plots_availability
-_dir_out_run_plots_aggregates_rawdata=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\1-2_rawdata_plots_aggregates
-_dir_out_run_eddypro=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations
-_dir_out_run_eddypro_ini=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations\ini
-_dir_out_run_eddypro_bin=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations\bin
-_dir_out_run_eddypro_results=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-0_eddypro_flux_calculations\results
-_dir_out_run_plots_summary=F:\Sync\luhk_work\CURRENT\FRU_rECord_test\OUT\CH-FRU_FR-20250328-150417\2-1_eddypro_flux_calculations_summary_plots
+dir_out=F:\TMP\d
+_dir_out_run=F:\TMP\d\CH-FRU_FR-20250328-215751
+_dir_out_run_log=F:\TMP\d\CH-FRU_FR-20250328-215751\0_log
+_dir_out_run_rawdata_ascii_files=F:\TMP\d\CH-FRU_FR-20250328-215751\1-0_rawdata_files_ascii
+_dir_used_rawdata_ascii_files_eddypro_data_path=F:\TMP\d\CH-FRU_FR-20250328-215751\1-0_rawdata_files_ascii
+_dir_out_run_plots_availability_rawdata=F:\TMP\d\CH-FRU_FR-20250328-215751\1-1_rawdata_plots_availability
+_dir_out_run_plots_aggregates_rawdata=F:\TMP\d\CH-FRU_FR-20250328-215751\1-2_rawdata_plots_aggregates
+_dir_out_run_eddypro=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations
+_dir_out_run_eddypro_ini=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations\ini
+_dir_out_run_eddypro_bin=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations\bin
+_dir_out_run_eddypro_results=F:\TMP\d\CH-FRU_FR-20250328-215751\2-0_eddypro_flux_calculations\results
+_dir_out_run_plots_summary=F:\TMP\d\CH-FRU_FR-20250328-215751\2-1_eddypro_flux_calculations_summary_plots
 
 ## Plots
 plot_availability_rawdata=1

@@ -18,8 +18,8 @@ class Ui_MainWindow(object):
     """
 
     def __init__(self):
-        self.dtp_processing_time_range_start = None
-        self.dtp_processing_time_range_end = None
+        self.dtp_rawdata_time_range_start = None
+        self.dtp_rawdata_time_range_end = None
         self.btn_proc_ep_procfile = None
         self.lbl_proc_ep_procfile_selected = None
         self.btn_output_folder = None
@@ -29,16 +29,17 @@ class Ui_MainWindow(object):
         self.lbl_link_source_code = None
         self.lbl_link_changelog = None
         self.lbl_link_ep_changelog = None
-        self.cmb_instr_site_selection = None
-        self.btn_proc_rawdata_source_dir = None
+        self.cmb_site_selection = None
+        self.btn_rawdata_source_dir = None
         self.lbl_proc_rawdata_source_dir_selected = None
-        self.cmb_proc_rawdata_compr = None
-        self.lne_proc_filedt_format = None
+        self.cmb_rawdata_compr = None
+        self.lne_filedt_format = None
         self.chk_output_plots_availability_rawdata = None
         self.chk_output_plots_aggregates_rawdata = None
         self.chk_output_plots_summary = None
         self.chk_output_afterprocessing_delete_ascii_rawdata = None
-        self.btn_ctr_run = None
+        self.btn_run = None
+        self.cmb_rawdata_header_format = None
 
     def setupUi(self, mainwindow):
         # Main window
@@ -129,14 +130,14 @@ class Ui_MainWindow(object):
         header_instr_instruments = qtw.QLabel('Site')
         header_instr_instruments.setProperty('labelClass', 'header_2')
         grid.addWidget(header_instr_instruments, 0, 0)
-        self.cmb_instr_site_selection = \
+        self.cmb_site_selection = \
             gui_elements.add_label_combobox_to_grid(
-                label='Select Site', grid=grid, row=2,
+                label='Select site', grid=grid, row=2,
                 items=['CH-AES', 'CH-AWS', 'CH-CHA', 'CH-DAE',
                        'CH-DAV', 'CH-DAS', 'CH-FOR', 'CH-FRU',
                        'CH-HON', 'CH-INO', 'CH-LAE', 'CH-LAS',
                        'CH-OE2', 'CH-TAN'])
-        self.cmb_instr_site_selection.setMaxVisibleItems(99)
+        self.cmb_site_selection.setMaxVisibleItems(99)
         # grid.setRowStretch(3, 1)
 
         # RAW DATA
@@ -147,71 +148,80 @@ class Ui_MainWindow(object):
         # RAW DATA: Source folder for raw data
         header_proc_rawdata_source_dir = qtw.QLabel('Select raw data source folder (ASCII)')
         grid.addWidget(header_proc_rawdata_source_dir, 4, 0)
-        self.btn_proc_rawdata_source_dir = \
+        self.btn_rawdata_source_dir = \
             gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=4, col=1)
         self.lbl_proc_rawdata_source_dir_selected = qtw.QLabel("***Please select source folder***")
         grid.addWidget(self.lbl_proc_rawdata_source_dir_selected, 4, 2, 1, 1)
 
         # RAW DATA: File compression
-        self.cmb_proc_rawdata_compr = \
-            gui_elements.add_label_combobox_to_grid(label='ASCII File Compression', grid=grid, row=5,
+        self.cmb_rawdata_compr = \
+            gui_elements.add_label_combobox_to_grid(label='ASCII file compression', grid=grid, row=5,
                                                     items=['gzip', 'None'])
-        self.cmb_proc_rawdata_compr.setToolTip(tooltips.cmb_output_compression)
+        self.cmb_rawdata_compr.setToolTip(tooltips.cmb_output_compression)
 
-        # File Settings
-        self.lne_proc_filedt_format = \
-            gui_elements.add_label_lineedit_to_grid(label='Date/Time Format In File Name '
+        # RAW DATA: Header format
+        self.cmb_rawdata_header_format = \
+            gui_elements.add_label_combobox_to_grid(label='ASCII header format', grid=grid, row=6,
+                                                    items=[
+                                                        '3-row header (bico files)',
+                                                        '4-row header (rECord files)'
+                                                    ])
+        # self.cmb_rawdata_header_format.setToolTip(tooltips.cmb_output_compression)
+
+        # RAW DATA: File Settings
+        self.lne_filedt_format = \
+            gui_elements.add_label_lineedit_to_grid(label='Date/time format in file name '
                                                           '(default: yyyymmddHHMM)', grid=grid,
-                                                    row=6, value='*.X*')
+                                                    row=7, value='*.X*')
 
         # RAW DATA: Time Range
-        self.dtp_processing_time_range_start = \
-            gui_elements.add_label_datetimepicker_to_grid(label='Start', grid=grid, row=7)
-        self.dtp_processing_time_range_end = \
-            gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=8)
+        self.dtp_rawdata_time_range_start = \
+            gui_elements.add_label_datetimepicker_to_grid(label='Start', grid=grid, row=8)
+        self.dtp_rawdata_time_range_end = \
+            gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=9)
 
         # PROCESSING SETTINGS: EddyPro Processing File
         header_proc = qtw.QLabel('Flux Processing Settings')
         header_proc.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_proc, 9, 0)
+        grid.addWidget(header_proc, 10, 0)
 
         header_proc_rawdata_source_dir = qtw.QLabel('Select EddyPro processing file (*.eddypro)')
-        grid.addWidget(header_proc_rawdata_source_dir, 10, 0)
+        grid.addWidget(header_proc_rawdata_source_dir, 11, 0)
         self.btn_proc_ep_procfile = \
-            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=10, col=1)
+            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=11, col=1)
         self.lbl_proc_ep_procfile_selected = qtw.QLabel("***Please select EddyPro *.processing file***")
-        grid.addWidget(self.lbl_proc_ep_procfile_selected, 10, 2, 1, 2)
+        grid.addWidget(self.lbl_proc_ep_procfile_selected, 11, 2, 1, 2)
 
-        # Main Header
+        # OUTPUT
         header_output_output = qtw.QLabel('Output')
         header_output_output.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_output_output, 11, 0)
+        grid.addWidget(header_output_output, 12, 0)
 
-        # Output folder
+        # OUTPUT: Output folder
         header_output_plots = qtw.QLabel('Select output folder')
-        grid.addWidget(header_output_plots, 12, 0, 1, 1)
-        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=12, col=1)
+        grid.addWidget(header_output_plots, 13, 0, 1, 1)
+        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=13, col=1)
         self.btn_output_folder.setToolTip(tooltips.btn_output_folder)
         self.lbl_output_folder = qtw.QLabel("***Please select output folder...***")
-        grid.addWidget(self.lbl_output_folder, 12, 2, 1, 1)
+        grid.addWidget(self.lbl_output_folder, 13, 2, 1, 1)
 
-        # Plots
+        # OUTPUT: Plots
         self.chk_output_plots_availability_rawdata = \
-            gui_elements.add_checkbox_to_grid(label='Availability (Raw Data)', grid=grid, row=14)
+            gui_elements.add_checkbox_to_grid(label='Availability (raw data)', grid=grid, row=14)
         self.chk_output_plots_aggregates_rawdata = \
-            gui_elements.add_checkbox_to_grid(label='Aggregates (Raw Data)', grid=grid, row=15)
+            gui_elements.add_checkbox_to_grid(label='Aggregates (raw data)', grid=grid, row=15)
         self.chk_output_plots_summary = \
-            gui_elements.add_checkbox_to_grid(label='Summary (Flux Processing)', grid=grid, row=16)
+            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=16)
 
-        # After processing
+        # OUTPUT: After processing
         self.chk_output_afterprocessing_delete_ascii_rawdata = \
             gui_elements.add_checkbox_to_grid(label='Delete uncompressed raw data ASCII after processing', grid=grid,
-                                              row=18)
+                                              row=17)
 
-        # Buttons
-        self.btn_ctr_run = \
-            gui_elements.add_button_to_grid(label='Run', grid=grid, row=20, col=2, colspan=1)
-        self.btn_ctr_run.setShortcut(qtg.QKeySequence("Ctrl+R"))  # Set Ctrl+R as the shortcut
+        # RUN
+        self.btn_run = \
+            gui_elements.add_button_to_grid(label='Run', grid=grid, row=18, col=2, colspan=1)
+        self.btn_run.setShortcut(qtg.QKeySequence("Ctrl+R"))  # Set Ctrl+R as the shortcut
 
         # End section
         section.setLayout(grid)
