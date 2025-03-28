@@ -107,7 +107,7 @@ class FluxRunEngine:
             self.logger.info("(!)WARNING EddyPro RP already generated a full_output file. FCC will be skipped. "
                              "This is not necessarily bad.")
 
-        if rp_process_status == 0 and found_full_output == False:
+        if rp_process_status == 0 and found_full_output is False:
             fcc_process_status = self.run_eddypro_cmd(cmd='eddypro_fcc.exe')  # execute exe todo for linux and osx
 
         self._plot_summary()
@@ -301,18 +301,19 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
     def get_settings_from_gui(self):
         """Read settings from GUI and store in dict"""
         # Instruments
-        self.update_dict_key(key='site', new_val=self.cmb_instr_site_selection.currentText())
+        self.update_dict_key(key='site', new_val=self.cmb_site_selection.currentText())
         # self.update_dict_key(key='header', new_val=self.cmb_instr_header.currentText())
 
         # Processing
         self.update_dict_key(key='rawdata_indir', new_val=self.lbl_proc_rawdata_source_dir_selected.text())
         self.update_dict_key(key='rawdata_start_date',
-                             new_val=self.dtp_processing_time_range_start.dateTime().toString('yyyy-MM-dd hh:mm'))
+                             new_val=self.dtp_rawdata_time_range_start.dateTime().toString('yyyy-MM-dd hh:mm'))
         self.update_dict_key(key='rawdata_end_date',
-                             new_val=self.dtp_processing_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm'))
+                             new_val=self.dtp_rawdata_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm'))
         self.update_dict_key(key='rawdata_filename_datetime_format',
-                             new_val=self.lne_proc_filedt_format.text())
-        self.update_dict_key(key='rawdata_file_compression', new_val=self.cmb_proc_rawdata_compr.currentText())
+                             new_val=self.lne_filedt_format.text())
+        self.update_dict_key(key='rawdata_file_compression', new_val=self.cmb_rawdata_compr.currentText())
+        self.update_dict_key(key='rawdata_header_format', new_val=self.cmb_rawdata_header_format.currentText())
         self.update_dict_key(key='path_selected_eddypro_processing_file',
                              new_val=Path(self.lbl_proc_ep_procfile_selected.text()))
 
@@ -347,19 +348,21 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
     def show_settings_in_gui(self):
         """Update GUI from dict"""
         # Instruments
-        self.set_gui_combobox(combobox=self.cmb_instr_site_selection, find_text=self.settings_dict['site'])
+        self.set_gui_combobox(combobox=self.cmb_site_selection, find_text=self.settings_dict['site'])
         # self.set_gui_combobox(combobox=self.cmb_instr_header, find_text=self.settings_dict['header'])
 
         # Processing
         self.lbl_proc_rawdata_source_dir_selected.setText(str(self.settings_dict['rawdata_indir']))
-        self.set_gui_datetimepicker(datetimepicker=self.dtp_processing_time_range_start,
+        self.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_start,
                                     date_str=self.settings_dict['rawdata_start_date'])
-        self.set_gui_datetimepicker(datetimepicker=self.dtp_processing_time_range_end,
+        self.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_end,
                                     date_str=self.settings_dict['rawdata_end_date'])
-        self.set_gui_lineedit(lineedit=self.lne_proc_filedt_format,
+        self.set_gui_lineedit(lineedit=self.lne_filedt_format,
                               string=self.settings_dict['rawdata_filename_datetime_format'])
-        self.set_gui_combobox(combobox=self.cmb_proc_rawdata_compr,
+        self.set_gui_combobox(combobox=self.cmb_rawdata_compr,
                               find_text=self.settings_dict['rawdata_file_compression'])
+        self.set_gui_combobox(combobox=self.cmb_rawdata_header_format,
+                              find_text=self.settings_dict['rawdata_header_format'])
         self.lbl_proc_ep_procfile_selected.setText(str(self.settings_dict['path_selected_eddypro_processing_file']))
 
         # Output
@@ -389,7 +392,7 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         self.lbl_link_ep_changelog.linkActivated.connect(self.link)
 
         # Processing
-        self.btn_proc_rawdata_source_dir.clicked.connect(lambda: self.select_dir(
+        self.btn_rawdata_source_dir.clicked.connect(lambda: self.select_dir(
             start_dir=self.settings_dict['rawdata_indir'], dir_setting='rawdata_indir',
             update_label=self.lbl_proc_rawdata_source_dir_selected,
             dialog_txt='Select Source Folder For Raw Data Files'))
@@ -404,7 +407,7 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
             update_label=self.lbl_output_folder, dialog_txt='Select Output Folder'))
 
         # Controls
-        self.btn_ctr_run.clicked.connect(lambda: self.run())
+        self.btn_run.clicked.connect(lambda: self.run())
 
     def select_dir(self, start_dir, dir_setting, update_label, dialog_txt):
         """ Select directory, update dict and label"""

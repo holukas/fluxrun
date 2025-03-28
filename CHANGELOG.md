@@ -2,7 +2,7 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
-## v1.5.0 | XX Jan 2025
+## v1.5.0 | XX Apr 2025
 
 - Now using PyQt6 for GUI
 - Updated code for PyQt6
