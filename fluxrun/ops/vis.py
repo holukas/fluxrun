@@ -1,5 +1,6 @@
 import datetime as dt
 import os
+import time
 
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
@@ -386,13 +387,20 @@ class PlotRawDataFilesAggregates:
 
     def read_uncompr_ascii_file(self, filepath):
         self.logger.info(f"{self.section_id}    Reading file {filepath} ...")
-        import time
+
         tic = time.time()
+
         # TODO check settings hier weiter
+        # Check header format
+        if self.settings_dict['rawdata_header_format'] == '3-row header (bico files)':
+            skiprows = None
+        elif self.settings_dict['rawdata_header_format'] == '4-row header (rECord)':
+            skiprows = 0
+        else:
+            raise NotImplementedError(f"{self.settings_dict['rawdata_header_format']} is not implemented.")
+
         rawdata_df = pd.read_csv(filepath,
-                                 skiprows=[0],
-                                 # skiprows=None,
-                                 # header=[0],
+                                 skiprows=skiprows,
                                  header=[0, 1, 2],
                                  na_values=-9999,
                                  encoding='utf-8',
