@@ -211,6 +211,7 @@ class Ui_MainWindow(object):
         # Buttons
         self.btn_ctr_run = \
             gui_elements.add_button_to_grid(label='Run', grid=grid, row=20, col=2, colspan=1)
+        self.btn_ctr_run.setShortcut(qtg.QKeySequence("Ctrl+R"))  # Set Ctrl+R as the shortcut
 
         # End section
         section.setLayout(grid)

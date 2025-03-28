@@ -6,9 +6,10 @@
 
 - Now using PyQt6 for GUI
 - Updated code for PyQt6
-- Updated env
-- Used Python version in dev is now `3.11.11`
 - Fixed bug in pandas `.pivot()` method, small issue due to the updated pandas version
+- `diive` is now using Python version `3.11` upwards
+- Updated environment, poetry `pyproject.toml` file now has the currently used structure
+- Added key shortcut to start ("Ctrl+R")
 
 ## v1.4.1 | 27 Mar 2024
 
