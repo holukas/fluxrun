@@ -40,6 +40,7 @@ class Ui_MainWindow(object):
         self.chk_output_afterprocessing_delete_ascii_rawdata = None
         self.btn_run = None
         self.cmb_rawdata_header_format = None
+        self.lbl_rawdata_searchfilestring = None
 
     def setupUi(self, mainwindow):
         # Main window
@@ -166,7 +167,7 @@ class Ui_MainWindow(object):
                                                         '3-row header (bico files)',
                                                         '4-row header (rECord files)'
                                                     ])
-        # self.cmb_rawdata_header_format.setToolTip(tooltips.cmb_output_compression)
+        self.cmb_rawdata_header_format.setToolTip(tooltips.cmb_rawdata_header_format)
 
         # RAW DATA: File Settings
         self.lne_filedt_format = \
@@ -180,47 +181,53 @@ class Ui_MainWindow(object):
         self.dtp_rawdata_time_range_end = \
             gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=9)
 
+        # RAW DATA: String for file search
+        lbl_rawdata_searchfilestring_static = qtw.QLabel("Using files with name:")
+        grid.addWidget(lbl_rawdata_searchfilestring_static, 10, 0, 1, 1)
+        self.lbl_rawdata_searchfilestring = qtw.QLabel("XXX")
+        grid.addWidget(self.lbl_rawdata_searchfilestring, 10, 1, 1, 2)
+
         # PROCESSING SETTINGS: EddyPro Processing File
         header_proc = qtw.QLabel('Flux Processing Settings')
         header_proc.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_proc, 10, 0)
+        grid.addWidget(header_proc, 11, 0)
 
         header_proc_rawdata_source_dir = qtw.QLabel('Select EddyPro processing file (*.eddypro)')
-        grid.addWidget(header_proc_rawdata_source_dir, 11, 0)
+        grid.addWidget(header_proc_rawdata_source_dir, 12, 0)
         self.btn_proc_ep_procfile = \
-            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=11, col=1)
+            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=12, col=1)
         self.lbl_proc_ep_procfile_selected = qtw.QLabel("***Please select EddyPro *.processing file***")
-        grid.addWidget(self.lbl_proc_ep_procfile_selected, 11, 2, 1, 2)
+        grid.addWidget(self.lbl_proc_ep_procfile_selected, 12, 2, 1, 2)
 
         # OUTPUT
         header_output_output = qtw.QLabel('Output')
         header_output_output.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_output_output, 12, 0)
+        grid.addWidget(header_output_output, 13, 0)
 
         # OUTPUT: Output folder
         header_output_plots = qtw.QLabel('Select output folder')
-        grid.addWidget(header_output_plots, 13, 0, 1, 1)
-        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=13, col=1)
+        grid.addWidget(header_output_plots, 14, 0, 1, 1)
+        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=14, col=1)
         self.btn_output_folder.setToolTip(tooltips.btn_output_folder)
         self.lbl_output_folder = qtw.QLabel("***Please select output folder...***")
-        grid.addWidget(self.lbl_output_folder, 13, 2, 1, 1)
+        grid.addWidget(self.lbl_output_folder, 14, 2, 1, 1)
 
         # OUTPUT: Plots
         self.chk_output_plots_availability_rawdata = \
-            gui_elements.add_checkbox_to_grid(label='Availability (raw data)', grid=grid, row=14)
+            gui_elements.add_checkbox_to_grid(label='Availability (raw data)', grid=grid, row=15)
         self.chk_output_plots_aggregates_rawdata = \
-            gui_elements.add_checkbox_to_grid(label='Aggregates (raw data)', grid=grid, row=15)
+            gui_elements.add_checkbox_to_grid(label='Aggregates (raw data)', grid=grid, row=16)
         self.chk_output_plots_summary = \
-            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=16)
+            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=17)
 
         # OUTPUT: After processing
         self.chk_output_afterprocessing_delete_ascii_rawdata = \
             gui_elements.add_checkbox_to_grid(label='Delete uncompressed raw data ASCII after processing', grid=grid,
-                                              row=17)
+                                              row=18)
 
         # RUN
         self.btn_run = \
-            gui_elements.add_button_to_grid(label='Run', grid=grid, row=18, col=2, colspan=1)
+            gui_elements.add_button_to_grid(label='Run', grid=grid, row=19, col=2, colspan=1)
         self.btn_run.setShortcut(qtg.QKeySequence("Ctrl+R"))  # Set Ctrl+R as the shortcut
 
         # End section

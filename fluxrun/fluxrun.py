@@ -382,6 +382,20 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         """Call hyperlink from label, opens in browser"""
         qtg.QDesktopServices.openUrl(qtc.QUrl(link_str))
 
+    def _update_text_field(self):
+        # TODO init on start
+        # TODO testing dynamic text update
+        # TODO use searchfilestring directly for search
+        _site = self.cmb_site_selection.currentText()
+        _compression = self.cmb_rawdata_compr.currentText()
+        _datetimeformat = self.lne_filedt_format.text()
+        _ext = '<select compression>'
+        if _compression == 'gzip':
+            _ext = '.csv.gzip'
+        elif _compression == 'None':
+            _ext = '.csv'
+        self.lbl_rawdata_searchfilestring.setText(f"{_site}_{_datetimeformat}{_ext}")
+
     def connections(self):
         """Connect GUI elements to functions"""
         # Logo
@@ -390,6 +404,11 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         # self.lbl_link_license.linkActivated.connect(self.link)
         self.lbl_link_changelog.linkActivated.connect(self.link)
         self.lbl_link_ep_changelog.linkActivated.connect(self.link)
+
+        # TODO testing dynamic text update
+        self.cmb_site_selection.currentIndexChanged.connect(self._update_text_field)
+        self.cmb_rawdata_compr.currentIndexChanged.connect(self._update_text_field)
+        self.lne_filedt_format.textChanged.connect(self._update_text_field)
 
         # Processing
         self.btn_rawdata_source_dir.clicked.connect(lambda: self.select_dir(
