@@ -2,14 +2,15 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
-## v1.5.0 | XX Apr 2025
+## v2.0.0 | XX Apr 2025
 
 - Now using PyQt6 for GUI
 - Updated code for PyQt6
 - Fixed bug in pandas `.pivot()` method, small issue due to the updated pandas version
 - `diive` is now using Python version `3.11` upwards
 - Updated environment, poetry `pyproject.toml` file now has the currently used structure
-- Added key shortcut to start ("Ctrl+R")
+- Added key shortcut to start processing ("Ctrl+R")
+- Added key shortcut save settings ("Ctrl+S")
 
 ## v1.4.1 | 27 Mar 2024
 

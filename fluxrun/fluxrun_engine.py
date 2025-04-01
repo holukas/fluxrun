@@ -19,6 +19,12 @@ class FluxRunEngine:
 
         self.logger = None
 
+        # Set filepath to setting YAML
+        dir_script = os.path.abspath(__file__)  # Dir of this file
+        dir_settings = Path(
+            os.path.join(os.path.dirname(dir_script))) / 'settings'  # Preload settings dir to load settings file
+        self.filepath_settings = Path(dir_settings) / 'fluxrunsettings.yaml'
+
         self.update_settings()
 
     def update_settings(self):
@@ -44,13 +50,15 @@ class FluxRunEngine:
         self.logger.info(f"fluxrun version: {version.__version__} / {version.__date__}\n\n")
 
         self.settings = file.PrepareEddyProFiles(settings_dict=self.settings, logger=self.logger).get()
-        file.save_settings_to_file(settings_dict=self.settings, copy_to_outdir=True)
+        file.save_settings_to_file(filepath_settings=self.filepath_settings,
+                                   settings=self.settings,
+                                   copy_to_outdir=True)
 
         # Search valid raw ASCII files, depending on settings
         self.rawdata_found_files_dict = file.SearchAll(
-            settings_dict=self.settings,
+            settings=self.settings,
             logger=self.logger,
-            search_in_dir=self.settings['rawdata_indir']) \
+            search_in_dir=self.settings['RAWDATA']['INDIR']) \
             .keep_valid_files()
 
         if not self.rawdata_found_files_dict:
@@ -58,13 +66,13 @@ class FluxRunEngine:
             sys.exit(-1)
 
         # Get raw data files for processing, uncompress if needed
-        if self.settings['rawdata_file_compression'] == 'gzip':
-            file.uncompress_gzip(settings_dict=self.settings,
-                                 found_gzip_files_dict=self.rawdata_found_files_dict,
-                                 logger=self.logger)
+        if self.settings['RAWDATA']['COMPRESSION'] == 'gz':
+            file.uncompress_gz(settings_dict=self.settings,
+                               found_gz_files_dict=self.rawdata_found_files_dict,
+                               logger=self.logger)
             # Files were uncompressed, search those files
             self.rawdata_found_files_dict = file.SearchAll(
-                settings_dict=self.settings,
+                settings=self.settings,
                 logger=self.logger,
                 search_in_dir=self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'],
                 search_uncompressed=True) \
@@ -128,7 +136,7 @@ class FluxRunEngine:
         """Delete uncompressed (unzipped) ASCII files that were used for flux processing"""
         if int(self.settings['delete_uncompressed_ascii_after_processing']) == 1:
             uncompressed_ascii_files = file.SearchAll(
-                settings_dict=self.settings,
+                settings=self.settings,
                 logger=self.logger,
                 search_in_dir=self.settings['_dir_out_run_rawdata_ascii_files'],
                 search_uncompressed=True) \
@@ -195,7 +203,7 @@ class FluxRunEngine:
         Compressed files will be uncompressed and saved to the current run output folder.
         Uncompressed files will be directly used from where they are stored.
         """
-        if self.settings['RAWDATA']['COMPRESSION'] == 'gzip':
+        if self.settings['RAWDATA']['COMPRESSION'] == '.gz':
             self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'] = \
                 self.settings['_dir_out_run_rawdata_ascii_files']
 
