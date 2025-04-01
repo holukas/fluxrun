@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-import sys
-
 from PyQt6 import QtCore as qtc
 from PyQt6 import QtGui as qtg
 from PyQt6 import QtWidgets as qtw
-from PyQt6.QtGui import QPixmap
 
-import settings._version as info
-from gui import gui_elements
-# import gui_elements
+import gui.gui_elements as gui_elements
 from help import tooltips
+from settings import _version
 
 
 class Ui_MainWindow(object):
@@ -77,7 +73,7 @@ class Ui_MainWindow(object):
         section.setProperty('labelClass', 'section_bg_output')
         grid = qtw.QGridLayout()
         label_image = qtw.QLabel()
-        label_image.setPixmap(QPixmap('images/logo_FLUXRUN1_256px.png'))
+        label_image.setPixmap(qtg.QPixmap('images/logo_FLUXRUN1_256px.png'))
 
         label_txt = qtw.QLabel("fluxrun")
         label_txt.setProperty('labelClass', 'header_1')
@@ -86,21 +82,21 @@ class Ui_MainWindow(object):
         label_txt2 = qtw.QLabel("Wrapper for EddyPro flux calculations")
         label_txt2.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
-        label_txt3 = qtw.QLabel(f"v{info.__version__} / {info.__date__}")
+        label_txt3 = qtw.QLabel(f"v{_version.__version__} / {_version.__date__}")
         label_txt3.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
-        label_txt4 = qtw.QLabel(f"using EddyPro v{info.__ep_version__}")
+        label_txt4 = qtw.QLabel(f"using EddyPro v{_version.__ep_version__}")
         label_txt4.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
         # Links
         self.lbl_link_releases = gui_elements.add_label_link_to_grid(
-            link_txt='Releases', link_str=info.__link_releases__, grid=grid, row=6)
+            link_txt='Releases', link_str=_version.__link_releases__, grid=grid, row=6)
         self.lbl_link_source_code = gui_elements.add_label_link_to_grid(
-            link_txt='Source Code', link_str=info.__link_source_code__, grid=grid, row=7)
+            link_txt='Source Code', link_str=_version.__link_source_code__, grid=grid, row=7)
         self.lbl_link_changelog = gui_elements.add_label_link_to_grid(
-            link_txt='Changelog', link_str=info.__link_changelog__, grid=grid, row=8)
+            link_txt='Changelog', link_str=_version.__link_changelog__, grid=grid, row=8)
         self.lbl_link_ep_changelog = gui_elements.add_label_link_to_grid(
-            link_txt='EddyPro Changelog', link_str=info.__link_ep_changelog__, grid=grid, row=9)
+            link_txt='EddyPro Changelog', link_str=_version.__link_ep_changelog__, grid=grid, row=9)
 
         grid.addWidget(label_image, 0, 0)
         grid.addWidget(qtw.QLabel(), 1, 0)
@@ -238,20 +234,3 @@ class Ui_MainWindow(object):
         section.setLayout(grid)
 
         return section
-
-
-class TesGui(qtw.QMainWindow, Ui_MainWindow):
-    def __init__(self, parent=None):
-        super(TesGui, self).__init__(parent)
-        self.setupUi(self)
-
-
-def main():
-    appp = qtw.QApplication(sys.argv)
-    testgui = TesGui()
-    testgui.show()
-    appp.exec()
-
-
-if __name__ == '__main__':
-    main()
