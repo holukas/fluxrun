@@ -1,3 +1,4 @@
+from shutil import copyfile
 import datetime as dt
 import fileinput
 import fnmatch
@@ -6,7 +7,6 @@ import os
 import shutil
 import sys
 from pathlib import Path
-from shutil import copyfile
 
 import numpy as np
 import pandas as pd
@@ -26,9 +26,9 @@ def check_if_file_in_folder(search_str: str, folder: str):
     return file_is_in_folder, filepath
 
 
-def uncompress_gzip(settings_dict, found_gzip_files_dict, logger):
-    """Unzip compressed gzip files to output folder of current run"""
-    for compr_filename, compr_filepath in found_gzip_files_dict.items():
+def uncompress_gz(settings_dict, found_gz_files_dict, logger):
+    """Unzip compressed .gz files to output folder of current run"""
+    for compr_filename, compr_filepath in found_gz_files_dict.items():
         compr_filepath = str(compr_filepath)
         uncompr_filename = Path(compr_filename).stem
         uncompr_filepath = Path(settings_dict['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
@@ -39,7 +39,7 @@ def uncompress_gzip(settings_dict, found_gzip_files_dict, logger):
             with open(uncompr_filepath, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
                 time_needed = time.time() - tic
-                logger.info(f"[UNZIPPING GZIP RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
+                logger.info(f"[UNZIPPING GZ RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
                             f"(done in {time_needed:.3f}s)")
 
     # # Search for the now converted files and update dict of found files
@@ -60,26 +60,21 @@ def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
 
 
 class SearchAll():
-    def __init__(self, logger, search_in_dir, settings_dict, search_uncompressed=False):
+    def __init__(self, logger, search_in_dir, settings):
         self.logger = logger
         self.valid_files_dict = {}
         self.search_in_dir = search_in_dir
-        self.rawdata_start_date = settings_dict['rawdata_start_date']
-        self.rawdata_end_date = settings_dict['rawdata_end_date']
-
-        self.site_search_str = settings_dict['_sitefiles_search_str']
-        self.site_parse_str = settings_dict['_sitefiles_parse_str']
-
-        if search_uncompressed:
-            self.site_search_str = self.site_search_str.rstrip('.gz')
-            self.site_parse_str = self.site_parse_str.rstrip('.gz')
+        self.rawdata_start_date = settings['RAWDATA']['START_DATE']
+        self.rawdata_end_date = settings['RAWDATA']['END_DATE']
+        self.site_parse_str = settings['RAWDATA']['PARSING_STRING']
 
     def keep_valid_files(self):
         """Search all files with file id, but then keep only those that fulfil selected requirements"""
 
         # Search files for current site
+        # TODO hier weiter parsing string for python
         self.valid_files_dict = self.search_all(dir=self.search_in_dir,
-                                                site_search_str=self.site_search_str,
+                                                site_search_str=self.site_parse_str,
                                                 logger=self.logger)
 
         # Parse filedates and keep files in specified date range
@@ -243,7 +238,7 @@ class PrepareEddyProFiles:
         # Remove .gzip file extension, EddyPro uses the unzipped files
         prototype_str = self.settings_dict['RAWDATA']['PARSING_STRING']
         file_ext = Path(self.settings_dict['RAWDATA']['PARSING_STRING']).suffix
-        prototype_str = prototype_str.replace('.gzip', '') if file_ext == '.gzip' else file_ext
+        prototype_str = prototype_str.replace('.gz', '') if file_ext == '.gz' else file_ext
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         # file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
@@ -483,38 +478,48 @@ class ReadEddyProFullOutputFile:
         return run_id
 
 
-def save_settings_to_file(settings_dict: dict, copy_to_outdir=False):
-    """Save settings dict to settings file """
-
-    # for key, val in settings_dict.items():
-    #     print(key, val)
-
-    with open("config.yaml", "w") as f:
-        cfg = yaml.dump(
-            cfg, stream=f, default_flow_style=False, sort_keys=False
-        )
-
-    print(yaml.dump(settings_dict, default_flow_style=True))
-
-    old_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settings')
-    new_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
-    with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
-        for line in infile:  # cycle through all lines in settings file
-            if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
-                line_id, line_setting = line.strip().split('=')
-                line = '{}={}\n'.format(line_id, settings_dict[line_id])  # insert setting from dict
-            outfile.write(line)
-    try:
-        os.remove(old_settings_file + 'Old')
-    except:
-        pass
-    os.rename(old_settings_file, old_settings_file + 'Old')
-    os.rename(new_settings_file, old_settings_file)
-
+def save_settings_to_file(filepath_settings: Path, settings: dict, copy_to_outdir: bool = False):
+    """Save settings from the GUI to settings file."""
+    essential_settings = {key: value for key, value in settings.items() if not key.startswith('_')}
+    with open(filepath_settings, "w") as f:
+        cfg = yaml.dump(essential_settings, stream=f, default_flow_style=False, sort_keys=False)
     if copy_to_outdir:
         # Save a copy of the settings file also in the output dir
-        run_settings_file_path = Path(settings_dict['_dir_out_run']) / 'FluxRun.settings'
-        copyfile(old_settings_file, run_settings_file_path)
-        pass
+        run_settings_file_path = Path(settings['_dir_out_run']) / 'fluxrunsettings.yaml'
+        copyfile(filepath_settings, run_settings_file_path)
 
-    # return settings_dict
+# def save_settings_to_file(settings_dict: dict, copy_to_outdir=False):
+#     """Save settings dict to settings file """
+#
+#     # for key, val in settings_dict.items():
+#     #     print(key, val)
+#
+#     with open("config.yaml", "w") as f:
+#         cfg = yaml.dump(
+#             cfg, stream=f, default_flow_style=False, sort_keys=False
+#         )
+#
+#     print(yaml.dump(settings_dict, default_flow_style=True))
+#
+#     old_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settings')
+#     new_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
+#     with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
+#         for line in infile:  # cycle through all lines in settings file
+#             if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
+#                 line_id, line_setting = line.strip().split('=')
+#                 line = '{}={}\n'.format(line_id, settings_dict[line_id])  # insert setting from dict
+#             outfile.write(line)
+#     try:
+#         os.remove(old_settings_file + 'Old')
+#     except:
+#         pass
+#     os.rename(old_settings_file, old_settings_file + 'Old')
+#     os.rename(new_settings_file, old_settings_file)
+#
+#     if copy_to_outdir:
+#         # Save a copy of the settings file also in the output dir
+#         run_settings_file_path = Path(settings_dict['_dir_out_run']) / 'FluxRun.settings'
+#         copyfile(old_settings_file, run_settings_file_path)
+#         pass
+#
+#     # return settings_dict
