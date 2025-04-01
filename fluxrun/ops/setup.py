@@ -5,11 +5,11 @@ from pathlib import Path
 import yaml
 
 
-def read_settings_file_to_dict(dir_settings, file, reset_paths):
+def read_settings_file(filepath_settings, reset_paths):
     """Read start values from settings file as strings into dict, with same variable names as in file"""
 
-    settings_file_fullpath = os.path.join(dir_settings, file)
-    with open(settings_file_fullpath, 'r', encoding='utf-8') as f:
+    # settings_file_fullpath = os.path.join(dir_settings, file)
+    with open(filepath_settings, 'r', encoding='utf-8') as f:
         settings_dict = yaml.safe_load(f)
 
     # settings_dict = {}

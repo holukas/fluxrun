@@ -1,3 +1,4 @@
+import yaml
 import datetime as dt
 import fileinput
 import fnmatch
@@ -487,6 +488,18 @@ class ReadEddyProFullOutputFile:
 
 def save_settings_to_file(settings_dict: dict, copy_to_outdir=False):
     """Save settings dict to settings file """
+
+    # for key, val in settings_dict.items():
+    #     print(key, val)
+
+    with open("config.yaml", "w") as f:
+        cfg = yaml.dump(
+            cfg, stream=f, default_flow_style=False, sort_keys=False
+        )
+
+
+    print(yaml.dump(settings_dict, default_flow_style=True))
+
     old_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settings')
     new_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
     with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
