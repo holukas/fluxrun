@@ -39,7 +39,8 @@ class FluxRunEngine:
         self.settings_dict['_dir_fluxrun'] = Path(self.settings_dict['_dir_script']).parents[0]
         self.settings_dict['_dir_root'] = Path(self.settings_dict['_dir_script']).parents[1]
         self.settings_dict = set_outdirs(settings_dict=self.settings_dict)
-        self.make_parsing_strings()
+        # Convert given parsing string to a string containing datetime characters that Python understands, e.g. %Y
+        self.settings_dict['_sitefiles_parse_str_python'] = self.make_datetime_parsing_string()
         make_outdirs(settings_dict=self.settings_dict)
         self.set_dir_eddypro_rawdata()
 
@@ -184,48 +185,9 @@ class FluxRunEngine:
         self.logger.info("*" * 30)
         return process_status
 
-    def make_parsing_strings(self):
-        """Make parsing strings to parse info from raw data filenames"""
-
-        # Assemble search strings
-
-        file_ext = Path(self.settings_dict['rawdata_filename_datetime_format']).suffix
-
-        if not file_ext:
-            # If no file extension given in setting 'rawdata_filename_datetime_format',
-            # the by default '.csv' is used
-            if self.settings_dict['rawdata_file_compression'] == 'gzip':
-                file_ext_search = '.csv.gz'
-                file_ext_parsing = '.csv.gz'
-            else:
-                file_ext_search = '.csv'
-                file_ext_parsing = '.csv'
-
-        else:
-            if self.settings_dict['rawdata_file_compression'] == 'gzip':
-                file_ext_search = f'{file_ext}.gz'
-                file_ext_parsing = '.gz'
-            else:
-                # File extension already given in setting 'rawdata_filename_datetime_format'
-                file_ext_search = file_ext
-                file_ext_parsing = ''
-
-        self.settings_dict['_sitefiles_search_str'] = f"{self.settings_dict['site']}_*{file_ext_search}"
-        # print(self.settings_dict['_sitefiles_search_str'])
-
-        # Convert given parsing string to a string containing datetime characters that Python understands, e.g. %Y
-        self.settings_dict['filename_datetime_parsing_string'] = self.make_datetime_parsing_string()
-
-        # Construct exact parsing string
-        self.settings_dict['_sitefiles_parse_str'] = f"{self.settings_dict['site']}_" \
-                                                     f"{self.settings_dict['filename_datetime_parsing_string']}" \
-                                                     f"{file_ext_parsing}"
-        # print(self.settings_dict['_sitefiles_parse_str'])
-        # print(self.settings_dict['_sitefiles_parse_str'])
-
     def make_datetime_parsing_string(self):
         """Parse filename for datetime info"""
-        _parsing_string = self.settings_dict['rawdata_filename_datetime_format']
+        _parsing_string = self.settings_dict['sitefiles_parse_str']
         _parsing_string = _parsing_string.replace('yyyy', '%Y')
         _parsing_string = _parsing_string.replace('mm', '%m')
         _parsing_string = _parsing_string.replace('dd', '%d')
@@ -268,9 +230,9 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         # Read previous settings: File --> Dict
         self.settings_dict = \
             ops.setup_fr.read_settings_file_to_dict(dir_settings=dir_settings,
-                                                    file='FluxRun.settings',
+                                                    file='fluxrunsettings.yaml',
                                                     reset_paths=False)
-        self.reset_derived_settings()
+        # TODO self.reset_derived_settings()
 
         # Fill-In Settings: Dict --> GUI
         self.show_settings_in_gui()
@@ -312,6 +274,8 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
                              new_val=self.dtp_rawdata_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm'))
         self.update_dict_key(key='rawdata_filename_datetime_format',
                              new_val=self.lne_filedt_format.text())
+        self.update_dict_key(key='sitefiles_parse_str',
+                             new_val=self.lbl_rawdata_sitefiles_parse_str.text())
         self.update_dict_key(key='rawdata_file_compression', new_val=self.cmb_rawdata_compr.currentText())
         self.update_dict_key(key='rawdata_header_format', new_val=self.cmb_rawdata_header_format.currentText())
         self.update_dict_key(key='path_selected_eddypro_processing_file',
@@ -343,42 +307,42 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         lineedit.setText(string)
 
     def set_gui_checkbox(self, checkbox, state):
-        checkbox.setChecked(True if state == '1' else False)
+        checkbox.setChecked(True if state == 1 else False)
 
     def show_settings_in_gui(self):
-        """Update GUI from dict"""
-        # Instruments
-        self.set_gui_combobox(combobox=self.cmb_site_selection, find_text=self.settings_dict['site'])
-        # self.set_gui_combobox(combobox=self.cmb_instr_header, find_text=self.settings_dict['header'])
+        """Update GUI with settings from fluxrunsettings.yaml file."""
+        # SITE
+        self.set_gui_combobox(combobox=self.cmb_site_selection, find_text=self.settings_dict['SITE'])
 
-        # Processing
-        self.lbl_proc_rawdata_source_dir_selected.setText(str(self.settings_dict['rawdata_indir']))
-        self.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_start,
-                                    date_str=self.settings_dict['rawdata_start_date'])
-        self.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_end,
-                                    date_str=self.settings_dict['rawdata_end_date'])
-        self.set_gui_lineedit(lineedit=self.lne_filedt_format,
-                              string=self.settings_dict['rawdata_filename_datetime_format'])
-        self.set_gui_combobox(combobox=self.cmb_rawdata_compr,
-                              find_text=self.settings_dict['rawdata_file_compression'])
-        self.set_gui_combobox(combobox=self.cmb_rawdata_header_format,
-                              find_text=self.settings_dict['rawdata_header_format'])
-        self.lbl_proc_ep_procfile_selected.setText(str(self.settings_dict['path_selected_eddypro_processing_file']))
+        # RAW DATA
+        _settings = self.settings_dict['RAWDATA']
+        self.lbl_proc_rawdata_source_dir_selected.setText(str(_settings['INDIR']))
+        self.set_gui_combobox(combobox=self.cmb_rawdata_compr, find_text=_settings['COMPRESSION'])
+        self.set_gui_combobox(combobox=self.cmb_rawdata_header_format, find_text=_settings['HEADER_FORMAT'])
+        self.set_gui_lineedit(lineedit=self.lne_filedt_format, string=_settings['FILENAME_DATETIME_FORMAT'])
+        self.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_start, date_str=_settings['START_DATE'])
+        self.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_end, date_str=_settings['END_DATE'])
+        self.lbl_rawdata_sitefiles_parse_str.setText(str(_settings['PARSING_STRING']))
 
-        # Output
-        self.lbl_output_folder.setText(str(self.settings_dict['dir_out']))
+        # FLUX PROCESSING
+        _settings = self.settings_dict['FLUX_PROCESSING']
+        self.lbl_proc_ep_procfile_selected.setText(str(_settings['EDDYPRO_PROCESSING_FILE']))
 
+        # OUTPUT
+        _settings = self.settings_dict['OUTPUT']
+        self.lbl_output_folder.setText(str(_settings['OUTDIR']))
         self.set_gui_checkbox(checkbox=self.chk_output_plots_availability_rawdata,
-                              state=self.settings_dict['plot_availability_rawdata'])
+                              state=_settings['PLOT_RAWDATA_AVAILABILITY'])
         self.set_gui_checkbox(checkbox=self.chk_output_plots_aggregates_rawdata,
-                              state=self.settings_dict['plot_aggregates_rawdata'])
-        self.set_gui_checkbox(checkbox=self.chk_output_plots_summary,
-                              state=self.settings_dict['plot_summary'])
-
+                              state=_settings['PLOT_RAWDATA_AGGREGATES'])
+        self.set_gui_checkbox(checkbox=self.chk_output_plots_summary, state=_settings['PLOT_SUMMARY'])
         self.set_gui_checkbox(checkbox=self.chk_output_afterprocessing_delete_ascii_rawdata,
-                              state=self.settings_dict['delete_uncompressed_ascii_after_processing'])
+                              state=_settings['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING'])
 
-    def link(self, link_str):
+        # self._update_text_field()
+
+    @staticmethod
+    def link(link_str):
         """Call hyperlink from label, opens in browser"""
         qtg.QDesktopServices.openUrl(qtc.QUrl(link_str))
 
@@ -394,7 +358,7 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
             _ext = '.csv.gzip'
         elif _compression == 'None':
             _ext = '.csv'
-        self.lbl_rawdata_searchfilestring.setText(f"{_site}_{_datetimeformat}{_ext}")
+        self.lbl_rawdata_sitefiles_parse_str.setText(f"{_site}_{_datetimeformat}{_ext}")
 
     def connections(self):
         """Connect GUI elements to functions"""
@@ -426,6 +390,8 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
             update_label=self.lbl_output_folder, dialog_txt='Select Output Folder'))
 
         # Controls
+        self.btn_save.clicked.connect(lambda: file.save_settings_to_file(settings_dict=self.settings_dict,
+                                                                         copy_to_outdir=True))
         self.btn_run.clicked.connect(lambda: self.run())
 
     def select_dir(self, start_dir, dir_setting, update_label, dialog_txt):
