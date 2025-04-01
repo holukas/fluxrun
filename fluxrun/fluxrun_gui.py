@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# from gui.gui import Ui_MainWindow
 import os
 from pathlib import Path
 
@@ -30,27 +29,27 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
             filepath_settings=self.filepath_settings,
             reset_paths=False)
 
-        # TODO self.reset_derived_settings()
+        # TODO delete self.reset_derived_settings()
 
         # Show settings in GUI
         self.show_settings_in_gui(settings=self.settings)
 
         # Connect GUI elements
-        self.connections()
+        self._connections()
 
     def run(self):
         """Call FluxRunEngine for calculations"""
-        self.get_settings_from_gui()
-        fluxrunengine = FluxRunEngine(settings_dict=self.settings)
+        self.settings = self.get_settings_from_gui()
+        fluxrunengine = FluxRunEngine(settings=self.settings)
         fluxrunengine.run()
 
-    def reset_derived_settings(self):
-        """
-        Reset all settings that are constructed from GUI settings
-        """
-        for key, val in self.settings.items():
-            if str(key).startswith('_'):
-                self.settings[key] = ""
+    # todo delete def reset_derived_settings(self):
+    #     """
+    #     Reset all settings that are constructed from GUI settings
+    #     """
+    #     for key, val in self.settings.items():
+    #         if str(key).startswith('_'):
+    #             self.settings[key] = ""
 
     def update_dict_key(self, key, new_val):
         """ Updates key in Dict with new_val """
@@ -89,35 +88,41 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
 
         # self._update_text_field()
 
-    def get_settings_from_gui(self):
+    def get_settings_from_gui(self) -> dict:
         """Read settings from GUI and store in dict"""
+
+        # Reset
+        settings = self.settings.copy()
+
         # SITE
-        self.settings['SITE'] = self.cmb_site_selection.currentText()
+        settings['SITE'] = self.cmb_site_selection.currentText()
 
         # RAW DATA
-        self.settings['RAWDATA']['INDIR'] = self.lbl_proc_rawdata_source_dir_selected.text()
-        self.settings['RAWDATA']['COMPRESSION'] = self.cmb_rawdata_compr.currentText()
-        self.settings['RAWDATA']['HEADER_FORMAT'] = self.cmb_rawdata_header_format.currentText()
-        self.settings['RAWDATA']['FILENAME_DATETIME_FORMAT'] = self.lne_filedt_format.text()
-        self.settings['RAWDATA']['START_DATE'] = self.dtp_rawdata_time_range_start.dateTime().toString(
+        settings['RAWDATA']['INDIR'] = self.lbl_proc_rawdata_source_dir_selected.text()
+        settings['RAWDATA']['COMPRESSION'] = self.cmb_rawdata_compr.currentText()
+        settings['RAWDATA']['HEADER_FORMAT'] = self.cmb_rawdata_header_format.currentText()
+        settings['RAWDATA']['FILENAME_DATETIME_FORMAT'] = self.lne_filedt_format.text()
+        settings['RAWDATA']['START_DATE'] = self.dtp_rawdata_time_range_start.dateTime().toString(
             'yyyy-MM-dd hh:mm')
-        self.settings['RAWDATA']['END_DATE'] = self.dtp_rawdata_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm')
-        self.settings['RAWDATA']['PARSING_STRING'] = self.lbl_rawdata_sitefiles_parse_str.text()
+        settings['RAWDATA']['END_DATE'] = self.dtp_rawdata_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm')
+        settings['RAWDATA']['PARSING_STRING'] = self.lbl_rawdata_sitefiles_parse_str.text()
 
         # FLUX PROCESSING
-        self.settings['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'] = str(
+        settings['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'] = str(
             Path(self.lbl_proc_ep_procfile_selected.text()))
 
         # OUTPUT
-        self.settings['OUTPUT']['OUTDIR'] = str(Path(self.lbl_output_folder.text()))
-        self.settings['OUTPUT']['PLOT_RAWDATA_AVAILABILITY'] = \
+        settings['OUTPUT']['OUTDIR'] = str(Path(self.lbl_output_folder.text()))
+        settings['OUTPUT']['PLOT_RAWDATA_AVAILABILITY'] = \
             1 if self.chk_output_plots_availability_rawdata.isChecked() else 0
-        self.settings['OUTPUT']['PLOT_RAWDATA_AGGREGATES'] = \
+        settings['OUTPUT']['PLOT_RAWDATA_AGGREGATES'] = \
             1 if self.chk_output_plots_aggregates_rawdata.isChecked() else 0
-        self.settings['OUTPUT']['PLOT_SUMMARY'] = \
+        settings['OUTPUT']['PLOT_SUMMARY'] = \
             1 if self.chk_output_plots_summary.isChecked() else 0
-        self.settings['OUTPUT']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING'] = \
+        settings['OUTPUT']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING'] = \
             1 if self.chk_output_afterprocessing_delete_ascii_rawdata.isChecked() else 0
+
+        return settings
 
     @staticmethod
     def link(link_str):
@@ -135,7 +140,7 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
             _ext = '.csv'
         self.lbl_rawdata_sitefiles_parse_str.setText(f"{_site}_{_datetimeformat}{_ext}")
 
-    def connections(self):
+    def _connections(self):
         """Connect GUI elements to functions"""
         # Logo
         self.lbl_link_releases.linkActivated.connect(self.link)
@@ -150,17 +155,20 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
 
         # Processing
         self.btn_rawdata_source_dir.clicked.connect(lambda: self.select_dir(
-            start_dir=self.settings['rawdata_indir'], dir_setting='rawdata_indir',
+            start_dir=self.settings['RAWDATA']['INDIR'],
+            dir_setting=('RAWDATA', 'INDIR'),
             update_label=self.lbl_proc_rawdata_source_dir_selected,
             dialog_txt='Select Source Folder For Raw Data Files'))
         self.btn_proc_ep_procfile.clicked.connect(lambda: self.select_file(
-            start_dir=self.settings['rawdata_indir'], filesetting='path_selected_eddypro_processing_file',
+            start_dir=self.settings['RAWDATA']['INDIR'],
+            filesetting=('FLUX_PROCESSING', 'EDDYPRO_PROCESSING_FILE'),
             update_label=self.lbl_proc_ep_procfile_selected, dialog_txt='Select EddyPro *.processing file',
             ext='*.eddypro'))
 
         # Output
         self.btn_output_folder.clicked.connect(lambda: self.select_dir(
-            start_dir=self.settings['dir_out'], dir_setting='dir_out',
+            start_dir=self.settings['OUTPUT']['OUTDIR'],
+            dir_setting=('OUTPUT', 'OUTDIR'),
             update_label=self.lbl_output_folder, dialog_txt='Select Output Folder'))
 
         # Controls
@@ -169,21 +177,21 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
 
     def save_settings_to_file(self):
         """Save settings dict to settings file """
-
-        self.get_settings_from_gui()
-
+        self.settings = self.get_settings_from_gui()
         with open(self.filepath_settings, "w") as f:
             cfg = yaml.dump(self.settings, stream=f, default_flow_style=False, sort_keys=False)
 
     def select_dir(self, start_dir, dir_setting, update_label, dialog_txt):
         """ Select directory, update dict and label"""
         selected_dir = qtw.QFileDialog.getExistingDirectory(None, dialog_txt, str(start_dir))  # Open dialog
-        self.settings[dir_setting] = selected_dir  # Update settings dict
-        update_label.setText(self.settings[dir_setting])  # Update gui
-        # ops.setup.settings_dict_to_file(settings_dict=self.settings_dict)  # Save to file
+        self.settings[dir_setting[0]][dir_setting[1]] = selected_dir  # Update settings dict
+        # self.settings[dir_setting] = selected_dir
+        update_label.setText(self.settings[dir_setting[0]][dir_setting[1]])  # Update gui
 
     def select_file(self, start_dir, filesetting, update_label, dialog_txt, ext):
         """ Select file, update dict (with Path) and label (with str)"""
         selected_file = qtw.QFileDialog.getOpenFileName(None, dialog_txt, str(start_dir), ext)  # Open dialog
-        self.settings[filesetting] = selected_file  # Update settings dict
-        update_label.setText(self.settings[filesetting][0])  # Update gui
+        self.settings[filesetting[0]][filesetting[1]] = selected_file  # Update settings dict
+        txt = self.settings[filesetting[0]][filesetting[1]]
+        txt = txt[0]
+        update_label.setText(txt)  # Update gui

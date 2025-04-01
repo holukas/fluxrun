@@ -1,4 +1,3 @@
-import yaml
 import datetime as dt
 import fileinput
 import fnmatch
@@ -11,6 +10,7 @@ from shutil import copyfile
 
 import numpy as np
 import pandas as pd
+import yaml
 
 
 def check_if_file_in_folder(search_str: str, folder: str):
@@ -149,7 +149,7 @@ class PrepareEddyProFiles:
 
         self.dir_out_run_eddypro_ini = Path(self.settings_dict['_dir_out_run_eddypro_ini'])
         self.dir_out_run_eddypro_bin = Path(self.settings_dict['_dir_out_run_eddypro_bin'])
-        self.path_selected_processing_file = Path(settings_dict['path_selected_eddypro_processing_file'])
+        self.path_selected_processing_file = Path(settings_dict['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'])
 
         self.run()
 
@@ -240,15 +240,12 @@ class PrepareEddyProFiles:
                          f"\n    OLD:  {data_path_old}"
                          f"    NEW:  {data_path_new}")
 
-        # If no file extension was given in setting 'rawdata_filename_datetime_format',
-        # the file extension will default to '.csv'. Otherwise, the given file extension
-        # is used.
-        file_ext = Path(self.settings_dict['rawdata_filename_datetime_format']).suffix
-        file_ext = '.csv' if not file_ext else ''
-
-        prototype_str = f"{self.settings_dict['site']}_" \
-                        f"{self.settings_dict['rawdata_filename_datetime_format']}{file_ext}"
+        # Remove .gzip file extension, EddyPro uses the unzipped files
+        prototype_str = self.settings_dict['RAWDATA']['PARSING_STRING']
+        file_ext = Path(self.settings_dict['RAWDATA']['PARSING_STRING']).suffix
+        prototype_str = prototype_str.replace('.gzip', '') if file_ext == '.gzip' else file_ext
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
+        # file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=file_prototype_old, new=file_prototype_new)
         self.logger.info(f"{section_id}"
@@ -256,7 +253,7 @@ class PrepareEddyProFiles:
                          f"\n    OLD:  {file_prototype_old}"
                          f"    NEW:  {file_prototype_new}")
 
-        project_id_new = f"project_id={self.settings_dict['site']}_{Path(self.settings_dict['_run_id'])}\n"
+        project_id_new = f"project_id={self.settings_dict['SITE']}_{Path(self.settings_dict['_run_id'])}\n"
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=project_id_old, new=project_id_new)
         self.logger.info(f"{section_id}"
@@ -496,7 +493,6 @@ def save_settings_to_file(settings_dict: dict, copy_to_outdir=False):
         cfg = yaml.dump(
             cfg, stream=f, default_flow_style=False, sort_keys=False
         )
-
 
     print(yaml.dump(settings_dict, default_flow_style=True))
 
