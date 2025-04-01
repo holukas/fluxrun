@@ -40,7 +40,8 @@ class Ui_MainWindow(object):
         self.chk_output_afterprocessing_delete_ascii_rawdata = None
         self.btn_run = None
         self.cmb_rawdata_header_format = None
-        self.lbl_rawdata_searchfilestring = None
+        self.lbl_rawdata_sitefiles_parse_str = None
+        self.btn_save = None
 
     def setupUi(self, mainwindow):
         # Main window
@@ -184,8 +185,8 @@ class Ui_MainWindow(object):
         # RAW DATA: String for file search
         lbl_rawdata_searchfilestring_static = qtw.QLabel("Using files with name:")
         grid.addWidget(lbl_rawdata_searchfilestring_static, 10, 0, 1, 1)
-        self.lbl_rawdata_searchfilestring = qtw.QLabel("XXX")
-        grid.addWidget(self.lbl_rawdata_searchfilestring, 10, 1, 1, 2)
+        self.lbl_rawdata_sitefiles_parse_str = qtw.QLabel("XXX")
+        grid.addWidget(self.lbl_rawdata_sitefiles_parse_str, 10, 1, 1, 2)
 
         # PROCESSING SETTINGS: EddyPro Processing File
         header_proc = qtw.QLabel('Flux Processing Settings')
@@ -225,7 +226,10 @@ class Ui_MainWindow(object):
             gui_elements.add_checkbox_to_grid(label='Delete uncompressed raw data ASCII after processing', grid=grid,
                                               row=18)
 
-        # RUN
+        # RUN/SAVE
+        self.btn_save = \
+            gui_elements.add_button_to_grid(label='Save settings', grid=grid, row=19, col=1, colspan=1)
+        self.btn_save.setShortcut(qtg.QKeySequence("Ctrl+S"))  # Set Ctrl+R as the shortcut
         self.btn_run = \
             gui_elements.add_button_to_grid(label='Run', grid=grid, row=19, col=2, colspan=1)
         self.btn_run.setShortcut(qtg.QKeySequence("Ctrl+R"))  # Set Ctrl+R as the shortcut
