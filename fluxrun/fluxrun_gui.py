@@ -11,14 +11,14 @@ import gui.gui_elements as ele
 from fluxrun.ops.setup import read_settings_file
 from fluxrun_engine import FluxRunEngine
 from gui.mainwindow import Ui_MainWindow
-
+import ops.file as file
 
 class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(FluxRunGUI, self).__init__(parent)
         self.setupUi(self)
 
-        # Detect Folders
+        # Set filepath to setting YAML
         dir_script = os.path.abspath(__file__)  # Dir of this file
         dir_settings = Path(
             os.path.join(os.path.dirname(dir_script))) / 'settings'  # Preload settings dir to load settings file
@@ -134,8 +134,8 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         _compression = self.cmb_rawdata_compr.currentText()
         _datetimeformat = self.lne_filedt_format.text()
         _ext = '<select compression>'
-        if _compression == 'gzip':
-            _ext = '.csv.gzip'
+        if _compression == '.gz':
+            _ext = '.csv.gz'
         elif _compression == 'None':
             _ext = '.csv'
         self.lbl_rawdata_sitefiles_parse_str.setText(f"{_site}_{_datetimeformat}{_ext}")
@@ -176,10 +176,13 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         self.btn_run.clicked.connect(lambda: self.run())
 
     def save_settings_to_file(self):
-        """Save settings dict to settings file """
+        """Save settings from the GUI to settings file."""
         self.settings = self.get_settings_from_gui()
-        with open(self.filepath_settings, "w") as f:
-            cfg = yaml.dump(self.settings, stream=f, default_flow_style=False, sort_keys=False)
+        file.save_settings_to_file(filepath_settings=self.filepath_settings,
+                                   settings=self.settings,
+                                   copy_to_outdir=False)
+        # with open(self.filepath_settings, "w") as f:
+        #     cfg = yaml.dump(self.settings, stream=f, default_flow_style=False, sort_keys=False)
 
     def select_dir(self, start_dir, dir_setting, update_label, dialog_txt):
         """ Select directory, update dict and label"""

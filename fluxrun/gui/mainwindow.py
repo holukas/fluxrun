@@ -154,7 +154,7 @@ class Ui_MainWindow(object):
         # RAW DATA: File compression
         self.cmb_rawdata_compr = \
             gui_elements.add_label_combobox_to_grid(label='ASCII file compression', grid=grid, row=5,
-                                                    items=['gzip', 'None'])
+                                                    items=['.gz', 'None'])
         self.cmb_rawdata_compr.setToolTip(tooltips.cmb_output_compression)
 
         # RAW DATA: Header format

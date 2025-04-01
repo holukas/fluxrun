@@ -2,7 +2,7 @@ btn_output_folder = "Select output folder to store FluxRun results"
 
 cmb_output_compression = \
     "OPTIONS\n"\
-    "gzip ... files available as compressed *.csv.gz files (default)\n"\
+    " ... files available as compressed *.csv.gz files (default)\n"\
     "None ... files available as uncompressed *.csv files"
 
 cmb_rawdata_header_format = \
