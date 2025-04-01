@@ -34,9 +34,9 @@ def set_outdirs(settings_dict: dict) -> dict:
     """Set paths for output files"""
 
     # Output folder
-    _dirname = f"{settings_dict['site']}_{settings_dict['_run_id']}"
+    _dirname = f"{settings_dict['SITE']}_{settings_dict['_run_id']}"
     settings_dict['_dir_out_run'] = \
-        Path(settings_dict['dir_out']) / _dirname
+        Path(settings_dict['OUTPUT']['OUTDIR']) / _dirname
 
     # Logfile
     settings_dict['_dir_out_run_log'] = \
@@ -69,9 +69,10 @@ def make_outdirs(settings_dict):
     """Create output folders"""
 
     # Create general run output folder that contains all other folders
-    if not Path.is_dir(settings_dict['_dir_out_run']):
-        print(f"Creating folder {settings_dict['_dir_out_run']} ...")
-        os.makedirs(settings_dict['_dir_out_run'])
+    _dir_out_run = Path(settings_dict['_dir_out_run'])
+    if not Path.is_dir(_dir_out_run):
+        print(f"Creating folder {_dir_out_run} ...")
+        os.makedirs(_dir_out_run)
 
     # Make subfolders
     for key, val in settings_dict.items():
