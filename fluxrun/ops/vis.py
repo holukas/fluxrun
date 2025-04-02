@@ -392,12 +392,12 @@ class PlotRawDataFilesAggregates:
 
         # TODO check settings hier weiter
         # Check header format
-        if self.settings_dict['rawdata_header_format'] == '3-row header (bico files)':
+        if self.settings_dict['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
             skiprows = None
-        elif self.settings_dict['rawdata_header_format'] == '4-row header (rECord)':
-            skiprows = 0
+        elif self.settings_dict['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
+            skiprows = [0]
         else:
-            raise NotImplementedError(f"{self.settings_dict['rawdata_header_format']} is not implemented.")
+            raise NotImplementedError(f"{self.settings_dict['RAWDATA']['HEADER_FORMAT']} is not implemented.")
 
         rawdata_df = pd.read_csv(filepath,
                                  skiprows=skiprows,

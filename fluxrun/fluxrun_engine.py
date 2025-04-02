@@ -37,10 +37,22 @@ class FluxRunEngine:
         self.settings['_dir_fluxrun'] = Path(self.settings['_dir_script']).parents[0]
         self.settings['_dir_root'] = Path(self.settings['_dir_script']).parents[1]
         self.settings = setup.set_outdirs(settings_dict=self.settings)
-        # Convert given parsing string to a string containing datetime characters that Python understands, e.g. %Y
-        self.settings['_sitefiles_parse_str_python'] = self.make_datetime_parsing_string()
+        self._make_parsing_strings_python()
         setup.make_outdirs(settings_dict=self.settings)
         self.set_dir_eddypro_rawdata()
+
+    def _make_parsing_strings_python(self) -> None:
+        """Convert given parsing string to a string containing datetime characters
+        that Python understands, e.g. %Y.
+
+        This has to be done for both compressed and uncompressed files. If not
+        compressed files were used, then both parsing strings are the same.
+        """
+        _parsing_str_py = self.make_datetime_parsing_string()
+        _file_ext = Path(_parsing_str_py).suffix
+        _parsing_str_py_uncompr = _parsing_str_py.replace('.gz', '') if _file_ext == '.gz' else _parsing_str_py
+        self.settings['_sitefiles_parse_str_python'] = _parsing_str_py  # For compressed files
+        self.settings['_sitefiles_parse_str_python_uncompr'] = _parsing_str_py_uncompr  # For uncompressed files
 
     def run(self):
 
@@ -54,7 +66,7 @@ class FluxRunEngine:
                                    settings=self.settings,
                                    copy_to_outdir=True)
 
-        # Search valid raw ASCII files, depending on settings
+        # Search valid raw ASCII files
         self.rawdata_found_files_dict = file.SearchAll(
             settings=self.settings,
             logger=self.logger,
@@ -66,36 +78,38 @@ class FluxRunEngine:
             sys.exit(-1)
 
         # Get raw data files for processing, uncompress if needed
-        if self.settings['RAWDATA']['COMPRESSION'] == 'gz':
+        if self.settings['RAWDATA']['COMPRESSION'] == '.gz':
+
+            # Uncompress
             file.uncompress_gz(settings_dict=self.settings,
                                found_gz_files_dict=self.rawdata_found_files_dict,
                                logger=self.logger)
+
             # Files were uncompressed, search those files
-            self.rawdata_found_files_dict = file.SearchAll(
-                settings=self.settings,
-                logger=self.logger,
-                search_in_dir=self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'],
-                search_uncompressed=True) \
-                .keep_valid_files()
-        elif self.settings['rawdata_file_compression'] == 'None':
+            self.rawdata_found_files_dict = \
+                file.SearchAll(settings=self.settings,
+                               logger=self.logger,
+                               search_in_dir=self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'],
+                               search_uncompressed=True).keep_valid_files()
+        elif self.settings['RAWDATA']['COMPRESSION'] == 'None':
             # In this case files are already uncompressed
             pass
-            # file.copy_rawdata_files(...)
 
         # Availability heatmap for *uncompressed* raw data files
-        if self.settings['plot_availability_rawdata'] == '1':
-            vis.availability_rawdata(rawdata_found_files_dict=self.rawdata_found_files_dict,
-                                     rawdata_file_datefrmt=self.settings['_sitefiles_parse_str'].rstrip('.gz'),
-                                     outdir=self.settings['_dir_out_run_plots_availability_rawdata'],
-                                     logger=self.logger)
+        if self.settings['OUTPUT']['PLOT_RAWDATA_AVAILABILITY'] == 1:
+            vis.availability_rawdata(
+                rawdata_found_files_dict=self.rawdata_found_files_dict,
+                rawdata_file_datefrmt=self.settings['_sitefiles_parse_str_python_uncompr'].rstrip('.gz'),
+                outdir=self.settings['_dir_out_run_plots_availability_rawdata'],
+                logger=self.logger)
 
         # Plot stats for *uncompressed* raw data files
-        if self.settings['plot_aggregates_rawdata'] == '1':
+        if self.settings['OUTPUT']['PLOT_RAWDATA_AGGREGATES'] == 1:
             vis.PlotRawDataFilesAggregates(
                 rawdata_found_files_dict=self.rawdata_found_files_dict,
                 settings_dict=self.settings,
                 logger=self.logger,
-                rawdata_file_datefrmt=self.settings['_sitefiles_parse_str'].rstrip('.gz'))
+                rawdata_file_datefrmt=self.settings['_sitefiles_parse_str_python_uncompr'].rstrip('.gz'))
 
         # Call EddyPro processing
         rp_process_status = self.run_eddypro_cmd(cmd='eddypro_rp.exe')  # execute exe todo for linux and osx

@@ -149,6 +149,7 @@ class Ui_MainWindow(object):
         self.btn_rawdata_source_dir = \
             gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=4, col=1)
         self.lbl_proc_rawdata_source_dir_selected = qtw.QLabel("***Please select source folder***")
+        self.lbl_proc_rawdata_source_dir_selected.setProperty('labelClass', 'filepath')
         grid.addWidget(self.lbl_proc_rawdata_source_dir_selected, 4, 2, 1, 1)
 
         # RAW DATA: File compression
@@ -182,7 +183,8 @@ class Ui_MainWindow(object):
         lbl_rawdata_searchfilestring_static = qtw.QLabel("Using files with name:")
         grid.addWidget(lbl_rawdata_searchfilestring_static, 10, 0, 1, 1)
         self.lbl_rawdata_sitefiles_parse_str = qtw.QLabel("XXX")
-        grid.addWidget(self.lbl_rawdata_sitefiles_parse_str, 10, 1, 1, 2)
+        self.lbl_rawdata_sitefiles_parse_str.setProperty('labelClass', 'parsingstring')
+        grid.addWidget(self.lbl_rawdata_sitefiles_parse_str, 10, 2, 1, 1)
 
         # PROCESSING SETTINGS: EddyPro Processing File
         header_proc = qtw.QLabel('Flux Processing Settings')
@@ -194,6 +196,7 @@ class Ui_MainWindow(object):
         self.btn_proc_ep_procfile = \
             gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=12, col=1)
         self.lbl_proc_ep_procfile_selected = qtw.QLabel("***Please select EddyPro *.processing file***")
+        self.lbl_proc_ep_procfile_selected.setProperty('labelClass', 'filepath')
         grid.addWidget(self.lbl_proc_ep_procfile_selected, 12, 2, 1, 2)
 
         # OUTPUT
@@ -207,6 +210,7 @@ class Ui_MainWindow(object):
         self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=14, col=1)
         self.btn_output_folder.setToolTip(tooltips.btn_output_folder)
         self.lbl_output_folder = qtw.QLabel("***Please select output folder...***")
+        self.lbl_output_folder.setProperty('labelClass', 'filepath')
         grid.addWidget(self.lbl_output_folder, 14, 2, 1, 1)
 
         # OUTPUT: Plots
