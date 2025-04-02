@@ -246,7 +246,7 @@ class PrepareEddyProFiles:
         # Remove .gzip file extension, EddyPro uses the unzipped files
         prototype_str = self.settings_dict['RAWDATA']['PARSING_STRING']
         file_ext = Path(self.settings_dict['RAWDATA']['PARSING_STRING']).suffix
-        prototype_str = prototype_str.replace('.gz', '') if file_ext == '.gz' else file_ext
+        prototype_str = prototype_str.replace('.gz', '') if file_ext == '.gz' else prototype_str
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         # file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],

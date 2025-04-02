@@ -3,7 +3,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import fluxrun_gui
 # from fluxrun_gui import FluxRunGUI
 import ops.file as file
 import ops.logger as logger
@@ -140,13 +139,17 @@ class FluxRunEngine:
         found_full_output, filepath_full_output = \
             file.check_if_file_in_folder(search_str='*_full_output_*.csv',
                                          folder=self.settings['_dir_out_run_eddypro_results'])
-        if found_full_output and int(self.settings['OUTPUT']['PLOT_SUMMARY']) == 1:
-            vis.PlotEddyProFullOutputFile(
-                file_to_plot=filepath_full_output,
-                destination_folder=self.settings['_dir_out_run_plots_summary'],
-                logger=self.logger).run()
+        if found_full_output:
+            if int(self.settings['OUTPUT']['PLOT_SUMMARY']) == 1:
+                vis.PlotEddyProFullOutputFile(
+                    file_to_plot=filepath_full_output,
+                    destination_folder=self.settings['_dir_out_run_plots_summary'],
+                    logger=self.logger).run()
+            else:
+                self.logger.info("Skipping summary plots (not selected).")
         else:
-            self.logger.info("(!)WARNING No *_full_output_* file was found. Skipping summary plots.")
+            if int(self.settings['OUTPUT']['PLOT_SUMMARY']) == 1:
+                self.logger.info("(!)WARNING No *_full_output_* file was found. Skipping summary plots.")
 
     def _delete_uncompressed_ascii_files(self):
         """Delete uncompressed (unzipped) ASCII files that were used for flux processing"""
@@ -178,11 +181,32 @@ class FluxRunEngine:
     def run_eddypro_cmd(self, cmd: str):
         """Run eddypro_rp.exe or eddypro_fcc.exe"""
 
+        # todo check execution
+        # # ALTERNATIVE, works:
+        # os.chdir(self.settings['_dir_out_run_eddypro_bin'])  # go to eddypro bin folder
+        # process = subprocess.Popen(
+        #     [cmd],
+        #     stdout=subprocess.PIPE,
+        #     stderr=subprocess.PIPE,
+        #     text=True,
+        # )
+        # while True:
+        #     output = process.stdout.readline()
+        #     if output:
+        #         print(output.strip())  # Print the output line
+        #     if process.poll() is not None:
+        #         break
+        # # Capture any remaining output and errors
+        # remaining_stdout, remaining_stderr = process.communicate()
+        # print(remaining_stdout)
+        # print(remaining_stderr)
+
         os.chdir(self.settings['_dir_out_run_eddypro_bin'])  # go to eddypro bin folder
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE)  # call cmd command
         while process.poll() is None:
             # This blocks until it receives a newline.
-            line = process.stdout.readline().decode('utf-8').replace('\r\n', '')
+            line = process.stdout.readline().decode('utf-8').rstrip()
+            # line = process.stdout.readline().decode('utf-8').replace('\r\n', '')
             if 'processing new flux averaging period' in line:
                 self.logger.info("-" * 60)  # to better see the different days in the output
             else:
@@ -228,6 +252,6 @@ class FluxRunEngine:
             readme_txt = open(str(outpath), "w+")
             readme_txt.write(f"This folder is empty because uncompressed ASCII raw data files from the "
                              f"following folder were used for flux calculations:\n\n"
-                             f"{self.settings['rawdata_indir']}")
+                             f"{self.settings['RAWDATA']['INDIR']}")
             self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'] = \
-                self.settings['rawdata_indir']
+                self.settings['RAWDATA']['INDIR']

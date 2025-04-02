@@ -1,6 +1,6 @@
 SITE: CH-FRU
 RAWDATA:
-  INDIR: F:\Sync\luhk_work\CURRENT\FRU_rECord_test\1.0-raw_data_ascii_gz_rECord
+  INDIR: F:/Sync/luhk_work/CURRENT/FRU_rECord_test/1.0-raw_data_ascii_gz_rECord
   COMPRESSION: .gz
   HEADER_FORMAT: 4-row header (rECord files)
   FILENAME_DATETIME_FORMAT: ec_yyyymmdd-HHMM
@@ -8,9 +8,9 @@ RAWDATA:
   END_DATE: 2025-12-31 23:59
   PARSING_STRING: CH-FRU_ec_yyyymmdd-HHMM.csv.gz
 FLUX_PROCESSING:
-  EDDYPRO_PROCESSING_FILE: F:\Sync\luhk_work\CURRENT\FRU_rECord_test\1.1-eddypro_fluxrun_calcs\CH-FRU_2025_rECord_[IRGA75]_R350-R1+IRGA75-RX.eddypro
+  EDDYPRO_PROCESSING_FILE: F:/Sync/luhk_work/CURRENT/FRU_rECord_test/1.1-eddypro_fluxrun_calcs/newsettings.eddypro
 OUTPUT:
-  OUTDIR: F:\Sync\luhk_work\CURRENT\FRU_rECord_test\1.1-eddypro_fluxrun_calcs\OUT
+  OUTDIR: F:/Sync/luhk_work/CURRENT/FRU_rECord_test/1.1-eddypro_fluxrun_calcs/OUT
   PLOT_RAWDATA_AVAILABILITY: 0
   PLOT_RAWDATA_AGGREGATES: 0
   PLOT_SUMMARY: 0

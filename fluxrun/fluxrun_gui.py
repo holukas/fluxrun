@@ -63,7 +63,7 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
 
         # RAW DATA
         _settings = settings['RAWDATA']
-        self.lbl_proc_rawdata_source_dir_selected.setText(str(Path(_settings['INDIR'])))
+        self.lbl_proc_rawdata_source_dir_selected.setText(_settings['INDIR'])
         ele.set_gui_combobox(combobox=self.cmb_rawdata_compr, find_text=_settings['COMPRESSION'])
         ele.set_gui_combobox(combobox=self.cmb_rawdata_header_format, find_text=_settings['HEADER_FORMAT'])
         ele.set_gui_lineedit(lineedit=self.lne_filedt_format, string=_settings['FILENAME_DATETIME_FORMAT'])
@@ -73,11 +73,11 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
 
         # FLUX PROCESSING
         _settings = settings['FLUX_PROCESSING']
-        self.lbl_proc_ep_procfile_selected.setText(str(Path(_settings['EDDYPRO_PROCESSING_FILE'])))
+        self.lbl_proc_ep_procfile_selected.setText(_settings['EDDYPRO_PROCESSING_FILE'])
 
         # OUTPUT
         _settings = settings['OUTPUT']
-        self.lbl_output_folder.setText(str(_settings['OUTDIR']))
+        self.lbl_output_folder.setText(_settings['OUTDIR'])
         ele.set_gui_checkbox(checkbox=self.chk_output_plots_availability_rawdata,
                              state=_settings['PLOT_RAWDATA_AVAILABILITY'])
         ele.set_gui_checkbox(checkbox=self.chk_output_plots_aggregates_rawdata,
@@ -108,11 +108,10 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         settings['RAWDATA']['PARSING_STRING'] = self.lbl_rawdata_sitefiles_parse_str.text()
 
         # FLUX PROCESSING
-        settings['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'] = str(
-            Path(self.lbl_proc_ep_procfile_selected.text()))
+        settings['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'] = self.lbl_proc_ep_procfile_selected.text()
 
         # OUTPUT
-        settings['OUTPUT']['OUTDIR'] = str(Path(self.lbl_output_folder.text()))
+        settings['OUTPUT']['OUTDIR'] = self.lbl_output_folder.text()
         settings['OUTPUT']['PLOT_RAWDATA_AVAILABILITY'] = \
             1 if self.chk_output_plots_availability_rawdata.isChecked() else 0
         settings['OUTPUT']['PLOT_RAWDATA_AGGREGATES'] = \
