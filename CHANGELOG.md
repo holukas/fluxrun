@@ -11,6 +11,7 @@
 - Updated environment, poetry `pyproject.toml` file now has the currently used structure
 - Added key shortcut to start processing ("Ctrl+R")
 - Added key shortcut save settings ("Ctrl+S")
+- Now always using forward slashes for paths
 
 ## v1.4.1 | 27 Mar 2024
 
