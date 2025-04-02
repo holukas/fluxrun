@@ -2,16 +2,16 @@
 import os
 from pathlib import Path
 
-import yaml
 from PyQt6 import QtCore as qtc
 from PyQt6 import QtGui as qtg
 from PyQt6 import QtWidgets as qtw
 
 import gui.gui_elements as ele
+import ops.file as file
 from fluxrun.ops.setup import read_settings_file
 from fluxrun_engine import FluxRunEngine
 from gui.mainwindow import Ui_MainWindow
-import ops.file as file
+
 
 class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):

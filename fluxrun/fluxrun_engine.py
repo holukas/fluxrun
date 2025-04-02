@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import fluxrun_gui
+# from fluxrun_gui import FluxRunGUI
 import ops.file as file
 import ops.logger as logger
 import ops.setup as setup
@@ -14,9 +16,9 @@ class FluxRunEngine:
 
     def __init__(
             self,
-            settings: dict):
+            settings: dict
+    ):
         self.settings = settings
-
         self.logger = None
 
         # Set filepath to setting YAML
@@ -138,7 +140,7 @@ class FluxRunEngine:
         found_full_output, filepath_full_output = \
             file.check_if_file_in_folder(search_str='*_full_output_*.csv',
                                          folder=self.settings['_dir_out_run_eddypro_results'])
-        if found_full_output and int(self.settings['plot_summary']) == 1:
+        if found_full_output and int(self.settings['OUTPUT']['PLOT_SUMMARY']) == 1:
             vis.PlotEddyProFullOutputFile(
                 file_to_plot=filepath_full_output,
                 destination_folder=self.settings['_dir_out_run_plots_summary'],
