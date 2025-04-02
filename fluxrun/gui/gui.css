@@ -1,8 +1,10 @@
 QWidget[accessibleName="mainwindow"]{background-color: white;}
 
-QLabel {color: #263238;}  /* bluegray 900 */
+QLabel {color: #263238}  /* bluegray 900 */
 QLabel[labelClass="header_1"] {font-size: 18pt; padding: 0.5em 0 0.2em 0; font-weight: bold;}
 QLabel[labelClass="header_2"] {font-size: 14pt; padding: 0.5em 0 0.2em 0; margin-left: 0px; font-weight: bold;}
+QLabel[labelClass="filepath"] {background-color: #E0F7FA;padding: 0.5em; margin-left: 0px; font-weight: bold;}
+QLabel[labelClass="parsingstring"] {background-color: #FFF8E1;padding: 0.5em; margin-left: 0px; font-weight: bold;}
 
 QComboBox{border: 2px solid #B0BEC5; padding: 10px; background: #ECEFF1; color: #263238; font-weight: bold; min-width: 150px;}  /* blue grey 200, 50, grey 800 */
 QComboBox:hover {background-color: #ffc159;}
