@@ -419,7 +419,7 @@ class ReadEddyProFullOutputFile:
                               na_values=self.DATA_NA_VALUES,
                               encoding='utf-8',
                               delimiter=self.DATA_DELIMITER,
-                              mangle_dupe_cols=True,
+                              # mangle_dupe_cols=True,
                               keep_date_col=False,
                               parse_dates=parse_dates,
                               date_parser=date_parser,

@@ -20,7 +20,7 @@ class Ui_MainWindow(object):
         self.lbl_proc_ep_procfile_selected = None
         self.btn_output_folder = None
         self.lbl_output_folder = None
-        self.statusbar = None
+        # self.statusbar = None
         self.lbl_link_releases = None
         self.lbl_link_source_code = None
         self.lbl_link_changelog = None
@@ -51,11 +51,11 @@ class Ui_MainWindow(object):
         centralwidget.setAccessibleName('mainwindow')
         mainwindow.setCentralWidget(centralwidget)
 
-        # Statusbar
-        self.statusbar = qtw.QStatusBar(mainwindow)
-        self.statusbar.setObjectName("statusbar")
-        self.statusbar.showMessage('No processing running.')
-        mainwindow.setStatusBar(self.statusbar)
+        # # Statusbar
+        # self.statusbar = qtw.QStatusBar(mainwindow)
+        # self.statusbar.setObjectName("statusbar")
+        # self.statusbar.showMessage('No processing running.')
+        # mainwindow.setStatusBar(self.statusbar)
 
         # CSS
         with open('gui/gui.css', "r") as fh:
