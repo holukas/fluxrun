@@ -59,39 +59,47 @@ def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
         logger.info(f"[GETTING CSV RAW DATA FILES] {filepath} --> {destination}")
 
 
-class SearchAll():
-    def __init__(self, logger, search_in_dir, settings):
+class SearchAll:
+    def __init__(self, logger, search_in_dir, settings, search_uncompressed = False):
         self.logger = logger
         self.valid_files_dict = {}
         self.search_in_dir = search_in_dir
         self.rawdata_start_date = settings['RAWDATA']['START_DATE']
         self.rawdata_end_date = settings['RAWDATA']['END_DATE']
-        self.site_parse_str = settings['RAWDATA']['PARSING_STRING']
+
+        if search_uncompressed:
+            self.site_parse_str_py = settings['_sitefiles_parse_str_python_uncompr']  # Parsing string in Python format
+        else:
+            self.site_parse_str_py = settings['_sitefiles_parse_str_python']  # Parsing string in Python format
+
 
     def keep_valid_files(self):
-        """Search all files with file id, but then keep only those that fulfil selected requirements"""
+        """Search all files that can be parsed with the parsing string,
+        but then keep only those that fulfil selected requirements."""
 
         # Search files for current site
-        # TODO hier weiter parsing string for python
         self.valid_files_dict = self.search_all(dir=self.search_in_dir,
-                                                site_search_str=self.site_parse_str,
+                                                site_parse_str_py=self.site_parse_str_py,
                                                 logger=self.logger)
 
         # Parse filedates and keep files in specified date range
-        self.valid_files_dict = self.keep_files_within_timerange(site_parse_str=self.site_parse_str)
+        self.valid_files_dict = self.keep_files_within_timerange(site_parse_str_py=self.site_parse_str_py)
         return self.valid_files_dict
 
-    @staticmethod
-    def search_all(dir, site_search_str, logger):
-        """Search all files in dir that match file id"""
-        logger.info("Searching for files ...")
+
+    def search_all(self, dir, site_parse_str_py, logger):
+        """Search all files that can be parsed with the parsing string."""
+        logger.info(f"Searching for files that fit the pattern {self.site_parse_str_py} ...")
         valid_files_dict = {}
         for root, dirs, found_files in os.walk(dir):
             for idx, file in enumerate(found_files):
-                if fnmatch.fnmatch(file, site_search_str):
+                try:
+                    rawdata_filedate = dt.datetime.strptime(file, self.site_parse_str_py)
                     filepath = Path(root) / file
                     valid_files_dict[file] = filepath
-        logger.info(f"Found {len(valid_files_dict)} files matching {site_search_str} in {dir}")
+                except ValueError:
+                    continue
+        logger.info(f"Found {len(valid_files_dict)} files matching {site_parse_str_py} in {dir}")
         return valid_files_dict
 
     @staticmethod
@@ -101,7 +109,7 @@ class SearchAll():
                          f"{settings_dict['filename_datetime_parsing_string']}{file_ext}"
         return parsing_string
 
-    def keep_files_within_timerange(self, site_parse_str):
+    def keep_files_within_timerange(self, site_parse_str_py):
         """Check if file date is within selected time range"""
 
         # site_parse_str = self.make_parsing_string(settings_dict=self.settings_dict)
@@ -112,7 +120,7 @@ class SearchAll():
         _invalid_files_dict = {}
         valid_files_dict = {}
         for filename, filepath in self.valid_files_dict.items():
-            rawdata_filedate = dt.datetime.strptime(filename, site_parse_str)
+            rawdata_filedate = dt.datetime.strptime(filename, site_parse_str_py)
             if (rawdata_filedate < run_start_date) | (rawdata_filedate > run_end_date):
                 self.logger.info(
                     f"{suffix} Date of file ({filename}, date: {rawdata_filedate}) is outside the selected time range"
