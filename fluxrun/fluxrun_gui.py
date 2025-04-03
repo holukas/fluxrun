@@ -49,18 +49,18 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
 
     def show_settings_in_gui(self, settings: dict):
         """Update GUI with settings from fluxrunsettings.yaml file."""
-        # SITE
-        # ele.set_gui_combobox(combobox=self.cmb_site_selection, find_text=settings['SITE'])
 
         # RAW DATA
         _settings = settings['RAWDATA']
         self.lbl_proc_rawdata_source_dir_selected.setText(_settings['INDIR'])
-        # ele.set_gui_combobox(combobox=self.cmb_rawdata_compr, find_text=_settings['COMPRESSION'])
+        self.lne_filename_id.setText(_settings['FILENAME_ID'])
         ele.set_gui_combobox(combobox=self.cmb_rawdata_header_format, find_text=_settings['HEADER_FORMAT'])
-        # ele.set_gui_lineedit(lineedit=self.lne_filedt_format, string=_settings['FILENAME_DATETIME_FORMAT'])
         ele.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_start, date_str=_settings['START_DATE'])
         ele.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_end, date_str=_settings['END_DATE'])
-        # self.lbl_rawdata_sitefiles_parse_str.setText(str(_settings['PARSING_STRING']))
+        ele.set_gui_checkbox(checkbox=self.chk_output_plots_availability_rawdata,
+                             state=_settings['PLOT_RAWDATA_AVAILABILITY'])
+        ele.set_gui_checkbox(checkbox=self.chk_output_plots_aggregates_rawdata,
+                             state=_settings['PLOT_RAWDATA_AGGREGATES'])
 
         # FLUX PROCESSING
         _settings = settings['FLUX_PROCESSING']
@@ -69,15 +69,14 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         # OUTPUT
         _settings = settings['OUTPUT']
         self.lbl_output_folder.setText(_settings['OUTDIR'])
-        ele.set_gui_checkbox(checkbox=self.chk_output_plots_availability_rawdata,
-                             state=_settings['PLOT_RAWDATA_AVAILABILITY'])
-        ele.set_gui_checkbox(checkbox=self.chk_output_plots_aggregates_rawdata,
-                             state=_settings['PLOT_RAWDATA_AGGREGATES'])
+        self.lne_outdir_prefix.setText(_settings['OUTDIR_PREFIX'])
         ele.set_gui_checkbox(checkbox=self.chk_output_plots_summary, state=_settings['PLOT_SUMMARY'])
+
+        # AFTER PROCESSING
+        _settings = settings['AFTER PROCESSING']
         ele.set_gui_checkbox(checkbox=self.chk_output_afterprocessing_delete_ascii_rawdata,
                              state=_settings['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING'])
 
-        # self._update_text_field()
 
     def get_settings_from_gui(self) -> dict:
         """Read settings from GUI and store in dict"""
@@ -85,31 +84,29 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         # Reset
         settings = self.settings.copy()
 
-        # SITE
-        settings['SITE'] = self.cmb_site_selection.currentText()
-
         # RAW DATA
         settings['RAWDATA']['INDIR'] = self.lbl_proc_rawdata_source_dir_selected.text()
-        settings['RAWDATA']['COMPRESSION'] = self.cmb_rawdata_compr.currentText()
+        settings['RAWDATA']['FILENAME_ID'] = self.lne_filename_id.text()
         settings['RAWDATA']['HEADER_FORMAT'] = self.cmb_rawdata_header_format.currentText()
-        settings['RAWDATA']['FILENAME_DATETIME_FORMAT'] = self.lne_filedt_format.text()
         settings['RAWDATA']['START_DATE'] = self.dtp_rawdata_time_range_start.dateTime().toString(
             'yyyy-MM-dd hh:mm')
         settings['RAWDATA']['END_DATE'] = self.dtp_rawdata_time_range_end.dateTime().toString('yyyy-MM-dd hh:mm')
-        settings['RAWDATA']['PARSING_STRING'] = self.lbl_rawdata_sitefiles_parse_str.text()
+        settings['RAWDATA']['PLOT_RAWDATA_AVAILABILITY'] = \
+            1 if self.chk_output_plots_availability_rawdata.isChecked() else 0
+        settings['RAWDATA']['PLOT_RAWDATA_AGGREGATES'] = \
+            1 if self.chk_output_plots_aggregates_rawdata.isChecked() else 0
 
         # FLUX PROCESSING
         settings['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'] = self.lbl_proc_ep_procfile_selected.text()
 
         # OUTPUT
         settings['OUTPUT']['OUTDIR'] = self.lbl_output_folder.text()
-        settings['OUTPUT']['PLOT_RAWDATA_AVAILABILITY'] = \
-            1 if self.chk_output_plots_availability_rawdata.isChecked() else 0
-        settings['OUTPUT']['PLOT_RAWDATA_AGGREGATES'] = \
-            1 if self.chk_output_plots_aggregates_rawdata.isChecked() else 0
+        settings['OUTPUT']['OUTDIR_PREFIX'] = self.lne_outdir_prefix.text()
         settings['OUTPUT']['PLOT_SUMMARY'] = \
             1 if self.chk_output_plots_summary.isChecked() else 0
-        settings['OUTPUT']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING'] = \
+
+        # AFTER PROCESSING
+        settings['AFTER PROCESSING']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING'] = \
             1 if self.chk_output_afterprocessing_delete_ascii_rawdata.isChecked() else 0
 
         return settings
@@ -119,20 +116,20 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         """Call hyperlink from label, opens in browser"""
         qtg.QDesktopServices.openUrl(qtc.QUrl(link_str))
 
-    def _update_text_field(self):
-        _site = self.cmb_site_selection.currentText()
-        _compression = self.cmb_rawdata_compr.currentText()
-        _datetimeformat = self.lne_filedt_format.text()
-        _ext = '<select compression>'
-        if _compression == '.gz':
-            _ext = '.csv.gz'
-        elif _compression == 'None':
-            _ext = '.csv'
-        self.lbl_rawdata_sitefiles_parse_str.setText(f"{_site}_{_datetimeformat}{_ext}")
+    # def _update_text_field(self):
+    #     _site = self.cmb_site_selection.currentText()
+    #     _compression = self.cmb_rawdata_compr.currentText()
+    #     _datetimeformat = self.lne_filedt_format.text()
+    #     _ext = '<select compression>'
+    #     if _compression == '.gz':
+    #         _ext = '.csv.gz'
+    #     elif _compression == 'None':
+    #         _ext = '.csv'
+    #     self.lbl_rawdata_sitefiles_parse_str.setText(f"{_site}_{_datetimeformat}{_ext}")
 
     def _connections(self):
         """Connect GUI elements to functions"""
-        # Logo
+        # SIDEBAR
         self.lbl_link_releases.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_releases__)))
         self.lbl_link_source_code.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_source_code__)))
         # self.lbl_link_license.clicked.connect(self.link)
@@ -143,7 +140,7 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         # self.cmb_rawdata_compr.currentIndexChanged.connect(self._update_text_field)
         # self.lne_filedt_format.textChanged.connect(self._update_text_field)
 
-        # Processing
+        # RAW DATA
         self.btn_rawdata_source_dir.clicked.connect(lambda: self.select_dir(
             start_dir=self.settings['RAWDATA']['INDIR'],
             dir_setting=('RAWDATA', 'INDIR'),
@@ -171,8 +168,6 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         file.save_settings_to_file(filepath_settings=self.filepath_settings,
                                    settings=self.settings,
                                    copy_to_outdir=False)
-        # with open(self.filepath_settings, "w") as f:
-        #     cfg = yaml.dump(self.settings, stream=f, default_flow_style=False, sort_keys=False)
 
     def select_dir(self, start_dir, dir_setting, update_label, dialog_txt):
         """ Select directory, update dict and label"""

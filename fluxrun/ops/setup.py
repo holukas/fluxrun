@@ -34,7 +34,7 @@ def set_outdirs(settings_dict: dict) -> dict:
     """Set paths for output files"""
 
     # Output folder
-    _dirname = f"{settings_dict['SITE']}_{settings_dict['_run_id']}"
+    _dirname = f"{settings_dict['OUTPUT']['OUTDIR_PREFIX']}_{settings_dict['_run_id']}"
     settings_dict['_dir_out_run'] = \
         Path(settings_dict['OUTPUT']['OUTDIR']) / _dirname
 

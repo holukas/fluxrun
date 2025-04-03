@@ -165,11 +165,11 @@ class BuildGui(object):
             gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=row + 1)
 
         # Plots
+        row = 7
         header_instr_instruments = qtw.QLabel('Plots')
         # header_instr_instruments.setProperty('labelClass', 'header_3')
-        grid.addWidget(header_instr_instruments, 6, 0)
+        grid.addWidget(header_instr_instruments, row, 0)
 
-        row = 7
         self.chk_output_plots_availability_rawdata = \
             gui_elements.add_checkbox_to_grid(label='Availability (raw data)', grid=grid, row=row)
         self.chk_output_plots_aggregates_rawdata = \
@@ -206,8 +206,8 @@ class BuildGui(object):
         header_output_output.setProperty('labelClass', 'header_2')
         grid.addWidget(header_output_output, row, 0)
 
-        # OUTPUT: Output folder
-        row=14
+        # OUTPUT
+        row = 14
         header_output_plots = qtw.QLabel('Select output folder')
         grid.addWidget(header_output_plots, row, 0, 1, 1)
         self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row, col=1)
@@ -216,26 +216,35 @@ class BuildGui(object):
         self.lbl_output_folder.setProperty('labelClass', 'filepath')
         grid.addWidget(self.lbl_output_folder, row, 2, 1, 1)
 
-        # OUTPUT: Plots
-        row = 15
+        self.lne_outdir_prefix = \
+            gui_elements.add_label_lineedit_to_grid(
+                label='Output folder name prefix',
+                grid=grid, row=row + 1, value='PREFIX')
+
         header_instr_instruments = qtw.QLabel('Plots')
-        # header_instr_instruments.setProperty('labelClass', 'header_3')
-        grid.addWidget(header_instr_instruments, row, 0)
-
+        grid.addWidget(header_instr_instruments, row + 2, 0)
         self.chk_output_plots_summary = \
-            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=row)
+            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=row + 2)
 
-        # OUTPUT: After processing
-        self.chk_output_afterprocessing_delete_ascii_rawdata = \
-            gui_elements.add_checkbox_to_grid(label='Delete uncompressed raw data ASCII after processing', grid=grid,
-                                              row=row+1)
-
-        # RUN/SAVE
         spacer = qtw.QLabel("")
         spacer.setProperty('labelClass', 'spacer')
-        grid.addWidget(spacer, 17, 0)
+        grid.addWidget(spacer, row + 3, 0)
 
+        # OUTPUT: After processing
         row = 18
+        header_instr_instruments = qtw.QLabel('After Processing')
+        header_instr_instruments.setProperty('labelClass', 'header_2')
+        grid.addWidget(header_instr_instruments, row, 0)
+        self.chk_output_afterprocessing_delete_ascii_rawdata = \
+            gui_elements.add_checkbox_to_grid(label='Delete uncompressed raw data ASCII after processing', grid=grid,
+                                              row=row + 1)
+
+        spacer = qtw.QLabel("")
+        spacer.setProperty('labelClass', 'spacer')
+        grid.addWidget(spacer, row + 2, 0)
+
+        # RUN/SAVE
+        row = 20
         self.btn_save = \
             gui_elements.add_button_to_grid(label='Save settings', grid=grid, row=row, col=1, colspan=1)
         self.btn_save.setShortcut(qtg.QKeySequence("Ctrl+S"))  # Set Ctrl+R as the shortcut

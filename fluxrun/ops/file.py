@@ -244,8 +244,8 @@ class PrepareEddyProFiles:
                          f"    NEW:  {data_path_new}")
 
         # Remove .gzip file extension, EddyPro uses the unzipped files
-        prototype_str = self.settings_dict['RAWDATA']['PARSING_STRING']
-        file_ext = Path(self.settings_dict['RAWDATA']['PARSING_STRING']).suffix
+        prototype_str = self.settings_dict['RAWDATA']['FILENAME_ID']
+        file_ext = Path(self.settings_dict['RAWDATA']['FILENAME_ID']).suffix
         prototype_str = prototype_str.replace('.gz', '') if file_ext == '.gz' else prototype_str
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         # file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
@@ -256,7 +256,7 @@ class PrepareEddyProFiles:
                          f"\n    OLD:  {file_prototype_old}"
                          f"    NEW:  {file_prototype_new}")
 
-        project_id_new = f"project_id={self.settings_dict['SITE']}_{Path(self.settings_dict['_run_id'])}\n"
+        project_id_new = f"project_id={self.settings_dict['OUTPUT']['OUTDIR_PREFIX']}_{Path(self.settings_dict['_run_id'])}\n"
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=project_id_old, new=project_id_new)
         self.logger.info(f"{section_id}"
