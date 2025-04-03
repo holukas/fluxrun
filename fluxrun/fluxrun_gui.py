@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from pathlib import Path
-
+from settings import version
 from PyQt6 import QtCore as qtc
 from PyQt6 import QtGui as qtg
 from PyQt6 import QtWidgets as qtw
@@ -10,10 +10,10 @@ import gui.gui_elements as ele
 import ops.file as file
 from fluxrun.ops.setup import read_settings_file
 from fluxrun_engine import FluxRunEngine
-from gui.mainwindow import Ui_MainWindow
+from gui.mainwindow import BuildGui
 
 
-class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
+class FluxRunGUI(qtw.QMainWindow, BuildGui):
     def __init__(self, parent=None):
         super(FluxRunGUI, self).__init__(parent)
         self.setupUi(self)
@@ -43,33 +43,24 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
         fluxrunengine = FluxRunEngine(settings=self.settings)
         fluxrunengine.run()
 
-    # todo delete def reset_derived_settings(self):
-    #     """
-    #     Reset all settings that are constructed from GUI settings
-    #     """
-    #     for key, val in self.settings.items():
-    #         if str(key).startswith('_'):
-    #             self.settings[key] = ""
-
     def update_dict_key(self, key, new_val):
         """ Updates key in Dict with new_val """
         self.settings[key] = new_val
-        # ('{}: {}'.format(key, self.settings_dict[key]))
 
     def show_settings_in_gui(self, settings: dict):
         """Update GUI with settings from fluxrunsettings.yaml file."""
         # SITE
-        ele.set_gui_combobox(combobox=self.cmb_site_selection, find_text=settings['SITE'])
+        # ele.set_gui_combobox(combobox=self.cmb_site_selection, find_text=settings['SITE'])
 
         # RAW DATA
         _settings = settings['RAWDATA']
         self.lbl_proc_rawdata_source_dir_selected.setText(_settings['INDIR'])
-        ele.set_gui_combobox(combobox=self.cmb_rawdata_compr, find_text=_settings['COMPRESSION'])
+        # ele.set_gui_combobox(combobox=self.cmb_rawdata_compr, find_text=_settings['COMPRESSION'])
         ele.set_gui_combobox(combobox=self.cmb_rawdata_header_format, find_text=_settings['HEADER_FORMAT'])
-        ele.set_gui_lineedit(lineedit=self.lne_filedt_format, string=_settings['FILENAME_DATETIME_FORMAT'])
+        # ele.set_gui_lineedit(lineedit=self.lne_filedt_format, string=_settings['FILENAME_DATETIME_FORMAT'])
         ele.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_start, date_str=_settings['START_DATE'])
         ele.set_gui_datetimepicker(datetimepicker=self.dtp_rawdata_time_range_end, date_str=_settings['END_DATE'])
-        self.lbl_rawdata_sitefiles_parse_str.setText(str(_settings['PARSING_STRING']))
+        # self.lbl_rawdata_sitefiles_parse_str.setText(str(_settings['PARSING_STRING']))
 
         # FLUX PROCESSING
         _settings = settings['FLUX_PROCESSING']
@@ -142,15 +133,15 @@ class FluxRunGUI(qtw.QMainWindow, Ui_MainWindow):
     def _connections(self):
         """Connect GUI elements to functions"""
         # Logo
-        self.lbl_link_releases.linkActivated.connect(self.link)
-        self.lbl_link_source_code.linkActivated.connect(self.link)
-        # self.lbl_link_license.linkActivated.connect(self.link)
-        self.lbl_link_changelog.linkActivated.connect(self.link)
-        self.lbl_link_ep_changelog.linkActivated.connect(self.link)
+        self.lbl_link_releases.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_releases__)))
+        self.lbl_link_source_code.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_source_code__)))
+        # self.lbl_link_license.clicked.connect(self.link)
+        self.lbl_link_changelog.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_changelog__)))
+        self.lbl_link_ep_changelog.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_ep_changelog__)))
 
-        self.cmb_site_selection.currentIndexChanged.connect(self._update_text_field)
-        self.cmb_rawdata_compr.currentIndexChanged.connect(self._update_text_field)
-        self.lne_filedt_format.textChanged.connect(self._update_text_field)
+        # self.cmb_site_selection.currentIndexChanged.connect(self._update_text_field)
+        # self.cmb_rawdata_compr.currentIndexChanged.connect(self._update_text_field)
+        # self.lne_filedt_format.textChanged.connect(self._update_text_field)
 
         # Processing
         self.btn_rawdata_source_dir.clicked.connect(lambda: self.select_dir(

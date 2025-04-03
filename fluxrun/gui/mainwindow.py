@@ -8,7 +8,7 @@ from help import tooltips
 from settings import version
 
 
-class Ui_MainWindow(object):
+class BuildGui(object):
     """
         Prepares the raw GUI, i.e. the canvas that is filled with content later.
     """
@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
         self.lbl_link_source_code = None
         self.lbl_link_changelog = None
         self.lbl_link_ep_changelog = None
-        self.cmb_site_selection = None
+        # self.cmb_site_selection = None
         self.btn_rawdata_source_dir = None
         self.lbl_proc_rawdata_source_dir_selected = None
         self.cmb_rawdata_compr = None
@@ -124,67 +124,64 @@ class Ui_MainWindow(object):
         section.setProperty('labelClass', 'section_bg_instruments')
         grid = qtw.QGridLayout()
 
-        # SITE
-        header_instr_instruments = qtw.QLabel('Site')
+        # RAW DATA FILES
+
+        header_instr_instruments = qtw.QLabel('Raw Data Files')
         header_instr_instruments.setProperty('labelClass', 'header_2')
         grid.addWidget(header_instr_instruments, 0, 0)
-        self.cmb_site_selection = \
-            gui_elements.add_label_combobox_to_grid(
-                label='Select site', grid=grid, row=2,
-                items=['CH-AES', 'CH-AWS', 'CH-CHA', 'CH-DAE',
-                       'CH-DAV', 'CH-DAS', 'CH-FOR', 'CH-FRU',
-                       'CH-HON', 'CH-INO', 'CH-LAE', 'CH-LAS',
-                       'CH-OE2', 'CH-TAN'])
-        self.cmb_site_selection.setMaxVisibleItems(99)
-        # grid.setRowStretch(3, 1)
 
-        # RAW DATA
-        header_proc = qtw.QLabel('Raw Data')
-        header_proc.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_proc, 3, 0)
+        # RAW DATA FILES: Settings
 
-        # RAW DATA: Source folder for raw data
+        header_instr_instruments = qtw.QLabel('File settings')
+        header_instr_instruments.setProperty('labelClass', 'header_3')
+        grid.addWidget(header_instr_instruments, 1, 0)
+
+        # Source folder for raw data
+        row = 2
         header_proc_rawdata_source_dir = qtw.QLabel('Select raw data source folder (ASCII)')
-        grid.addWidget(header_proc_rawdata_source_dir, 4, 0)
+        grid.addWidget(header_proc_rawdata_source_dir, row, 0)
         self.btn_rawdata_source_dir = \
-            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=4, col=1)
+            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=2, col=1)
         self.lbl_proc_rawdata_source_dir_selected = qtw.QLabel("***Please select source folder***")
         self.lbl_proc_rawdata_source_dir_selected.setProperty('labelClass', 'filepath')
-        grid.addWidget(self.lbl_proc_rawdata_source_dir_selected, 4, 2, 1, 1)
+        grid.addWidget(self.lbl_proc_rawdata_source_dir_selected, row, 2, 1, 1)
 
-        # RAW DATA: File compression
-        self.cmb_rawdata_compr = \
-            gui_elements.add_label_combobox_to_grid(label='ASCII file compression', grid=grid, row=5,
-                                                    items=['.gz', 'None'])
-        self.cmb_rawdata_compr.setToolTip(tooltips.cmb_output_compression)
+        # Filename ID
+        row = 3
+        self.lne_filename_id = \
+            gui_elements.add_label_lineedit_to_grid(
+                label='File name ID (default: yyyymmddHHMM)',
+                grid=grid, row=row, value='SITE_yyyymmddHHMM.csv.gz')
 
         # RAW DATA: Header format
+        row = 4
         self.cmb_rawdata_header_format = \
-            gui_elements.add_label_combobox_to_grid(label='ASCII header format', grid=grid, row=6,
+            gui_elements.add_label_combobox_to_grid(label='Header format', grid=grid, row=row,
                                                     items=[
                                                         '3-row header (bico files)',
                                                         '4-row header (rECord files)'
                                                     ])
         self.cmb_rawdata_header_format.setToolTip(tooltips.cmb_rawdata_header_format)
 
-        # RAW DATA: File Settings
-        self.lne_filedt_format = \
-            gui_elements.add_label_lineedit_to_grid(label='Date/time format in file name '
-                                                          '(default: yyyymmddHHMM)', grid=grid,
-                                                    row=7, value='*.X*')
-
-        # RAW DATA: Time Range
+        # Time Range
+        row = 5
         self.dtp_rawdata_time_range_start = \
-            gui_elements.add_label_datetimepicker_to_grid(label='Start', grid=grid, row=8)
+            gui_elements.add_label_datetimepicker_to_grid(label='Start', grid=grid, row=row)
         self.dtp_rawdata_time_range_end = \
-            gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=9)
+            gui_elements.add_label_datetimepicker_to_grid(label='End', grid=grid, row=row + 1)
 
-        # RAW DATA: String for file search
-        lbl_rawdata_searchfilestring_static = qtw.QLabel("Using files with name:")
-        grid.addWidget(lbl_rawdata_searchfilestring_static, 10, 0, 1, 1)
-        self.lbl_rawdata_sitefiles_parse_str = qtw.QLabel("XXX")
-        self.lbl_rawdata_sitefiles_parse_str.setProperty('labelClass', 'parsingstring')
-        grid.addWidget(self.lbl_rawdata_sitefiles_parse_str, 10, 2, 1, 1)
+        # Plots
+        header_instr_instruments = qtw.QLabel('Plots')
+        header_instr_instruments.setProperty('labelClass', 'header_3')
+        grid.addWidget(header_instr_instruments, 7, 0)
+
+        row = 8
+        self.chk_output_plots_availability_rawdata = \
+            gui_elements.add_checkbox_to_grid(label='Availability (raw data)', grid=grid, row=row)
+        self.chk_output_plots_aggregates_rawdata = \
+            gui_elements.add_checkbox_to_grid(label='Aggregates (raw data)', grid=grid, row=row + 1)
+
+        # PROCESSING SETTINGS
 
         # PROCESSING SETTINGS: EddyPro Processing File
         header_proc = qtw.QLabel('Flux Processing Settings')
@@ -214,10 +211,7 @@ class Ui_MainWindow(object):
         grid.addWidget(self.lbl_output_folder, 14, 2, 1, 1)
 
         # OUTPUT: Plots
-        self.chk_output_plots_availability_rawdata = \
-            gui_elements.add_checkbox_to_grid(label='Availability (raw data)', grid=grid, row=15)
-        self.chk_output_plots_aggregates_rawdata = \
-            gui_elements.add_checkbox_to_grid(label='Aggregates (raw data)', grid=grid, row=16)
+
         self.chk_output_plots_summary = \
             gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=17)
 

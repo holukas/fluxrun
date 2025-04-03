@@ -1,10 +1,11 @@
 QWidget[accessibleName="mainwindow"]{background-color: white;}
 
-QLabel {color: #263238}  /* bluegray 900 */
+QLabel {color: #263238;}  /* bluegray 900 */
 QLabel[labelClass="header_1"] {font-size: 18pt; padding: 0.5em 0 0.2em 0; font-weight: bold;}
 QLabel[labelClass="header_2"] {font-size: 14pt; padding: 0.5em 0 0.2em 0; margin-left: 0px; font-weight: bold;}
-QLabel[labelClass="filepath"] {background-color: #E0F7FA;padding: 0.5em; margin-left: 0px; font-weight: bold;}
-QLabel[labelClass="parsingstring"] {background-color: #FFF8E1;padding: 0.5em; margin-left: 0px; font-weight: bold;}
+QLabel[labelClass="header_3"] {font-size: 12pt; color: black; padding: 0.5em 0 0.2em 0; margin-left: 0px; font-weight: normal;}
+QLabel[labelClass="filepath"] {background-color: #E0F7FA; padding: 0.5em; margin-left: 0px; font-weight: bold;}
+QLabel[labelClass="parsingstring"] {background-color: #FFF8E1; padding: 0.5em; margin-left: 0px; font-weight: bold;}
 
 QComboBox{border: 2px solid #B0BEC5; padding: 10px; background: #ECEFF1; color: #263238; font-weight: bold; min-width: 150px;}  /* blue grey 200, 50, grey 800 */
 QComboBox:hover {background-color: #ffc159;}
@@ -27,31 +28,13 @@ QCheckBox::indicator:unchecked {image: url("images/switch1_off.png");}
 /*QFrame{}*/
 /*QFrame[labelClass="section_bg_instruments"] {background-color: white; padding: 20px; margin: 10px;}*/
 /*QFrame[labelClass="section_bg_processing"] {background-color: white; padding: 20px; margin: 10px;}*/
-QFrame[labelClass="section_bg_output"] {background-color: whitesmoke; padding: 20px; margin: 10px; border-right: 1px solid #5a5a5a;}
+QFrame[labelClass="section_bg_output"] {background-color: #EEEEEE; padding: 20px; margin: 10px; border-right: 1px solid #5a5a5a;}
 /*QFrame[labelClass="section_bg_controls"] {background-color: white; padding: 20px; margin: 10px;}*/
 
 
-QLineEdit {font-weight: bold; text-align: middle; padding: 10px; max-width: 200px; background-color:  #eceff1; color: #263238; border: 2px solid #B0BEC5;}
+QLineEdit {font-weight: bold; text-align: middle; padding: 10px; max-width: 300px; background-color:  #eceff1; color: #263238; border: 2px solid #B0BEC5;}
 QLineEdit:hover {background-color: #ffc159;}
 QDateTimeEdit {border: 2px solid #B0BEC5; color: #263238; font-weight: bold; background: #eceff1; padding: 5px;}
 QDateTimeEdit:hover {background-color: #ffc159;}
 
-/*QLineEdit[labelClass="section_bg_raw_bin"] {border: 2px solid #456268; background: #cee6f0; color: #456268;}*/
-/*QLineEdit:disabled {background: gray;}*/
-/*	*/
-
-
-
-/*!* COMBO BOX*!	*/
-/*!*	QComboBox {*!*/
-/*!*		border:					1px solid #455a64;	!* bluegray 700 *!				*!*/
-/*!*		padding:				5px;		*!*/
-/*!*		color:					#455a64;*!*/
-/*!*		font-weight:			bold;*!*/
-/*!*		background: 			#fff8e1;			!* amber 100 *!	*!*/
-/*!*		!*font-size:				16px;*!*!*/
-/*!*	}*!*/
-
-
-/*	*/
 
