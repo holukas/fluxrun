@@ -89,14 +89,14 @@ class BuildGui(object):
         label_txt4.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
 
         # Links
-        self.lbl_link_releases = gui_elements.add_label_link_to_grid(
-            link_txt='Releases', link_str=version.__link_releases__, grid=grid, row=6)
-        self.lbl_link_source_code = gui_elements.add_label_link_to_grid(
-            link_txt='Source Code', link_str=version.__link_source_code__, grid=grid, row=7)
-        self.lbl_link_changelog = gui_elements.add_label_link_to_grid(
-            link_txt='Changelog', link_str=version.__link_changelog__, grid=grid, row=8)
-        self.lbl_link_ep_changelog = gui_elements.add_label_link_to_grid(
-            link_txt='EddyPro Changelog', link_str=version.__link_ep_changelog__, grid=grid, row=9)
+        self.lbl_link_releases = gui_elements.add_button_link_to_grid(
+            link_txt='Releases', grid=grid, row=6)
+        self.lbl_link_source_code = gui_elements.add_button_link_to_grid(
+            link_txt='Source Code', grid=grid, row=7)
+        self.lbl_link_changelog = gui_elements.add_button_link_to_grid(
+            link_txt='Changelog', grid=grid, row=8)
+        self.lbl_link_ep_changelog = gui_elements.add_button_link_to_grid(
+            link_txt='EddyPro Changelog', grid=grid, row=9)
 
         grid.addWidget(label_image, 0, 0)
         grid.addWidget(qtw.QLabel(), 1, 0)
@@ -130,31 +130,25 @@ class BuildGui(object):
         header_instr_instruments.setProperty('labelClass', 'header_2')
         grid.addWidget(header_instr_instruments, 0, 0)
 
-        # RAW DATA FILES: Settings
-
-        header_instr_instruments = qtw.QLabel('File settings')
-        header_instr_instruments.setProperty('labelClass', 'header_3')
-        grid.addWidget(header_instr_instruments, 1, 0)
-
         # Source folder for raw data
-        row = 2
+        row = 1
         header_proc_rawdata_source_dir = qtw.QLabel('Select raw data source folder (ASCII)')
         grid.addWidget(header_proc_rawdata_source_dir, row, 0)
         self.btn_rawdata_source_dir = \
-            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=2, col=1)
+            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row, col=1)
         self.lbl_proc_rawdata_source_dir_selected = qtw.QLabel("***Please select source folder***")
         self.lbl_proc_rawdata_source_dir_selected.setProperty('labelClass', 'filepath')
         grid.addWidget(self.lbl_proc_rawdata_source_dir_selected, row, 2, 1, 1)
 
         # Filename ID
-        row = 3
+        row = 2
         self.lne_filename_id = \
             gui_elements.add_label_lineedit_to_grid(
                 label='File name ID (default: yyyymmddHHMM)',
                 grid=grid, row=row, value='SITE_yyyymmddHHMM.csv.gz')
 
         # RAW DATA: Header format
-        row = 4
+        row = 3
         self.cmb_rawdata_header_format = \
             gui_elements.add_label_combobox_to_grid(label='Header format', grid=grid, row=row,
                                                     items=[
@@ -164,7 +158,7 @@ class BuildGui(object):
         self.cmb_rawdata_header_format.setToolTip(tooltips.cmb_rawdata_header_format)
 
         # Time Range
-        row = 5
+        row = 4
         self.dtp_rawdata_time_range_start = \
             gui_elements.add_label_datetimepicker_to_grid(label='Start', grid=grid, row=row)
         self.dtp_rawdata_time_range_end = \
@@ -172,60 +166,81 @@ class BuildGui(object):
 
         # Plots
         header_instr_instruments = qtw.QLabel('Plots')
-        header_instr_instruments.setProperty('labelClass', 'header_3')
-        grid.addWidget(header_instr_instruments, 7, 0)
+        # header_instr_instruments.setProperty('labelClass', 'header_3')
+        grid.addWidget(header_instr_instruments, 6, 0)
 
-        row = 8
+        row = 7
         self.chk_output_plots_availability_rawdata = \
             gui_elements.add_checkbox_to_grid(label='Availability (raw data)', grid=grid, row=row)
         self.chk_output_plots_aggregates_rawdata = \
             gui_elements.add_checkbox_to_grid(label='Aggregates (raw data)', grid=grid, row=row + 1)
 
+        spacer = qtw.QLabel("")
+        spacer.setProperty('labelClass', 'spacer')
+        grid.addWidget(spacer, 9, 0)
+
         # PROCESSING SETTINGS
 
         # PROCESSING SETTINGS: EddyPro Processing File
+        row = 10
         header_proc = qtw.QLabel('Flux Processing Settings')
         header_proc.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_proc, 11, 0)
+        grid.addWidget(header_proc, row, 0)
 
+        row = 11
         header_proc_rawdata_source_dir = qtw.QLabel('Select EddyPro processing file (*.eddypro)')
-        grid.addWidget(header_proc_rawdata_source_dir, 12, 0)
+        grid.addWidget(header_proc_rawdata_source_dir, row, 0)
         self.btn_proc_ep_procfile = \
-            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=12, col=1)
+            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row, col=1)
         self.lbl_proc_ep_procfile_selected = qtw.QLabel("***Please select EddyPro *.processing file***")
         self.lbl_proc_ep_procfile_selected.setProperty('labelClass', 'filepath')
-        grid.addWidget(self.lbl_proc_ep_procfile_selected, 12, 2, 1, 2)
+        grid.addWidget(self.lbl_proc_ep_procfile_selected, row, 2, 1, 2)
+
+        spacer = qtw.QLabel("")
+        spacer.setProperty('labelClass', 'spacer')
+        grid.addWidget(spacer, 12, 0)
 
         # OUTPUT
+        row = 13
         header_output_output = qtw.QLabel('Output')
         header_output_output.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_output_output, 13, 0)
+        grid.addWidget(header_output_output, row, 0)
 
         # OUTPUT: Output folder
+        row=14
         header_output_plots = qtw.QLabel('Select output folder')
-        grid.addWidget(header_output_plots, 14, 0, 1, 1)
-        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=14, col=1)
+        grid.addWidget(header_output_plots, row, 0, 1, 1)
+        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row, col=1)
         self.btn_output_folder.setToolTip(tooltips.btn_output_folder)
         self.lbl_output_folder = qtw.QLabel("***Please select output folder...***")
         self.lbl_output_folder.setProperty('labelClass', 'filepath')
-        grid.addWidget(self.lbl_output_folder, 14, 2, 1, 1)
+        grid.addWidget(self.lbl_output_folder, row, 2, 1, 1)
 
         # OUTPUT: Plots
+        row = 15
+        header_instr_instruments = qtw.QLabel('Plots')
+        # header_instr_instruments.setProperty('labelClass', 'header_3')
+        grid.addWidget(header_instr_instruments, row, 0)
 
         self.chk_output_plots_summary = \
-            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=17)
+            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=row)
 
         # OUTPUT: After processing
         self.chk_output_afterprocessing_delete_ascii_rawdata = \
             gui_elements.add_checkbox_to_grid(label='Delete uncompressed raw data ASCII after processing', grid=grid,
-                                              row=18)
+                                              row=row+1)
 
         # RUN/SAVE
+        spacer = qtw.QLabel("")
+        spacer.setProperty('labelClass', 'spacer')
+        grid.addWidget(spacer, 17, 0)
+
+        row = 18
         self.btn_save = \
-            gui_elements.add_button_to_grid(label='Save settings', grid=grid, row=19, col=1, colspan=1)
+            gui_elements.add_button_to_grid(label='Save settings', grid=grid, row=row, col=1, colspan=1)
         self.btn_save.setShortcut(qtg.QKeySequence("Ctrl+S"))  # Set Ctrl+R as the shortcut
         self.btn_run = \
-            gui_elements.add_button_to_grid(label='Run', grid=grid, row=19, col=2, colspan=1)
+            gui_elements.add_button_to_grid(label='Run', grid=grid, row=row, col=2, colspan=1)
         self.btn_run.setShortcut(qtg.QKeySequence("Ctrl+R"))  # Set Ctrl+R as the shortcut
 
         # End section
