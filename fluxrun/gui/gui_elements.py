@@ -36,7 +36,7 @@ def add_label_lineedit_to_grid(label, grid, row, value, only_int=False):
 
 def add_checkbox_to_grid(label, grid, row):
     checkbox = qtw.QCheckBox(label)
-    grid.addWidget(checkbox, row, 0)
+    grid.addWidget(checkbox, row, 1)
     return checkbox
 
 
@@ -47,11 +47,43 @@ def add_button_to_grid(label, grid, row, col: int = 0, colspan=1):
 
 
 def add_label_link_to_grid(link_txt, link_str, grid, row, colspan=1):
-    label_link = qtw.QLabel(f"<a href='{link_str}'>{link_txt}</a>\n")
-    label_link.setProperty('labelClass', 'label_link')
-    label_link.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
+    label_link = qtw.QPushButton(link_txt)
+    # label_link = qtw.QLabel(f"<a href='{link_str}'>{link_txt}</a>\n")
+    # label_link.setProperty('labelClass', 'link')
+    # label_link.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignVCenter)
     grid.addWidget(label_link, row, 0, 1, colspan)
     return label_link
+
+# import sys
+# from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
+# from PyQt6.QtCore import QUrl
+# from PyQt6.QtGui import QDesktopServices
+#
+# class MyWindow(QWidget):
+#     def __init__(self):
+#         super().__init__()
+#
+#         self.setWindowTitle("Link Button Example")
+#         layout = QVBoxLayout()
+#
+#         link_button = QPushButton("Visit Google")
+#         link_button.setStyleSheet("""
+#             QPushButton {
+#                 background: none;
+#                 border: none;
+#                 color: blue;
+#                 text-decoration: underline;
+#                 text-align: center;
+#             }
+#             QPushButton:hover {
+#                 color: red;
+#             }
+#         """)
+#         link_button.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://www.google.com")))
+#
+#         layout.addWidget(link_button)
+#         self.setLayout(layout)
+#
 
 
 def set_gui_combobox(combobox, find_text):
