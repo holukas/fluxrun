@@ -67,6 +67,7 @@ class FluxRunEngine:
                                    settings=self.settings,
                                    copy_to_outdir=True)
 
+        # TODO hier weiter
         # Search valid raw ASCII files
         self.rawdata_found_files_dict = file.SearchAll(
             settings=self.settings,
@@ -227,7 +228,7 @@ class FluxRunEngine:
 
     def make_datetime_parsing_string(self):
         """Parse filename for datetime info"""
-        _parsing_string = self.settings['RAWDATA']['PARSING_STRING']
+        _parsing_string = self.settings['RAWDATA']['FILENAME_ID']
         _parsing_string = _parsing_string.replace('yyyy', '%Y')
         _parsing_string = _parsing_string.replace('mm', '%m')
         _parsing_string = _parsing_string.replace('dd', '%d')
@@ -237,17 +238,19 @@ class FluxRunEngine:
         return _parsing_string
 
     def set_dir_eddypro_rawdata(self):
-        """
-        Set raw data folder for EddyPro flux calculations
+        """Set raw data folder for EddyPro flux calculations.
 
         Compressed files will be uncompressed and saved to the current run output folder.
         Uncompressed files will be directly used from where they are stored.
+
+        If files are compressed is detected from the file extension.
         """
-        if self.settings['RAWDATA']['COMPRESSION'] == '.gz':
+        _suffix = Path(self.settings['RAWDATA']['FILENAME_ID']).suffix
+        _compressed = True if _suffix == '.gz' else False
+        if _compressed:
             self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'] = \
                 self.settings['_dir_out_run_rawdata_ascii_files']
-
-        elif self.settings['RAWDATA']['COMPRESSION'] == 'None':
+        else:
             outpath = Path(self.settings['_dir_out_run_rawdata_ascii_files']) / 'readme.txt'
             readme_txt = open(str(outpath), "w+")
             readme_txt.write(f"This folder is empty because uncompressed ASCII raw data files from the "
