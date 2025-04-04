@@ -1,4 +1,4 @@
-btn_output_folder = "Select output folder to store FluxRun results"
+btn_output_folder = "Select output folder to store fluxrun results"
 
 cmb_output_compression = \
     "OPTIONS\n"\
