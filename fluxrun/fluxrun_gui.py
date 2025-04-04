@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from pathlib import Path
-from settings import version
+
 from PyQt6 import QtCore as qtc
 from PyQt6 import QtGui as qtg
 from PyQt6 import QtWidgets as qtw
@@ -11,6 +11,7 @@ import ops.file as file
 from fluxrun.ops.setup import read_settings_file
 from fluxrun_engine import FluxRunEngine
 from gui.mainwindow import BuildGui
+from settings import version
 
 
 class FluxRunGUI(qtw.QMainWindow, BuildGui):
@@ -25,11 +26,7 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         self.filepath_settings = Path(dir_settings) / 'fluxrunsettings.yaml'
 
         # Read settings from YAML file
-        self.settings = read_settings_file(
-            filepath_settings=self.filepath_settings,
-            reset_paths=False)
-
-        # TODO delete self.reset_derived_settings()
+        self.settings = read_settings_file(filepath_settings=self.filepath_settings)
 
         # Show settings in GUI
         self.show_settings_in_gui(settings=self.settings)
@@ -79,7 +76,6 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         _settings = settings['AFTER PROCESSING']
         ele.set_gui_checkbox(checkbox=self.chk_output_afterprocessing_delete_ascii_rawdata,
                              state=_settings['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING'])
-
 
     def get_settings_from_gui(self) -> dict:
         """Read settings from GUI and store in dict"""
@@ -144,11 +140,15 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
     def _connections(self):
         """Connect GUI elements to functions"""
         # SIDEBAR
-        self.lbl_link_releases.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_releases__)))
-        self.lbl_link_source_code.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_source_code__)))
+        self.lbl_link_releases.clicked.connect(
+            lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_releases__)))
+        self.lbl_link_source_code.clicked.connect(
+            lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_source_code__)))
         # self.lbl_link_license.clicked.connect(self.link)
-        self.lbl_link_changelog.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_changelog__)))
-        self.lbl_link_ep_changelog.clicked.connect(lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_ep_changelog__)))
+        self.lbl_link_changelog.clicked.connect(
+            lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_changelog__)))
+        self.lbl_link_ep_changelog.clicked.connect(
+            lambda: qtg.QDesktopServices.openUrl(qtc.QUrl(version.__link_ep_changelog__)))
 
         # self.cmb_site_selection.currentIndexChanged.connect(self._update_text_field)
         # self.cmb_rawdata_compr.currentIndexChanged.connect(self._update_text_field)
