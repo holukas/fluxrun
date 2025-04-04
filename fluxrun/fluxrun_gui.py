@@ -64,6 +64,8 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
 
         # FLUX PROCESSING
         _settings = settings['FLUX_PROCESSING']
+        ele.set_gui_checkbox(checkbox=self.chk_proc_run_fluxcalcs,
+                             state=_settings['RUN_FLUX_CALCS'])
         self.lbl_proc_ep_procfile_selected.setText(_settings['EDDYPRO_PROCESSING_FILE'])
 
         # OUTPUT
@@ -97,6 +99,8 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
             1 if self.chk_output_plots_aggregates_rawdata.isChecked() else 0
 
         # FLUX PROCESSING
+        settings['FLUX_PROCESSING']['RUN_FLUX_CALCS'] = \
+            1 if self.chk_proc_run_fluxcalcs.isChecked() else 0
         settings['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'] = self.lbl_proc_ep_procfile_selected.text()
 
         # OUTPUT
@@ -127,6 +131,15 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
     #         _ext = '.csv'
     #     self.lbl_rawdata_sitefiles_parse_str.setText(f"{_site}_{_datetimeformat}{_ext}")
 
+    def _checkbox_changed(self, state):
+
+        if state == qtc.Qt.CheckState.Checked.value:
+            self.chk_output_plots_summary.setEnabled(True)
+            # self.chk_output_plots_summary.setChecked(True)
+        elif state == qtc.Qt.CheckState.Unchecked.value:
+            self.chk_output_plots_summary.setDisabled(True)
+            self.chk_output_plots_summary.setChecked(False)
+
     def _connections(self):
         """Connect GUI elements to functions"""
         # SIDEBAR
@@ -139,6 +152,7 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         # self.cmb_site_selection.currentIndexChanged.connect(self._update_text_field)
         # self.cmb_rawdata_compr.currentIndexChanged.connect(self._update_text_field)
         # self.lne_filedt_format.textChanged.connect(self._update_text_field)
+        self.chk_proc_run_fluxcalcs.stateChanged.connect(self._checkbox_changed)
 
         # RAW DATA
         self.btn_rawdata_source_dir.clicked.connect(lambda: self.select_dir(
