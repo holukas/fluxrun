@@ -109,8 +109,7 @@ class PlotEddyProFullOutputFile:
 
                 # fig = plt.subplot2grid((3, 3), (0, 0))
 
-                qua1 = y.quantile(0.01)
-                qua2 = y.quantile(0.99)
+
 
                 # TIME SERIES PLOT
                 ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=2)
@@ -130,6 +129,9 @@ class PlotEddyProFullOutputFile:
                 # plt.setp(ax1.xaxis.get_majorticklabels(), rotation=0)
                 ax1.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
                 # ax1.xaxis.set_major_locator(dates.WeekdayLocator(byweekday=1, interval=1))
+
+                qua1 = y.quantile(0.01)
+                qua2 = y.quantile(0.99)
                 ax1.set_ylim(qua1, qua2)
 
                 # DAILY AVG SCATTER

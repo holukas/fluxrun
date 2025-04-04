@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 
-import ops
+from fluxrun.ops.setup import read_settings_file
 from fluxrun_engine import FluxRunEngine
 
 
@@ -20,15 +20,17 @@ class FluxRunCli:
         self.folder = Path(folder)
         self.days = days
 
-        self.settings_dict = {}
 
-    def _update_settings_from_args(self, settings_dict: dict) -> dict:
+
+        self.settings = {}
+
+    def _update_settings_from_args(self, settings: dict) -> dict:
         """Update settings according to given args"""
         if self.days:
-            settings_dict = self._days_from_arg(settings_dict=settings_dict)
-        return settings_dict
+            settings = self._days_from_arg(settings=settings)
+        return settings
 
-    def _days_from_arg(self, settings_dict: dict) -> dict:
+    def _days_from_arg(self, settings: dict) -> dict:
         """Set new start and end date according to DAYS arg"""
         # Get current time, subtract number of days
         _currentdate = dt.datetime.now().date()
@@ -44,33 +46,26 @@ class FluxRunCli:
         _newenddatetime = _newenddatetime.strftime('%Y-%m-%d %H:%M')
 
         # Update dict
-        settings_dict['rawdata_start_date'] = _newstartdatetime
-        settings_dict['rawdata_end_date'] = _newenddatetime
+        settings['_rawdata_start_date'] = _newstartdatetime
+        settings['_rawdata_end_date'] = _newenddatetime
 
-        return settings_dict
+        return settings
 
     def run(self):
-        settingsfilefound = self.search_settingsfile()
-
-        if not settingsfilefound:
-            print(f"(!)ERROR: No 'FluxRun.settings' file found. Please make sure it is in folder '{self.folder}'")
-            sys.exit()
-
-        # Read Settings: File --> Dict
-        self.settings_dict = \
-            ops.setup_fr.read_settings_file_to_dict(dir_settings=self.folder,
-                                                    file='FluxRun.settings',
-                                                    reset_paths=False)
-
-        self.settings_dict = self._update_settings_from_args(settings_dict=self.settings_dict)
-
+        filepath_settings = self.search_settingsfile()
+        self.settings = read_settings_file(filepath_settings=filepath_settings)
+        self.settings = self._update_settings_from_args(settings=self.settings)
         self.execute_in_folder()
 
     def search_settingsfile(self):
         files = os.listdir(self.folder)
-        settingsfilefound = True if 'FluxRun.settings' in files else False
-        return settingsfilefound
+        settingsfilefound = True if 'fluxrunsettings.yaml' in files else False
+        if settingsfilefound:
+            filepath_settings = Path(self.folder) / 'fluxrunsettings.yaml'
+        else:
+            raise FileNotFoundError(f'No fluxrunsettings.yaml file found in folder {self.folder}.')
+        return filepath_settings
 
     def execute_in_folder(self):
-        bicoengine = FluxRunEngine(settings_dict=self.settings_dict)
-        bicoengine.run()
+        _fluxrunengine = FluxRunEngine(settings=self.settings)
+        _fluxrunengine.run()
