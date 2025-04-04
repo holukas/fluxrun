@@ -20,12 +20,10 @@ class BuildGui(object):
         self.lbl_proc_ep_procfile_selected = None
         self.btn_output_folder = None
         self.lbl_output_folder = None
-        # self.statusbar = None
         self.lbl_link_releases = None
         self.lbl_link_source_code = None
         self.lbl_link_changelog = None
         self.lbl_link_ep_changelog = None
-        # self.cmb_site_selection = None
         self.btn_rawdata_source_dir = None
         self.lbl_proc_rawdata_source_dir_selected = None
         self.cmb_rawdata_compr = None
@@ -38,6 +36,7 @@ class BuildGui(object):
         self.cmb_rawdata_header_format = None
         self.lbl_rawdata_sitefiles_parse_str = None
         self.btn_save = None
+        self.chk_proc_run_fluxcalcs = None
 
     def setupUi(self, mainwindow):
         # Main window
@@ -187,51 +186,53 @@ class BuildGui(object):
         header_proc.setProperty('labelClass', 'header_2')
         grid.addWidget(header_proc, row, 0)
 
-        row = 11
+        header_proc = qtw.QLabel('Run flux calculations using EddyPro')
+        grid.addWidget(header_proc, row + 1, 0)
+        self.chk_proc_run_fluxcalcs = \
+            gui_elements.add_checkbox_to_grid(label='Calculate fluxes', grid=grid, row=row + 1)
+
         header_proc_rawdata_source_dir = qtw.QLabel('Select EddyPro processing file (*.eddypro)')
-        grid.addWidget(header_proc_rawdata_source_dir, row, 0)
+        grid.addWidget(header_proc_rawdata_source_dir, row + 2, 0)
         self.btn_proc_ep_procfile = \
-            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row, col=1)
+            gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row + 2, col=1)
         self.lbl_proc_ep_procfile_selected = qtw.QLabel("***Please select EddyPro *.processing file***")
         self.lbl_proc_ep_procfile_selected.setProperty('labelClass', 'filepath')
-        grid.addWidget(self.lbl_proc_ep_procfile_selected, row, 2, 1, 2)
-
-        spacer = qtw.QLabel("")
-        spacer.setProperty('labelClass', 'spacer')
-        grid.addWidget(spacer, 12, 0)
-
-        # OUTPUT
-        row = 13
-        header_output_output = qtw.QLabel('Output')
-        header_output_output.setProperty('labelClass', 'header_2')
-        grid.addWidget(header_output_output, row, 0)
-
-        # OUTPUT
-        row = 14
-        header_output_plots = qtw.QLabel('Select output folder')
-        grid.addWidget(header_output_plots, row, 0, 1, 1)
-        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row, col=1)
-        self.btn_output_folder.setToolTip(tooltips.btn_output_folder)
-        self.lbl_output_folder = qtw.QLabel("***Please select output folder...***")
-        self.lbl_output_folder.setProperty('labelClass', 'filepath')
-        grid.addWidget(self.lbl_output_folder, row, 2, 1, 1)
-
-        self.lne_outdir_prefix = \
-            gui_elements.add_label_lineedit_to_grid(
-                label='Output folder name prefix',
-                grid=grid, row=row + 1, value='PREFIX')
-
-        header_instr_instruments = qtw.QLabel('Plots')
-        grid.addWidget(header_instr_instruments, row + 2, 0)
-        self.chk_output_plots_summary = \
-            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=row + 2)
+        grid.addWidget(self.lbl_proc_ep_procfile_selected, row + 2, 2, 1, 2)
 
         spacer = qtw.QLabel("")
         spacer.setProperty('labelClass', 'spacer')
         grid.addWidget(spacer, row + 3, 0)
 
+        # OUTPUT
+        row = 14
+        header_output_output = qtw.QLabel('Output')
+        header_output_output.setProperty('labelClass', 'header_2')
+        grid.addWidget(header_output_output, row, 0)
+
+        header_output_plots = qtw.QLabel('Select output folder')
+        grid.addWidget(header_output_plots, row + 1, 0, 1, 1)
+        self.btn_output_folder = gui_elements.add_button_to_grid(label='Select ...', grid=grid, row=row + 1, col=1)
+        self.btn_output_folder.setToolTip(tooltips.btn_output_folder)
+        self.lbl_output_folder = qtw.QLabel("***Please select output folder...***")
+        self.lbl_output_folder.setProperty('labelClass', 'filepath')
+        grid.addWidget(self.lbl_output_folder, row + 1, 2, 1, 1)
+
+        self.lne_outdir_prefix = \
+            gui_elements.add_label_lineedit_to_grid(
+                label='Output folder name prefix',
+                grid=grid, row=row + 2, value='PREFIX')
+
+        header_instr_instruments = qtw.QLabel('Plots')
+        grid.addWidget(header_instr_instruments, row + 3, 0)
+        self.chk_output_plots_summary = \
+            gui_elements.add_checkbox_to_grid(label='Summary (flux processing)', grid=grid, row=row + 3)
+
+        spacer = qtw.QLabel("")
+        spacer.setProperty('labelClass', 'spacer')
+        grid.addWidget(spacer, row + 4, 0)
+
         # OUTPUT: After processing
-        row = 18
+        row = 19
         header_instr_instruments = qtw.QLabel('After Processing')
         header_instr_instruments.setProperty('labelClass', 'header_2')
         grid.addWidget(header_instr_instruments, row, 0)
@@ -244,7 +245,7 @@ class BuildGui(object):
         grid.addWidget(spacer, row + 2, 0)
 
         # RUN/SAVE
-        row = 20
+        row = 22
         self.btn_save = \
             gui_elements.add_button_to_grid(label='Save settings', grid=grid, row=row, col=1, colspan=1)
         self.btn_save.setShortcut(qtg.QKeySequence("Ctrl+S"))  # Set Ctrl+R as the shortcut

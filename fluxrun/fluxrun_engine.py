@@ -55,8 +55,7 @@ class FluxRunEngine:
         self.settings['_sitefiles_parse_str_python'] = _parsing_str_py  # For compressed files
         self.settings['_sitefiles_parse_str_python_uncompr'] = _parsing_str_py_uncompr  # For uncompressed files
 
-    def run(self):
-
+    def _run_setup(self):
         # Logger
         self.logger = logger.setup_logger(settings_dict=self.settings)
         self.logger.info(f"\n\nRun ID: {self.settings['_run_id']}")
@@ -67,7 +66,20 @@ class FluxRunEngine:
                                    settings=self.settings,
                                    copy_to_outdir=True)
 
-        # TODO hier weiter
+    def _run_rawdata_uncompress(self):
+        # Uncompress
+        file.uncompress_gz(settings_dict=self.settings,
+                           found_gz_files_dict=self.rawdata_found_files_dict,
+                           logger=self.logger)
+
+        # Files were uncompressed, search those files
+        self.rawdata_found_files_dict = \
+            file.SearchAll(settings=self.settings,
+                           logger=self.logger,
+                           search_in_dir=self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'],
+                           search_uncompressed=True).keep_valid_files()
+
+    def _run_rawdata(self):
         # Search valid raw ASCII files
         self.rawdata_found_files_dict = file.SearchAll(
             settings=self.settings,
@@ -79,26 +91,12 @@ class FluxRunEngine:
             self.logger.info("(!)ERROR No raw data files found. Please check settings.")
             sys.exit(-1)
 
-        # Get raw data files for processing, uncompress if needed
-        if self.settings['RAWDATA']['COMPRESSION'] == '.gz':
-
-            # Uncompress
-            file.uncompress_gz(settings_dict=self.settings,
-                               found_gz_files_dict=self.rawdata_found_files_dict,
-                               logger=self.logger)
-
-            # Files were uncompressed, search those files
-            self.rawdata_found_files_dict = \
-                file.SearchAll(settings=self.settings,
-                               logger=self.logger,
-                               search_in_dir=self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'],
-                               search_uncompressed=True).keep_valid_files()
-        elif self.settings['RAWDATA']['COMPRESSION'] == 'None':
-            # In this case files are already uncompressed
-            pass
+        # Uncompress if needed
+        if Path(self.settings['_sitefiles_parse_str_python']).suffix == '.gz':
+            self._run_rawdata_uncompress()
 
         # Availability heatmap for *uncompressed* raw data files
-        if self.settings['OUTPUT']['PLOT_RAWDATA_AVAILABILITY'] == 1:
+        if self.settings['RAWDATA']['PLOT_RAWDATA_AVAILABILITY'] == 1:
             vis.availability_rawdata(
                 rawdata_found_files_dict=self.rawdata_found_files_dict,
                 rawdata_file_datefrmt=self.settings['_sitefiles_parse_str_python_uncompr'].rstrip('.gz'),
@@ -106,15 +104,16 @@ class FluxRunEngine:
                 logger=self.logger)
 
         # Plot stats for *uncompressed* raw data files
-        if self.settings['OUTPUT']['PLOT_RAWDATA_AGGREGATES'] == 1:
+        if self.settings['RAWDATA']['PLOT_RAWDATA_AGGREGATES'] == 1:
             vis.PlotRawDataFilesAggregates(
                 rawdata_found_files_dict=self.rawdata_found_files_dict,
                 settings_dict=self.settings,
                 logger=self.logger,
                 rawdata_file_datefrmt=self.settings['_sitefiles_parse_str_python_uncompr'].rstrip('.gz'))
 
+    def _run_fluxprocessing(self):
         # Call EddyPro processing
-        rp_process_status = self.run_eddypro_cmd(cmd='eddypro_rp.exe')  # execute exe todo for linux and osx
+        rp_process_status = self.run_eddypro_cmd(cmd='eddypro_rp.exe')  # execute exe
 
         # Check if EddyPro full_output file was already generated
         found_full_output, _ = file.check_if_file_in_folder(search_str='*_full_output_*.csv',
@@ -125,15 +124,28 @@ class FluxRunEngine:
                              "This is not necessarily bad.")
 
         if rp_process_status == 0 and found_full_output is False:
-            fcc_process_status = self.run_eddypro_cmd(cmd='eddypro_fcc.exe')  # execute exe todo for linux and osx
+            fcc_process_status = self.run_eddypro_cmd(cmd='eddypro_fcc.exe')  # execute exe
 
+    def _run_output(self):
         self._plot_summary()
-        self._delete_uncompressed_ascii_files()
 
+    def _run_afterprocessing(self):
+        if int(self.settings['AFTER PROCESSING']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING']) == 1:
+            self._delete_uncompressed_ascii_files()
+
+    def _run_finalize(self):
         self.logger.info("\n\n\n")
         self.logger.info("=" * 60)
-        self.logger.info("FluxRun finished.")
+        self.logger.info("fluxrun finished.")
         self.logger.info("=" * 60)
+
+    def run(self):
+        self._run_setup()
+        self._run_rawdata()
+        if self.settings['FLUX_PROCESSING']['RUN_FLUX_CALCS'] == 1:
+            self._run_fluxprocessing()
+            self._run_output()
+        self._run_finalize()
 
     def _plot_summary(self):
         """Generate summary plots"""
@@ -154,30 +166,29 @@ class FluxRunEngine:
 
     def _delete_uncompressed_ascii_files(self):
         """Delete uncompressed (unzipped) ASCII files that were used for flux processing"""
-        if int(self.settings['delete_uncompressed_ascii_after_processing']) == 1:
-            uncompressed_ascii_files = file.SearchAll(
-                settings=self.settings,
-                logger=self.logger,
-                search_in_dir=self.settings['_dir_out_run_rawdata_ascii_files'],
-                search_uncompressed=True) \
-                .keep_valid_files()
+        uncompressed_ascii_files = file.SearchAll(
+            settings=self.settings,
+            logger=self.logger,
+            search_in_dir=self.settings['_dir_out_run_rawdata_ascii_files'],
+            search_uncompressed=True) \
+            .keep_valid_files()
 
-            # Convert to list
-            deletepaths = []
-            for filename, filepath in uncompressed_ascii_files.items():
-                deletepaths.append(filepath)
+        # Convert to list
+        deletepaths = []
+        for filename, filepath in uncompressed_ascii_files.items():
+            deletepaths.append(filepath)
 
-            # Keep the last file
-            deletepaths = list(deletepaths)[:-1]
+        # Keep the last file
+        deletepaths = list(deletepaths)[:-1]
 
-            # Make sure there are CSVs only
-            deletelist = []
-            [deletelist.append(x) for x in deletepaths if x.suffix == '.csv']
+        # Make sure there are CSVs only
+        deletelist = []
+        [deletelist.append(x) for x in deletepaths if x.suffix == '.csv']
 
-            # Delete files
-            for filepath in deletelist:
-                self.logger.info(f"Deleting uncompressed (unzipped) ASCII file: {filepath}) ...")
-                os.remove(filepath)
+        # Delete files
+        for filepath in deletelist:
+            self.logger.info(f"Deleting uncompressed (unzipped) ASCII file: {filepath}) ...")
+            os.remove(filepath)
 
     def run_eddypro_cmd(self, cmd: str):
         """Run eddypro_rp.exe or eddypro_fcc.exe"""
