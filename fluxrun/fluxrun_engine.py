@@ -3,7 +3,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-# from fluxrun_gui import FluxRunGUI
 import ops.file as file
 import ops.logger as logger
 import ops.setup as setup

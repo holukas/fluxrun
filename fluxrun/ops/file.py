@@ -333,7 +333,7 @@ class PrepareEddyProFiles:
             self.logger.info(f"{self.section_txt} [METADATA FILE] "
                              f"(!)ERROR: No *.metadata file with name {required_metadata_filename} was found.")
             self.logger.info(f"{self.section_txt} [METADATA FILE] "
-                             f"(!)ERROR: Stopping FluxRun.")
+                             f"(!)ERROR: Stopping fluxrun.")
             sys.exit()
 
     def search_required_metadata_file(self):

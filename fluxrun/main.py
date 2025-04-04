@@ -5,8 +5,8 @@ from pathlib import Path
 from PyQt6 import QtWidgets as qtw
 
 import cli.cli as cli
-from fluxrun_cli import FluxRunCli
-from fluxrun_gui import FluxRunGUI
+from fluxrun import fluxruncli
+from fluxrun import fluxrungui
 
 
 def main(args):
@@ -18,18 +18,18 @@ def main(args):
     # Run FLUXRUN w/o GUI
     if args.folder:
         days = args.days if args.days else None
-        fluxruncli = FluxRunCli(folder=args.folder, days=days)
-        fluxruncli.run()
+        _fluxruncli = fluxruncli(folder=args.folder, days=days)
+        _fluxruncli.run()
 
     # Run FLUXRUN with GUI
     if args.gui:
         app = qtw.QApplication(sys.argv)
-        fluxrungui = FluxRunGUI()
-        fluxrungui.show()
+        _fluxrungui = fluxrungui()
+        _fluxrungui.show()
         app.exec()
 
     else:
-        print("Please add arg how FLUXRUN should be executed. Add '-h' for help.")
+        print("Please add arg how fluxrun should be executed. Add '-h' for help.")
 
 
 if __name__ == '__main__':
