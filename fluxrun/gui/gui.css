@@ -22,7 +22,6 @@ QPushButton:pressed{background-color: white;}
 /*QPushButton:disabled{color: gray; border-color: gray;}*/
 
 QCheckBox{color: #263238;}
-QCheckBox[labelClass="checkbox_active"]{color: red;}
 QCheckBox::indicator {border: none; height: 35px; width: 35px;}
 QCheckBox::indicator:checked {image: url("images/switch1_on.png");}
 QCheckBox::indicator:unchecked {image: url("images/switch1_off.png");}
