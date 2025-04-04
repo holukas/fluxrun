@@ -65,6 +65,20 @@ class FluxRunEngine:
                                    settings=self.settings,
                                    copy_to_outdir=True)
 
+        self._log_extended_settings()
+
+    def _log_extended_settings(self):
+        self.logger.info("")
+        self.logger.info(f"{'=' * 80}")
+        self.logger.info("")
+        self.logger.info(f"SETTINGS (EXTENDED)")
+        self.logger.info("")
+        self.logger.info(f"{'=' * 80}")
+        for k, v in self.settings.items():
+            self.logger.info(f"{k}: {v}")
+        self.logger.info("")
+        self.logger.info("")
+
     def _run_rawdata_uncompress(self):
         # Uncompress
         file.uncompress_gz(settings_dict=self.settings,
