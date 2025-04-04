@@ -1,6 +1,5 @@
 import datetime as dt
 import os
-import sys
 from pathlib import Path
 
 from fluxrun.ops.setup import read_settings_file
@@ -19,8 +18,6 @@ class FluxRunCli:
     def __init__(self, folder: str, days: int = None):
         self.folder = Path(folder)
         self.days = days
-
-
 
         self.settings = {}
 

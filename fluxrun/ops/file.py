@@ -1,4 +1,3 @@
-from shutil import copyfile
 import datetime as dt
 import fileinput
 import fnmatch
@@ -6,7 +5,9 @@ import gzip
 import os
 import shutil
 import sys
+import time
 from pathlib import Path
+from shutil import copyfile
 
 import numpy as np
 import pandas as pd
@@ -29,26 +30,27 @@ def check_if_file_in_folder(search_str: str, folder: str):
 def uncompress_gz(settings_dict, found_gz_files_dict, logger):
     """Unzip compressed .gz files to output folder of current run"""
     for compr_filename, compr_filepath in found_gz_files_dict.items():
-        compr_filepath = str(compr_filepath)
-        uncompr_filename = Path(compr_filename).stem
-        uncompr_filepath = Path(settings_dict['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
-        import time
-        tic = time.time()
-        with gzip.open(compr_filepath, 'rb') as f_in:
-            logger.info(f"Trying to unzip file {compr_filepath} ...")
-            with open(uncompr_filepath, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-                time_needed = time.time() - tic
-                logger.info(f"[UNZIPPING GZ RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
-                            f"(done in {time_needed:.3f}s)")
-
-    # # Search for the now converted files and update dict of found files
-    # rawdata_found_files_dict = SearchAll(
-    #     settings_dict=settings_dict,
-    #     logger=logger,
-    #     search_in_dir=settings_dict['_dir_out_run_rawdata_ascii_files']).keep_valid_files()
-
-    # return rawdata_found_files_dict
+        try:
+            compr_filepath = str(compr_filepath)
+            uncompr_filename = Path(compr_filename).stem
+            uncompr_filepath = Path(settings_dict['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
+            tic = time.time()
+            with gzip.open(compr_filepath, 'rb') as f_in:
+                logger.info(f"Trying to unzip file {compr_filepath} ...")
+                with open(uncompr_filepath, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                    time_needed = time.time() - tic
+                    logger.info(f"[UNZIPPING GZ RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
+                                f"(done in {time_needed:.3f}s)")
+        except Exception as e:
+            logger.info("")
+            logger.info(f"{'!'* 50}")
+            logger.info(f"(!)WARNING for file {compr_filepath}")
+            logger.info(f"(!)File skipped during uncompression.")
+            logger.info(f"(!)Reason for skipping: {e}")
+            logger.info(f"(!)File will not be used in processing.")
+            logger.info(f"{'!'* 50}")
+            logger.info("")
 
 
 def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
@@ -60,7 +62,7 @@ def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
 
 
 class SearchAll:
-    def __init__(self, logger, search_in_dir, settings, search_uncompressed = False):
+    def __init__(self, logger, search_in_dir, settings, search_uncompressed=False):
         self.logger = logger
         self.valid_files_dict = {}
         self.search_in_dir = search_in_dir
@@ -71,7 +73,6 @@ class SearchAll:
             self.site_parse_str_py = settings['_sitefiles_parse_str_python_uncompr']  # Parsing string in Python format
         else:
             self.site_parse_str_py = settings['_sitefiles_parse_str_python']  # Parsing string in Python format
-
 
     def keep_valid_files(self):
         """Search all files that can be parsed with the parsing string,
@@ -85,7 +86,6 @@ class SearchAll:
         # Parse filedates and keep files in specified date range
         self.valid_files_dict = self.keep_files_within_timerange(site_parse_str_py=self.site_parse_str_py)
         return self.valid_files_dict
-
 
     def search_all(self, dir, site_parse_str_py, logger):
         """Search all files that can be parsed with the parsing string."""
