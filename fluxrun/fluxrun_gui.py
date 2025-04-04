@@ -40,6 +40,7 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
     def run(self):
         """Call FluxRunEngine for calculations"""
         self.settings = self.get_settings_from_gui()
+
         fluxrunengine = FluxRunEngine(settings=self.settings)
         fluxrunengine.run()
 
