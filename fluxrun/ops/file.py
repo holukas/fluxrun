@@ -104,6 +104,15 @@ def validate_numeric(settings: dict, found_files: dict, logger):
             filepath_out = Path(settings['_dir_out_run_rawdata_ascii_files']) / filename
             df.to_csv(filepath_out, index=False)
 
+            logger.warning("")
+            logger.warning(f"NON-NUMERIC VALUES in file")
+            logger.warning(f"{filename}")
+            logger.warning("Non-numeric values were converted to -9999.")
+            logger.warning(f"Columns with non-numeric values:")
+            for n in non_numeric_cols:
+                logger.warning(f"    {n}")
+            logger.warning("")
+
         except Exception as e:
             logger.info("")
             logger.info(f"{'!' * 50}")
