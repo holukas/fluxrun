@@ -27,13 +27,101 @@ def check_if_file_in_folder(search_str: str, folder: str):
     return file_is_in_folder, filepath
 
 
-def uncompress_gz(settings_dict, found_gz_files_dict, logger):
+def read_uncompr_ascii_file(settings, filepath, logger, section_id) -> pd.DataFrame:
+    # TODO
+    logger.info(f"{section_id}    Reading file {filepath} ...")
+
+    tic = time.time()
+
+    # Check header format
+    if settings['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
+        skiprows = None
+    elif settings['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
+        skiprows = [0]
+    else:
+        raise NotImplementedError(f"{settings['RAWDATA']['HEADER_FORMAT']} is not implemented.")
+
+    df = pd.read_csv(filepath,
+                     skiprows=skiprows,
+                     header=[0, 1, 2],
+                     na_values=-9999,
+                     encoding='utf-8',
+                     delimiter=',',
+                     # keep_date_col=True,
+                     parse_dates=False,
+                     # date_parser=None,
+                     index_col=None,
+                     dtype=None)
+    time_needed = time.time() - tic
+    logger.info(f"{section_id}    Finished ({time_needed:.3f}s). "
+                f"Detected {len(df)} rows and {df.columns.size} columns.")
+    return df
+
+
+def check_all_numeric(df: pd.DataFrame) -> bool:
+    """
+    Check if all columns in a pandas DataFrame are numeric.
+
+    Args:
+      df: The pandas DataFrame to check.
+
+    Returns:
+      True if all columns are numeric, False otherwise.
+    """
+    numeric_columns = df.select_dtypes(include=np.number).columns
+    return len(numeric_columns) == len(df.columns)
+
+
+def validate_numeric(settings: dict, found_files: dict, logger):
     """Unzip compressed .gz files to output folder of current run"""
-    for compr_filename, compr_filepath in found_gz_files_dict.items():
+    for filename, filepath in found_files.items():
+        try:
+            filepath = str(filepath)
+            # TODO
+            df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename)
+
+            # Check if all columns are numeric, yields True if yes and then continues with next file
+            if check_all_numeric(df=df):
+                continue
+
+            # Select non-numeric columns
+            non_numeric_cols = df.select_dtypes(exclude=np.number).columns
+
+            # Convert non-numeric columns to numeric, coercing errors to NaN
+            for col in non_numeric_cols:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
+
+            # Fill NaN values (which resulted from non-numeric values) with -9999
+            df = df.fillna(-9999)
+
+            # Re-check if now all columns are numeric
+            if check_all_numeric(df=df):
+                pass
+            else:
+                raise ValueError(f"(!)ERROR {filename} still contains non-numeric records.")
+
+            # Save file
+            filepath_out = Path(settings['_dir_out_run_rawdata_ascii_files']) / filename
+            df.to_csv(filepath_out, index=False)
+
+        except Exception as e:
+            logger.info("")
+            logger.info(f"{'!' * 50}")
+            logger.info(f"(!)WARNING for file {filepath}")
+            logger.info(f"(!)File skipped during uncompression.")
+            logger.info(f"(!)Reason for skipping: {e}")
+            logger.info(f"(!)File will not be used in processing.")
+            logger.info(f"{'!' * 50}")
+            logger.info("")
+
+
+def uncompress_gz(settings: dict, found_gz_files: dict, logger):
+    """Unzip compressed .gz files to output folder of current run"""
+    for compr_filename, compr_filepath in found_gz_files.items():
         try:
             compr_filepath = str(compr_filepath)
             uncompr_filename = Path(compr_filename).stem
-            uncompr_filepath = Path(settings_dict['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
+            uncompr_filepath = Path(settings['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
             tic = time.time()
             with gzip.open(compr_filepath, 'rb') as f_in:
                 logger.info(f"Trying to unzip file {compr_filepath} ...")
@@ -44,12 +132,12 @@ def uncompress_gz(settings_dict, found_gz_files_dict, logger):
                                 f"(done in {time_needed:.3f}s)")
         except Exception as e:
             logger.info("")
-            logger.info(f"{'!'* 50}")
+            logger.info(f"{'!' * 50}")
             logger.info(f"(!)WARNING for file {compr_filepath}")
             logger.info(f"(!)File skipped during uncompression.")
             logger.info(f"(!)Reason for skipping: {e}")
             logger.info(f"(!)File will not be used in processing.")
-            logger.info(f"{'!'* 50}")
+            logger.info(f"{'!' * 50}")
             logger.info("")
 
 
