@@ -56,7 +56,7 @@ class FluxRunEngine:
 
     def _run_setup(self):
         # Logger
-        self.logger = logger.setup_logger(settings_dict=self.settings)
+        self.logger = logger.setup_logger(settings=self.settings)
         self.logger.info(f"\n\nRun ID: {self.settings['_run_id']}")
         self.logger.info(f"fluxrun version: {version.__version__} / {version.__date__}\n\n")
 
@@ -109,7 +109,7 @@ class FluxRunEngine:
         if Path(self.settings['_sitefiles_parse_str_python']).suffix == '.gz':
             self.rawdata_found_files_dict = self._run_rawdata_uncompress()
 
-        # TODO Make sure all raw data are numeric
+        # Make sure all raw data are numeric
         file.validate_numeric(
             settings=self.settings,
             found_files=self.rawdata_found_files_dict,
