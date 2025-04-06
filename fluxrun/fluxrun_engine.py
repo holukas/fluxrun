@@ -79,18 +79,19 @@ class FluxRunEngine:
         self.logger.info("")
         self.logger.info("")
 
-    def _run_rawdata_uncompress(self):
+    def _run_rawdata_uncompress(self) -> dict:
         # Uncompress
-        file.uncompress_gz(settings_dict=self.settings,
-                           found_gz_files_dict=self.rawdata_found_files_dict,
+        file.uncompress_gz(settings=self.settings,
+                           found_gz_files=self.rawdata_found_files_dict,
                            logger=self.logger)
 
         # Files were uncompressed, search those files
-        self.rawdata_found_files_dict = \
+        rawdata_found_files_dict = \
             file.SearchAll(settings=self.settings,
                            logger=self.logger,
                            search_in_dir=self.settings['_dir_used_rawdata_ascii_files_eddypro_data_path'],
                            search_uncompressed=True).keep_valid_files()
+        return rawdata_found_files_dict
 
     def _run_rawdata(self):
         # Search valid raw ASCII files
@@ -106,7 +107,14 @@ class FluxRunEngine:
 
         # Uncompress if needed
         if Path(self.settings['_sitefiles_parse_str_python']).suffix == '.gz':
-            self._run_rawdata_uncompress()
+            self.rawdata_found_files_dict = self._run_rawdata_uncompress()
+
+        # TODO Make sure all raw data are numeric
+        file.validate_numeric(
+            settings=self.settings,
+            found_files=self.rawdata_found_files_dict,
+            logger=self.logger
+        )
 
         # Availability heatmap for *uncompressed* raw data files
         if self.settings['RAWDATA']['PLOT_RAWDATA_AVAILABILITY'] == 1:

@@ -10,7 +10,7 @@ import pandas as pd
 from matplotlib import dates
 from matplotlib.ticker import MultipleLocator
 
-from ops.file import ReadEddyProFullOutputFile
+from fluxrun.ops.file import ReadEddyProFullOutputFile, read_uncompr_ascii_file
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 15)
@@ -357,7 +357,7 @@ class PlotRawDataFilesAggregates:
 
     def __init__(self, rawdata_found_files_dict, settings_dict, logger, rawdata_file_datefrmt):
         self.rawdata_found_files_dict = rawdata_found_files_dict
-        self.settings_dict = settings_dict
+        self.settings = settings_dict
         self.logger = logger
         self.rawdata_file_datefrmt = rawdata_file_datefrmt
 
@@ -369,17 +369,27 @@ class PlotRawDataFilesAggregates:
         stats_coll_df = pd.DataFrame()
         num_files = len(self.rawdata_found_files_dict)
         for fid, filepath in self.rawdata_found_files_dict.items():
-            filecounter += 1
-            self.file_header_for_log(fid=fid, num_files=num_files, filecounter=filecounter)
-            rawdata_filedate = self.get_filedate(fid)
-            rawdata_df = self.read_uncompr_ascii_file(filepath=filepath)
-            stats_coll_df = self.calc_rawdata_stats(rawdata_df=rawdata_df,
-                                                    rawdata_filedate=rawdata_filedate,
-                                                    stats_coll_df=stats_coll_df,
-                                                    filecounter=filecounter)
+            try:
+                filecounter += 1
+                self.file_header_for_log(fid=fid, num_files=num_files, filecounter=filecounter)
+                rawdata_filedate = self.get_filedate(fid)
+                rawdata_df = read_uncompr_ascii_file(
+                    settings=self.settings,
+                    filepath=filepath,
+                    logger=self.logger,
+                    section_id=self.section_id
+                )
+                stats_coll_df = self.calc_rawdata_stats(rawdata_df=rawdata_df,
+                                                        rawdata_filedate=rawdata_filedate,
+                                                        stats_coll_df=stats_coll_df,
+                                                        filecounter=filecounter)
+            except Exception as e:
+                self.logger.error(e)
+                raise Exception(f"(!)ERROR in file {filepath}:\n"
+                                f"{e}")
+
         self.make_plot(df=stats_coll_df,
-                       outdir=self.settings_dict['_dir_out_run_plots_aggregates_rawdata'])
-        # print(filecounter)
+                       outdir=self.settings['_dir_out_run_plots_aggregates_rawdata'])
 
     def file_header_for_log(self, fid, num_files, filecounter):
         spacer = "=" * 30
@@ -387,35 +397,7 @@ class PlotRawDataFilesAggregates:
         self.logger.info(f"{self.section_id} File {fid} (#{filecounter} of {num_files}) ...")
         self.logger.info(f"{self.section_id} {spacer}")
 
-    def read_uncompr_ascii_file(self, filepath):
-        self.logger.info(f"{self.section_id}    Reading file {filepath} ...")
 
-        tic = time.time()
-
-        # TODO check settings hier weiter
-        # Check header format
-        if self.settings_dict['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
-            skiprows = None
-        elif self.settings_dict['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
-            skiprows = [0]
-        else:
-            raise NotImplementedError(f"{self.settings_dict['RAWDATA']['HEADER_FORMAT']} is not implemented.")
-
-        rawdata_df = pd.read_csv(filepath,
-                                 skiprows=skiprows,
-                                 header=[0, 1, 2],
-                                 na_values=-9999,
-                                 encoding='utf-8',
-                                 delimiter=',',
-                                 # keep_date_col=True,
-                                 parse_dates=False,
-                                 # date_parser=None,
-                                 index_col=None,
-                                 dtype=None)
-        time_needed = time.time() - tic
-        self.logger.info(f"{self.section_id}    Finished ({time_needed:.3f}s). "
-                         f"Detected {len(rawdata_df)} rows and {rawdata_df.columns.size} columns.")
-        return rawdata_df
 
     def calc_rawdata_stats(self, rawdata_df, stats_coll_df, rawdata_filedate, filecounter):
         """Calculate stats for raw data"""
