@@ -109,13 +109,6 @@ class FluxRunEngine:
         if Path(self.settings['_sitefiles_parse_str_python']).suffix == '.gz':
             self.rawdata_found_files_dict = self._run_rawdata_uncompress()
 
-        # Make sure all raw data are numeric
-        file.validate_numeric_data(
-            settings=self.settings,
-            found_files=self.rawdata_found_files_dict,
-            logger=self.logger
-        )
-
         # Availability heatmap for *uncompressed* raw data files
         if self.settings['RAWDATA']['PLOT_RAWDATA_AVAILABILITY'] == 1:
             vis.availability_rawdata(
@@ -124,7 +117,14 @@ class FluxRunEngine:
                 outdir=self.settings['_dir_out_run_plots_availability_rawdata'],
                 logger=self.logger)
 
-        # Plot stats for *uncompressed* raw data files
+        # Make sure all raw data are numeric
+        file.validate_numeric_data(
+            settings=self.settings,
+            found_files=self.rawdata_found_files_dict,
+            logger=self.logger
+        )
+
+        # todo move? Plot stats for *uncompressed* raw data files
         if self.settings['RAWDATA']['PLOT_RAWDATA_AGGREGATES'] == 1:
             vis.PlotRawDataFilesAggregates(
                 rawdata_found_files_dict=self.rawdata_found_files_dict,
