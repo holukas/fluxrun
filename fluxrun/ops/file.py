@@ -72,12 +72,21 @@ def check_all_numeric(df: pd.DataFrame) -> bool:
     return len(numeric_columns) == len(df.columns)
 
 
+def add_level_to_header(df: pd.DataFrame, new_level_name: str = '', new_level_value: str = '') -> pd.DataFrame:
+    """Validate number of header rows."""
+    new_columns_tuples = []
+    for col in df.columns:
+        new_columns_tuples.append((new_level_value,) + col)
+    new_columns = pd.MultiIndex.from_tuples(new_columns_tuples, names=[new_level_name] + df.columns.names)
+    df.columns = new_columns
+    return df
+
+
 def validate_numeric(settings: dict, found_files: dict, logger):
     """Unzip compressed .gz files to output folder of current run"""
     for filename, filepath in found_files.items():
         try:
             filepath = str(filepath)
-            # TODO
             df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename)
 
             # Check if all columns are numeric, yields True if yes and then continues with next file
@@ -100,28 +109,27 @@ def validate_numeric(settings: dict, found_files: dict, logger):
             else:
                 raise ValueError(f"(!)ERROR {filename} still contains non-numeric records.")
 
+            # Re-establish original number of header rows
+            # Files from rECord have 4 header rows, so any corrected files also need to have
+            # the same number of header rows.
+            if settings['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
+                pass
+            elif settings['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
+                df = add_level_to_header(df=df, new_level_value='TOA5')
+            else:
+                raise NotImplementedError(f"{settings['RAWDATA']['HEADER_FORMAT']} is not implemented.")
+
             # Save file
             filepath_out = Path(settings['_dir_out_run_rawdata_ascii_files']) / filename
             df.to_csv(filepath_out, index=False)
 
-            logger.warning("")
-            logger.warning(f"NON-NUMERIC VALUES in file")
-            logger.warning(f"{filename}")
-            logger.warning("Non-numeric values were converted to -9999.")
-            logger.warning(f"Columns with non-numeric values:")
+            logger.warning(f"NON-NUMERIC VALUES IN FILE {filename}: "
+                           f"Non-numeric values were converted to -9999. Columns with non-numeric values:")
             for n in non_numeric_cols:
                 logger.warning(f"    {n}")
-            logger.warning("")
 
         except Exception as e:
-            logger.info("")
-            logger.info(f"{'!' * 50}")
-            logger.info(f"(!)WARNING for file {filepath}")
-            logger.info(f"(!)File skipped during uncompression.")
-            logger.info(f"(!)Reason for skipping: {e}")
-            logger.info(f"(!)File will not be used in processing.")
-            logger.info(f"{'!' * 50}")
-            logger.info("")
+            logger.warning(f"FILE {filename} SKIPPED DURING UNCOMPRESSION: {e}")
 
 
 def uncompress_gz(settings: dict, found_gz_files: dict, logger):
