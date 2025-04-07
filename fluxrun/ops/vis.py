@@ -1,6 +1,5 @@
 import datetime as dt
 import os
-import time
 
 import matplotlib.dates as mdates
 import matplotlib.gridspec as gridspec
@@ -88,7 +87,7 @@ class PlotEddyProFullOutputFile:
             try:
                 y = self.data_df[col].astype(float)
             except ValueError:
-                self.logger.info(f"(!)WARNING: Skipping plotting for {col} because it is not numeric.")
+                self.logger.warning(f"SKIPPING PLOTTING FOR {col} BECAUSE IT IS NOT NUMERIC.")
                 continue
 
             y = sanitize_y(y=y)
@@ -108,8 +107,6 @@ class PlotEddyProFullOutputFile:
                 text_size = 8
 
                 # fig = plt.subplot2grid((3, 3), (0, 0))
-
-
 
                 # TIME SERIES PLOT
                 ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=2)
@@ -169,7 +166,7 @@ class PlotEddyProFullOutputFile:
                     ax2.set_title(f"{var} histogram", size=heading_size, backgroundcolor='#5b9bd5')
                     ax2.tick_params(axis='both', labelsize=label_size)
                 except ValueError as e:
-                    self.logger.info("(!)Error during histogram generation: {}".format(e))
+                    self.logger.error("ERROR DURING HISTOGRAM PLOTTING: {}".format(e))
                     pass
 
                 # CUMULATIVE
@@ -385,8 +382,7 @@ class PlotRawDataFilesAggregates:
                                                         filecounter=filecounter)
             except Exception as e:
                 self.logger.error(e)
-                raise Exception(f"(!)ERROR in file {filepath}:\n"
-                                f"{e}")
+                raise Exception(f"ERROR IN FILE {filepath}: {e}")
 
         self.make_plot(df=stats_coll_df,
                        outdir=self.settings['_dir_out_run_plots_aggregates_rawdata'])
@@ -396,8 +392,6 @@ class PlotRawDataFilesAggregates:
         self.logger.info(f"{self.section_id} {spacer}")
         self.logger.info(f"{self.section_id} File {fid} (#{filecounter} of {num_files}) ...")
         self.logger.info(f"{self.section_id} {spacer}")
-
-
 
     def calc_rawdata_stats(self, rawdata_df, stats_coll_df, rawdata_filedate, filecounter):
         """Calculate stats for raw data"""
@@ -443,12 +437,12 @@ class PlotRawDataFilesAggregates:
 
         # Get only var name, units and instrument from 3-row MultiIndex,
         # this means that the row with agg info is skipped here, but then used later during plotting
-        vars = list(zip(df.columns.get_level_values(0),
-                        df.columns.get_level_values(1),
-                        df.columns.get_level_values(2)))
-        vars = set(vars)
+        _vars = list(zip(df.columns.get_level_values(0),
+                         df.columns.get_level_values(1),
+                         df.columns.get_level_values(2)))
+        _vars = set(_vars)
 
-        for var in vars:
+        for var in _vars:
             self.logger.info(f"{self.section_id}    Plotting {var} ...")
             var_df = df[var].copy()
             gs = gridspec.GridSpec(2, 2)  # rows, cols
@@ -481,7 +475,9 @@ class PlotRawDataFilesAggregates:
             font = {'family': 'sans-serif', 'size': 10}
             ax1.legend(frameon=True, loc='upper right', prop=font).set_zorder(100)
 
-            outfile = outdir / f"{var[0]}_{var[1]}_{var[2]}"
+            outname = f"{var[0]}_{var[1]}_{var[2]}"
+            outname = outname.replace(':', '_')
+            outfile = outdir / outname
             fig.savefig(f"{outfile}.png", format='png', bbox_inches='tight', facecolor='w',
                         transparent=True, dpi=150)
 

@@ -82,54 +82,56 @@ def add_level_to_header(df: pd.DataFrame, new_level_name: str = '', new_level_va
     return df
 
 
-def validate_numeric(settings: dict, found_files: dict, logger):
-    """Unzip compressed .gz files to output folder of current run"""
+def validate_numeric_data(settings: dict, found_files: dict, logger):
+    """Ensure all data columns contain numeric data."""
     for filename, filepath in found_files.items():
-        try:
-            filepath = str(filepath)
-            df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename)
+        # try:
+        filepath = str(filepath)
+        df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename)
 
-            # Check if all columns are numeric, yields True if yes and then continues with next file
-            if check_all_numeric(df=df):
-                continue
+        # Check if all columns are numeric, yields True if yes and then continues with next file
+        if check_all_numeric(df=df):
+            continue
 
-            # Select non-numeric columns
-            non_numeric_cols = df.select_dtypes(exclude=np.number).columns
+        # Select non-numeric columns
+        non_numeric_cols = df.select_dtypes(exclude=np.number).columns
 
-            # Convert non-numeric columns to numeric, coercing errors to NaN
-            for col in non_numeric_cols:
-                df[col] = pd.to_numeric(df[col], errors='coerce')
+        # Convert non-numeric columns to numeric, coercing errors to NaN
+        for col in non_numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
 
-            # Fill NaN values (which resulted from non-numeric values) with -9999
-            df = df.fillna(-9999)
+        # Fill NaN values (which resulted from non-numeric values) with -9999
+        df = df.fillna(-9999)
 
-            # Re-check if now all columns are numeric
-            if check_all_numeric(df=df):
-                pass
-            else:
-                raise ValueError(f"(!)ERROR {filename} still contains non-numeric records.")
+        # Re-check if now all columns are numeric
+        if check_all_numeric(df=df):
+            pass
+        else:
+            msg = f"{filename} STILL CONTAINS NON-NUMERIC RECORDS."
+            logger.error(msg)
+            raise ValueError(msg)
 
-            # Re-establish original number of header rows
-            # Files from rECord have 4 header rows, so any corrected files also need to have
-            # the same number of header rows.
-            if settings['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
-                pass
-            elif settings['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
-                df = add_level_to_header(df=df, new_level_value='TOA5')
-            else:
-                raise NotImplementedError(f"{settings['RAWDATA']['HEADER_FORMAT']} is not implemented.")
+        # Re-establish original number of header rows
+        # Files from rECord have 4 header rows, so any corrected files also need to have
+        # the same number of header rows.
+        if settings['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
+            pass
+        elif settings['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
+            df = add_level_to_header(df=df, new_level_value='TOA5')
+        else:
+            raise NotImplementedError(f"{settings['RAWDATA']['HEADER_FORMAT']} is not implemented.")
 
-            # Save file
-            filepath_out = Path(settings['_dir_out_run_rawdata_ascii_files']) / filename
-            df.to_csv(filepath_out, index=False)
+        # Save file
+        filepath_out = Path(settings['_dir_out_run_rawdata_ascii_files']) / filename
+        df.to_csv(filepath_out, index=False)
 
-            logger.warning(f"NON-NUMERIC VALUES IN FILE {filename}: "
-                           f"Non-numeric values were converted to -9999. Columns with non-numeric values:")
-            for n in non_numeric_cols:
-                logger.warning(f"    {n}")
+        logger.warning(f"NON-NUMERIC VALUES IN FILE {filename}: "
+                       f"Non-numeric values were converted to -9999. Columns with non-numeric values:")
+        for n in non_numeric_cols:
+            logger.warning(f"    {n}")
 
-        except Exception as e:
-            logger.warning(f"FILE {filename} SKIPPED DURING UNCOMPRESSION: {e}")
+        # except Exception as e:
+        #     logger.warning(f"FILE {filename} SKIPPED DURING UNCOMPRESSION: {e}")
 
 
 def uncompress_gz(settings: dict, found_gz_files: dict, logger):
@@ -147,15 +149,9 @@ def uncompress_gz(settings: dict, found_gz_files: dict, logger):
                     time_needed = time.time() - tic
                     logger.info(f"[UNZIPPING GZ RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
                                 f"(done in {time_needed:.3f}s)")
+
         except Exception as e:
-            logger.info("")
-            logger.info(f"{'!' * 50}")
-            logger.info(f"(!)WARNING for file {compr_filepath}")
-            logger.info(f"(!)File skipped during uncompression.")
-            logger.info(f"(!)Reason for skipping: {e}")
-            logger.info(f"(!)File will not be used in processing.")
-            logger.info(f"{'!' * 50}")
-            logger.info("")
+            logger.warning(f"FILE {compr_filename} SKIPPED DURING UNCOMPRESSION: {e}")
 
 
 def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
@@ -381,7 +377,7 @@ class PrepareEddyProFiles:
         if os.name == 'nt':
             os_subdir = 'windows'
         else:
-            self.logger(f"(!)ERROR Operating system {os.name} not implemented")
+            self.logger(f"OPERATING SYSTEM {os.name} NOT IMPLEMENTED.")
             sys.exit(-1)
         dir_app = dir_app / os_subdir
 
@@ -399,13 +395,13 @@ class PrepareEddyProFiles:
 
         # Check if files available
         if not Path(self.settings_dict['_path_used_eddypro_app_rp']).is_file():
-            self.logger.info(f"(!)ERROR eddypro_rp.exe was not found "
-                             f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
+            self.logger.info(f"EXECUTABLE eddypro_rp.exe WAS NOT FOUND "
+                             f"IN FOLDER: {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
         if not Path(self.settings_dict['_path_used_eddypro_app_fcc']).is_file():
-            self.logger.info(f"(!)ERROR eddypro_fcc was not found "
-                             f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
+            self.logger.info(f"EXECUTABLE eddypro_fcc.exe WAS NOT FOUND "
+                             f"IN FOLDER: {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
     def prepare_processing_file(self):
@@ -436,9 +432,9 @@ class PrepareEddyProFiles:
 
         else:
             self.logger.info(f"{self.section_txt} [METADATA FILE] "
-                             f"(!)ERROR: No *.metadata file with name {required_metadata_filename} was found.")
+                             f"NO *.metadata FILE WITH NAME {required_metadata_filename} WAS FOUND.")
             self.logger.info(f"{self.section_txt} [METADATA FILE] "
-                             f"(!)ERROR: Stopping fluxrun.")
+                             f"STOPPING FLUXRUN.")
             sys.exit()
 
     def search_required_metadata_file(self):
