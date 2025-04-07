@@ -4,6 +4,74 @@
 
 ## v2.0.0 | XX Apr 2025
 
+### Introducing v2.0.0
+
+fluxrun has been updated to version 2, a significant release requiring new settings files. This version enhances its
+usability for a wider range of eddy covariance (EC) sites beyond
+the [ETH Grassland Sciences group](https://gl.ethz.ch/).
+
+[//]: # (<IMAGE>)
+
+fluxrun is a Python wrapper for EddyPro to calculate EC ecosystem fluxes from raw data files.
+
+The processing workflow in fluxrun version 2 involves:
+
+- Selecting a source folder containing eddy covariance raw data files (supports .gz compressed text files and
+  uncompressed text files).
+- Defining a file name ID that includes year, month, day, hour, and minute information.
+- Specifying the number of header rows in the raw data files.
+- Setting a start and end date for processing; files outside this range are ignored.
+- Optionally plotting data availability based on filenames and generating raw data aggregates.
+- Locating the .eddypro flux processing settings file and its corresponding .metadata file in the same directory.
+- Generating plots of all variables from the EddyPro _full_output_ file.
+- Choosing an output folder where fluxrun will create a subfolder with a user-defined prefix.
+- Optionally deleting the uncompressed ASCII files after processing.
+
+Raw data eddy covariance files can be selected from a folder. Depending on the file extension, the files are handled
+differently. If the files have the file extension `.gz`, they are uncompressed before further processing. Files need to
+be text-based, e.g. CSV files, but they can be compressed as `.gz`.
+
+We use fluxrun to run mulitple years in parallel.
+
+fluxrun stores log files (main log, and a separate file for warnings and errors)
+
+fluxrun can be executed using the GUI or directly from the command line interface.
+
+#### Installation
+
+- Installation is currently far from perfect, but here we go:
+- Create conda environment with required Python version: `conda create -n fluxrun-env python=3.11`
+- Activate the created environment: `conda activate fluxrun-env`
+- Now check the fluxrun releases [here](https://github.com/holukas/fluxrun/releases) and decide which version to use
+- Spot the `.tar.gz` file of the desired fluxrun version and use it to directly install from the GitHub repo via pip:
+  `pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.0.0.tar.gz`
+- Now all required dependencies are installed in the environment `fluxrun-env`
+- Spot the `.zip` file of the desired fluxrun version and download it from GitHub. Use the same version as for the
+  `.tar.gz` file: https://github.com/holukas/fluxrun/archive/refs/tags/v2.0.0.zip
+- Unzip the zip file to a folder, e.g. `C:\fluxrun-2.0.0`
+- Start GUI: `python C:\fluxrun-2.0.0\fluxrun main.py -g`
+- Start processing with CLI: `XXX`
+
+
+
+So the processing using fluxrun is like this:
+
+- Select source folder with EC raw data files
+- Define file name ID. The file name needs to contain datetime info, it needs info about the year, month, day, hours and
+  minutes.
+- Then the header format is important, how many header rows are in the raw data files
+- Define a start and end date for processing, files outside this range will be ignored
+- Then there are options to plot data availablility (based on the datetime info in the filenames) and aggregates of the
+  raw data
+- For calculating fluxes, the `.eddypro` file that contains the flux processing settings needs to be located. `fluxrun`
+  will search for a `.metadata` file of the same name in the same folder as the `.eddypro` file. For example, if the
+  settings file is named `my_settings.eddypro`, then `fluxrun` needs a metadata file with the name
+  `my_settings.metadata` in the same folder.
+- Plots can be generated using the `_full_output_` file from the EddyPro output. Every variable is plotted.
+- Then select an output folder, `fluxrun` creates an output folder with the defined prefix in this location
+- After processing, `fluxrun` can delete the uncompressed ASCII files. The uncompressed files are needed for flux
+  calculations, but unless there is a desire to store the uncompressed files they are no longer needed.
+
 - Now using PyQt6 for GUI
 - Updated code for PyQt6
 - Fixed bug in pandas `.pivot()` method, small issue due to the updated pandas version
