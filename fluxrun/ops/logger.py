@@ -26,7 +26,7 @@ def setup_logger(settings: dict,
     main_logfile_path = settings['_dir_out_run_log'] / main_logfile
 
     # Warnings logfile
-    warnings_logfile = f"{settings['_run_id']}_warnings.log"
+    warnings_logfile = f"{settings['_run_id']}_warnings_errors.log"
     warnings_logfile_path = settings['_dir_out_run_log'] / warnings_logfile
 
     # Create logger

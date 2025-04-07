@@ -102,7 +102,7 @@ class FluxRunEngine:
             .keep_valid_files()
 
         if not self.rawdata_found_files_dict:
-            self.logger.info("(!)ERROR No raw data files found. Please check settings.")
+            self.logger.error("NO RAW DATA FILES FOUND. PLEASE CHECK SETTINGS.")
             sys.exit(-1)
 
         # Uncompress if needed
@@ -110,7 +110,7 @@ class FluxRunEngine:
             self.rawdata_found_files_dict = self._run_rawdata_uncompress()
 
         # Make sure all raw data are numeric
-        file.validate_numeric(
+        file.validate_numeric_data(
             settings=self.settings,
             found_files=self.rawdata_found_files_dict,
             logger=self.logger
@@ -141,8 +141,13 @@ class FluxRunEngine:
                                                             folder=self.settings[
                                                                 '_dir_out_run_eddypro_results'])
         if found_full_output:
-            self.logger.info("(!)WARNING EddyPro RP already generated a full_output file. FCC will be skipped. "
-                             "This is not necessarily bad.")
+            self.logger.warning("EDDYPRO RP ALREADY GENERATED A FULL_OUTPUT FILE. "
+                                "FCC WILL BE SKIPPED.")
+            self.logger.warning("RP = Raw data processing, FCC = flux computation and correction")
+            self.logger.warning("RP = Raw data processing, FCC = flux computation and correction")
+            self.logger.warning("This is not necessarily an error. If the spectral correction "
+                                "is purely analytical (or no spectral correction is applied), "
+                                "then FCC is not executed.")
 
         if rp_process_status == 0 and found_full_output is False:
             fcc_process_status = self.run_eddypro_cmd(cmd='eddypro_fcc.exe')  # execute exe
@@ -183,7 +188,7 @@ class FluxRunEngine:
                 self.logger.info("Skipping summary plots (not selected).")
         else:
             if int(self.settings['OUTPUT']['PLOT_SUMMARY']) == 1:
-                self.logger.info("(!)WARNING No *_full_output_* file was found. Skipping summary plots.")
+                self.logger.warning("SKIPPING SUMMARY PLOTS BECAUSE NO *_full_output_* FILE WAS FOUND.")
 
     def _delete_uncompressed_ascii_files(self):
         """Delete uncompressed (unzipped) ASCII files that were used for flux processing"""
@@ -254,7 +259,7 @@ class FluxRunEngine:
         if process_status == 0:
             self.logger.info(f"[EDDYPRO LOG] {cmd} finished successfully.")
         else:
-            self.logger.info(f"[EDDYPRO LOG] (!)ERROR {cmd} encountered a problem.")
+            self.logger.info(f"[EDDYPRO LOG] {cmd} ENCOUNTERED A PROBLEM.")
         self.logger.info("*" * 30)
         return process_status
 
