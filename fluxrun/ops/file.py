@@ -27,9 +27,9 @@ def check_if_file_in_folder(search_str: str, folder: str):
     return file_is_in_folder, filepath
 
 
-def read_uncompr_ascii_file(settings, filepath, logger, section_id) -> pd.DataFrame:
-    # TODO
-    logger.info(f"{section_id}    Reading file {filepath} ...")
+def read_uncompr_ascii_file(settings, filepath, logger, section_id, verbose: bool = True) -> pd.DataFrame:
+    if verbose:
+        logger.info(f"{section_id}    Reading file {filepath} ...")
 
     tic = time.time()
 
@@ -53,8 +53,9 @@ def read_uncompr_ascii_file(settings, filepath, logger, section_id) -> pd.DataFr
                      index_col=None,
                      dtype=None)
     time_needed = time.time() - tic
-    logger.info(f"{section_id}    Finished ({time_needed:.3f}s). "
-                f"Detected {len(df)} rows and {df.columns.size} columns.")
+    if verbose:
+        logger.info(f"{section_id}    Finished ({time_needed:.3f}s). "
+                    f"Detected {len(df)} rows and {df.columns.size} columns.")
     return df
 
 
@@ -85,9 +86,14 @@ def add_level_to_header(df: pd.DataFrame, new_level_name: str = '', new_level_va
 def validate_numeric_data(settings: dict, found_files: dict, logger):
     """Ensure all data columns contain numeric data."""
     for filename, filepath in found_files.items():
-        # try:
+        logger.info(f"[VALIDATING NUMERIC DATA] {filename} ...")
         filepath = str(filepath)
-        df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename)
+        df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename,
+                                     verbose=False)
+
+        if df.empty:
+            logger.warning(f"{filename} is empty and will be skipped.")
+            continue
 
         # Check if all columns are numeric, yields True if yes and then continues with next file
         if check_all_numeric(df=df):
@@ -129,9 +135,6 @@ def validate_numeric_data(settings: dict, found_files: dict, logger):
                        f"Non-numeric values were converted to -9999. Columns with non-numeric values:")
         for n in non_numeric_cols:
             logger.warning(f"    {n}")
-
-        # except Exception as e:
-        #     logger.warning(f"FILE {filename} SKIPPED DURING UNCOMPRESSION: {e}")
 
 
 def uncompress_gz(settings: dict, found_gz_files: dict, logger):
