@@ -1,12 +1,6 @@
-![](images/logo_FLUXRUN1_256px.png)
+# fluxrun
 
-**FluxRun - Python wrapper for EddyPro flux calculations**
-
-## Introducing v2.0.0
-
-`fluxrun` has been updated to version 2.
-
-`fluxrun` is a Python wrapper for EddyPro to calculate eddy covariance (EC) ecosystem fluxes from raw data files.
+Python wrapper for EddyPro to calculate eddy covariance (EC) ecosystem fluxes from raw data files.
 
 ![](images/fluxrun_gui_v2.0.0.png)
 
