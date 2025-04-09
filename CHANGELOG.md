@@ -2,7 +2,7 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
-## v2.0.0 | XX Apr 2025
+## v2.0.0 | 9 Apr 2025
 
 ### Introducing v2.0.0
 
