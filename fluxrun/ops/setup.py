@@ -2,25 +2,13 @@ import os
 import time
 from pathlib import Path
 
+import yaml
 
-def read_settings_file_to_dict(dir_settings, file, reset_paths):
+
+def read_settings_file(filepath_settings):
     """Read start values from settings file as strings into dict, with same variable names as in file"""
-
-    settings_dict = {}
-    settings_file_fullpath = os.path.join(dir_settings, file)
-
-    with open(settings_file_fullpath) as input_file:
-        for line in input_file:  # cycle through all lines in settings file
-            if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
-                line_id, line_setting = line.strip().split('=')
-
-                # reset all file paths, folder paths and instr info, will be filled during run
-                if reset_paths:
-                    if line_id.startswith('f_') or line_id.startswith('dir_') or line_id.startswith('instr_'):
-                        line_setting = ''
-
-                settings_dict[line_id] = line_setting  # store setting from file in dict
-
+    with open(filepath_settings, 'r', encoding='utf-8') as f:
+        settings_dict = yaml.safe_load(f)
     return settings_dict
 
 
@@ -28,9 +16,9 @@ def set_outdirs(settings_dict: dict) -> dict:
     """Set paths for output files"""
 
     # Output folder
-    _dirname = f"{settings_dict['site']}_{settings_dict['_run_id']}"
+    _dirname = f"{settings_dict['OUTPUT']['OUTDIR_PREFIX']}_{settings_dict['_run_id']}"
     settings_dict['_dir_out_run'] = \
-        Path(settings_dict['dir_out']) / _dirname
+        Path(settings_dict['OUTPUT']['OUTDIR']) / _dirname
 
     # Logfile
     settings_dict['_dir_out_run_log'] = \
@@ -63,9 +51,10 @@ def make_outdirs(settings_dict):
     """Create output folders"""
 
     # Create general run output folder that contains all other folders
-    if not Path.is_dir(settings_dict['_dir_out_run']):
-        print(f"Creating folder {settings_dict['_dir_out_run']} ...")
-        os.makedirs(settings_dict['_dir_out_run'])
+    _dir_out_run = Path(settings_dict['_dir_out_run'])
+    if not Path.is_dir(_dir_out_run):
+        print(f"Creating folder {_dir_out_run} ...")
+        os.makedirs(_dir_out_run)
 
     # Make subfolders
     for key, val in settings_dict.items():
