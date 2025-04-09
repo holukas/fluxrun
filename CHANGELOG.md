@@ -6,40 +6,42 @@
 
 ### Introducing v2.0.0
 
-fluxrun has been updated to version 2, a significant release requiring new settings files. This version enhances its
-usability for a wider range of eddy covariance (EC) sites beyond
+`fluxrun` has been updated to version 2.
+
+`fluxrun` is a Python wrapper for EddyPro to calculate EC ecosystem fluxes from raw data files.
+
+This version enhances its usability for a wider range of eddy covariance (EC) sites beyond
 the [ETH Grassland Sciences group](https://gl.ethz.ch/).
 
 [//]: # (<IMAGE>)
 
-fluxrun is a Python wrapper for EddyPro to calculate EC ecosystem fluxes from raw data files.
+`fluxrun` can be executed using the GUI or directly from the command line interface.
 
-The processing workflow in fluxrun version 2 involves:
+`fluxrun` was created as a wrapper around EddyPro. This means that the flux calculations are done by EddyPro, but
+`fluxrun` adds some functionality, e.g.:
 
-- Selecting a source folder containing eddy covariance raw data files (supports .gz compressed text files and
-  uncompressed text files).
-- Defining a file name ID that includes year, month, day, hour, and minute information.
-- Specifying the number of header rows in the raw data files.
-- Setting a start and end date for processing; files outside this range are ignored.
-- Optionally plotting data availability based on filenames and generating raw data aggregates.
-- Locating the .eddypro flux processing settings file and its corresponding .metadata file in the same directory.
-- Generating plots of all variables from the EddyPro _full_output_ file.
-- Choosing an output folder where fluxrun will create a subfolder with a user-defined prefix.
-- Optionally deleting the uncompressed ASCII files after processing.
-
-Raw data eddy covariance files can be selected from a folder. Depending on the file extension, the files are handled
-differently. If the files have the file extension `.gz`, they are uncompressed before further processing. Files need to
-be text-based, e.g. CSV files, but they can be compressed as `.gz`.
-
-We use fluxrun to run mulitple years in parallel.
-
-fluxrun stores log files (main log, and a separate file for warnings and errors)
-
-fluxrun can be executed using the GUI or directly from the command line interface.
+- `fluxrun` automatically creates an output folder structure, including run ID.
+- The log output from EddyPro (together with other output from `fluxrun`) is stored to a log file.
+- There is an additional log file storing warnings and errors.
+- `fluxrun` can be executed in parallel, e.g. when calculating fluxes for multiple years `fluxrun` makes it a bit easier
+  to run them all at once. Parallelization is not included by default (at the moment), but using the command-line
+  interface multiple instances of `fluxrun` can be started quickly. Each started instance gets its own output folder and
+  folder structure, including a unique run ID.
+- Input files are validated to make sure columns contain numeric data only. Non-numeric data are converted to `-9999`.
+- `fluxrun` can create several plots during processing: raw data availability, raw data aggregates and summary plots of
+  all variables in EddyPro's `_full_output_` file.
+- In case compressed files are used (`.gz`), the files are automatically uncompressed (text format) before processing.
+  After processing,in case the uncompressed files are no longer needed, they can be automatically deleted. Raw data eddy
+  covariance files can be selected from a folder. Files are handled differently Depending on the file extension. If the
+  files have the file extension `.gz`, they are uncompressed before further processing. Files need to be text-based,
+  e.g. CSV files, but they can be compressed as `.gz`.
 
 #### Installation
 
-- Installation is currently far from perfect, but here we go:
+Installation is currently far from perfect, but here we go:
+
+Using [miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install#quickstart-install-instructions):
+
 - Create conda environment with required Python version: `conda create -n fluxrun-env python=3.11`
 - Activate the created environment: `conda activate fluxrun-env`
 - Now check the fluxrun releases [here](https://github.com/holukas/fluxrun/releases) and decide which version to use
@@ -50,27 +52,56 @@ fluxrun can be executed using the GUI or directly from the command line interfac
   `.tar.gz` file: https://github.com/holukas/fluxrun/archive/refs/tags/v2.0.0.zip
 - Unzip the zip file to a folder, e.g. `C:\fluxrun-2.0.0`
 - Start GUI: `python C:\fluxrun-2.0.0\fluxrun main.py -g`
-- Start processing with CLI: `XXX`
+- Start processing with CLI: `python C:\fluxrun-2.0.0\fluxrun main.py -f C:\my_project -d 10`. In this case, the
+  folder `C:\my_project` needs to contain the `.eddypro` settings file that contains the flux processing settings for
+  EddyPro. `fluxrun` will search for a `.metadata` file of the same name in the same folder as the `.eddypro` file. For
+  example, if the settings file is named `my_settings.eddypro`, then `fluxrun` needs a metadata file with the name
+  `my_settings.metadata` in the same folder. The parameter `-d 10` means that only fluxes for the last 10 days are
+  calculted. This can be used to automatically calculate fluxes.
 
+#### Description of GUI settings
 
+##### Raw Data Files
 
-So the processing using fluxrun is like this:
+- `Select raw data source folder (ASCII)`
+- `File name ID`  (default: SITE_yyyymmddHHMM.csv.gz)
+- `Header format`
+- `Start`
+- `End`
+- `Plots`
+  - `Availability (raw data)`
+  - `Aggregates (raw data)`
 
-- Select source folder with EC raw data files
+##### Flux Processing Settings
+
+- `Run flux calculation using EddyPro`
+- `Select EddyPro processing file (*.eddypro)`
+
+##### Output
+
+- `Select output folder`
+- `Output folder name prefix`
+- `Plots`:
+  - `Summary (flux processing)`
+
+##### After Processing
+
+- `Delete uncompressed raw data ASCII after processing`
+
+- Raw Data Select source folder with EC raw data files
 - Define file name ID. The file name needs to contain datetime info, it needs info about the year, month, day, hours and
   minutes.
 - Then the header format is important, how many header rows are in the raw data files
 - Define a start and end date for processing, files outside this range will be ignored
 - Then there are options to plot data availablility (based on the datetime info in the filenames) and aggregates of the
   raw data
-- For calculating fluxes, the `.eddypro` file that contains the flux processing settings needs to be located. `fluxrun`
-  will search for a `.metadata` file of the same name in the same folder as the `.eddypro` file. For example, if the
-  settings file is named `my_settings.eddypro`, then `fluxrun` needs a metadata file with the name
-  `my_settings.metadata` in the same folder.
+-
 - Plots can be generated using the `_full_output_` file from the EddyPro output. Every variable is plotted.
 - Then select an output folder, `fluxrun` creates an output folder with the defined prefix in this location
 - After processing, `fluxrun` can delete the uncompressed ASCII files. The uncompressed files are needed for flux
   calculations, but unless there is a desire to store the uncompressed files they are no longer needed.
+
+### Other changes
 
 - Now using PyQt6 for GUI
 - Updated code for PyQt6
