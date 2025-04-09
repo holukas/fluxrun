@@ -143,7 +143,7 @@ class BuildGui(object):
         row = 2
         self.lne_filename_id = \
             gui_elements.add_label_lineedit_to_grid(
-                label='File name ID (default: yyyymmddHHMM)',
+                label='File name ID',
                 grid=grid, row=row, value='SITE_yyyymmddHHMM.csv.gz')
 
         # RAW DATA: Header format
