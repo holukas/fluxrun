@@ -5,11 +5,13 @@ import gzip
 import os
 import shutil
 import sys
+import time
 from pathlib import Path
 from shutil import copyfile
 
 import numpy as np
 import pandas as pd
+import yaml
 
 
 def check_if_file_in_folder(search_str: str, folder: str):
@@ -25,29 +27,134 @@ def check_if_file_in_folder(search_str: str, folder: str):
     return file_is_in_folder, filepath
 
 
-def uncompress_gzip(settings_dict, found_gzip_files_dict, logger):
-    """Unzip compressed gzip files to output folder of current run"""
-    for compr_filename, compr_filepath in found_gzip_files_dict.items():
-        compr_filepath = str(compr_filepath)
-        uncompr_filename = Path(compr_filename).stem
-        uncompr_filepath = Path(settings_dict['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
-        import time
-        tic = time.time()
-        with gzip.open(compr_filepath, 'rb') as f_in:
-            logger.info(f"Trying to unzip file {compr_filepath} ...")
-            with open(uncompr_filepath, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-                time_needed = time.time() - tic
-                logger.info(f"[UNZIPPING GZIP RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
-                            f"(done in {time_needed:.3f}s)")
+def read_uncompr_ascii_file(settings, filepath, logger, section_id, verbose: bool = True) -> pd.DataFrame:
+    if verbose:
+        logger.info(f"{section_id}    Reading file {filepath} ...")
 
-    # # Search for the now converted files and update dict of found files
-    # rawdata_found_files_dict = SearchAll(
-    #     settings_dict=settings_dict,
-    #     logger=logger,
-    #     search_in_dir=settings_dict['_dir_out_run_rawdata_ascii_files']).keep_valid_files()
+    tic = time.time()
 
-    # return rawdata_found_files_dict
+    # Check header format
+    if settings['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
+        skiprows = None
+    elif settings['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
+        skiprows = [0]
+    else:
+        raise NotImplementedError(f"{settings['RAWDATA']['HEADER_FORMAT']} is not implemented.")
+
+    df = pd.read_csv(filepath,
+                     skiprows=skiprows,
+                     header=[0, 1, 2],
+                     na_values=-9999,
+                     encoding='utf-8',
+                     delimiter=',',
+                     # keep_date_col=True,
+                     parse_dates=False,
+                     # date_parser=None,
+                     index_col=None,
+                     dtype=None)
+    time_needed = time.time() - tic
+    if verbose:
+        logger.info(f"{section_id}    Finished ({time_needed:.3f}s). "
+                    f"Detected {len(df)} rows and {df.columns.size} columns.")
+    return df
+
+
+def check_all_numeric(df: pd.DataFrame) -> bool:
+    """
+    Check if all columns in a pandas DataFrame are numeric.
+
+    Args:
+      df: The pandas DataFrame to check.
+
+    Returns:
+      True if all columns are numeric, False otherwise.
+    """
+    numeric_columns = df.select_dtypes(include=np.number).columns
+    return len(numeric_columns) == len(df.columns)
+
+
+def add_level_to_header(df: pd.DataFrame, new_level_name: str = '', new_level_value: str = '') -> pd.DataFrame:
+    """Validate number of header rows."""
+    new_columns_tuples = []
+    for col in df.columns:
+        new_columns_tuples.append((new_level_value,) + col)
+    new_columns = pd.MultiIndex.from_tuples(new_columns_tuples, names=[new_level_name] + df.columns.names)
+    df.columns = new_columns
+    return df
+
+
+def validate_numeric_data(settings: dict, found_files: dict, logger):
+    """Ensure all data columns contain numeric data."""
+    for filename, filepath in found_files.items():
+        logger.info(f"[VALIDATING NUMERIC DATA] {filename} ...")
+        filepath = str(filepath)
+        df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename,
+                                     verbose=False)
+
+        if df.empty:
+            logger.warning(f"{filename} is empty and will be skipped.")
+            continue
+
+        # Check if all columns are numeric, yields True if yes and then continues with next file
+        if check_all_numeric(df=df):
+            continue
+
+        # Select non-numeric columns
+        non_numeric_cols = df.select_dtypes(exclude=np.number).columns
+
+        # Convert non-numeric columns to numeric, coercing errors to NaN
+        for col in non_numeric_cols:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
+        # Fill NaN values (which resulted from non-numeric values) with -9999
+        df = df.fillna(-9999)
+
+        # Re-check if now all columns are numeric
+        if check_all_numeric(df=df):
+            pass
+        else:
+            msg = f"{filename} STILL CONTAINS NON-NUMERIC RECORDS."
+            logger.error(msg)
+            raise ValueError(msg)
+
+        # Re-establish original number of header rows
+        # Files from rECord have 4 header rows, so any corrected files also need to have
+        # the same number of header rows.
+        if settings['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
+            pass
+        elif settings['RAWDATA']['HEADER_FORMAT'] == '4-row header (rECord files)':
+            df = add_level_to_header(df=df, new_level_value='TOA5')
+        else:
+            raise NotImplementedError(f"{settings['RAWDATA']['HEADER_FORMAT']} is not implemented.")
+
+        # Save file
+        filepath_out = Path(settings['_dir_out_run_rawdata_ascii_files']) / filename
+        df.to_csv(filepath_out, index=False)
+
+        logger.warning(f"NON-NUMERIC VALUES IN FILE {filename}: "
+                       f"Non-numeric values were converted to -9999. Columns with non-numeric values:")
+        for n in non_numeric_cols:
+            logger.warning(f"    {n}")
+
+
+def uncompress_gz(settings: dict, found_gz_files: dict, logger):
+    """Unzip compressed .gz files to output folder of current run"""
+    for compr_filename, compr_filepath in found_gz_files.items():
+        try:
+            compr_filepath = str(compr_filepath)
+            uncompr_filename = Path(compr_filename).stem
+            uncompr_filepath = Path(settings['_dir_out_run_rawdata_ascii_files']) / uncompr_filename
+            tic = time.time()
+            with gzip.open(compr_filepath, 'rb') as f_in:
+                logger.info(f"Trying to unzip file {compr_filepath} ...")
+                with open(uncompr_filepath, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                    time_needed = time.time() - tic
+                    logger.info(f"[UNZIPPING GZ RAW DATA (ASCII) FILES] {compr_filepath} --> {uncompr_filepath} "
+                                f"(done in {time_needed:.3f}s)")
+
+        except Exception as e:
+            logger.warning(f"FILE {compr_filename} SKIPPED DURING UNCOMPRESSION: {e}")
 
 
 def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
@@ -58,44 +165,45 @@ def copy_rawdata_files(settings_dict, found_csv_files_dict, logger):
         logger.info(f"[GETTING CSV RAW DATA FILES] {filepath} --> {destination}")
 
 
-class SearchAll():
-    def __init__(self, logger, search_in_dir, settings_dict, search_uncompressed=False):
+class SearchAll:
+    def __init__(self, logger, search_in_dir, settings, search_uncompressed=False):
         self.logger = logger
         self.valid_files_dict = {}
         self.search_in_dir = search_in_dir
-        self.rawdata_start_date = settings_dict['rawdata_start_date']
-        self.rawdata_end_date = settings_dict['rawdata_end_date']
-
-        self.site_search_str = settings_dict['_sitefiles_search_str']
-        self.site_parse_str = settings_dict['_sitefiles_parse_str']
+        self.rawdata_start_date = settings['RAWDATA']['START_DATE']
+        self.rawdata_end_date = settings['RAWDATA']['END_DATE']
 
         if search_uncompressed:
-            self.site_search_str = self.site_search_str.rstrip('.gz')
-            self.site_parse_str = self.site_parse_str.rstrip('.gz')
+            self.site_parse_str_py = settings['_sitefiles_parse_str_python_uncompr']  # Parsing string in Python format
+        else:
+            self.site_parse_str_py = settings['_sitefiles_parse_str_python']  # Parsing string in Python format
 
     def keep_valid_files(self):
-        """Search all files with file id, but then keep only those that fulfil selected requirements"""
+        """Search all files that can be parsed with the parsing string,
+        but then keep only those that fulfil selected requirements."""
 
         # Search files for current site
         self.valid_files_dict = self.search_all(dir=self.search_in_dir,
-                                                site_search_str=self.site_search_str,
+                                                site_parse_str_py=self.site_parse_str_py,
                                                 logger=self.logger)
 
         # Parse filedates and keep files in specified date range
-        self.valid_files_dict = self.keep_files_within_timerange(site_parse_str=self.site_parse_str)
+        self.valid_files_dict = self.keep_files_within_timerange(site_parse_str_py=self.site_parse_str_py)
         return self.valid_files_dict
 
-    @staticmethod
-    def search_all(dir, site_search_str, logger):
-        """Search all files in dir that match file id"""
-        logger.info("Searching for files ...")
+    def search_all(self, dir, site_parse_str_py, logger):
+        """Search all files that can be parsed with the parsing string."""
+        logger.info(f"Searching for files that fit the pattern {self.site_parse_str_py} ...")
         valid_files_dict = {}
         for root, dirs, found_files in os.walk(dir):
             for idx, file in enumerate(found_files):
-                if fnmatch.fnmatch(file, site_search_str):
+                try:
+                    rawdata_filedate = dt.datetime.strptime(file, self.site_parse_str_py)
                     filepath = Path(root) / file
                     valid_files_dict[file] = filepath
-        logger.info(f"Found {len(valid_files_dict)} files matching {site_search_str} in {dir}")
+                except ValueError:
+                    continue
+        logger.info(f"Found {len(valid_files_dict)} files matching {site_parse_str_py} in {dir}")
         return valid_files_dict
 
     @staticmethod
@@ -105,7 +213,7 @@ class SearchAll():
                          f"{settings_dict['filename_datetime_parsing_string']}{file_ext}"
         return parsing_string
 
-    def keep_files_within_timerange(self, site_parse_str):
+    def keep_files_within_timerange(self, site_parse_str_py):
         """Check if file date is within selected time range"""
 
         # site_parse_str = self.make_parsing_string(settings_dict=self.settings_dict)
@@ -116,7 +224,7 @@ class SearchAll():
         _invalid_files_dict = {}
         valid_files_dict = {}
         for filename, filepath in self.valid_files_dict.items():
-            rawdata_filedate = dt.datetime.strptime(filename, site_parse_str)
+            rawdata_filedate = dt.datetime.strptime(filename, site_parse_str_py)
             if (rawdata_filedate < run_start_date) | (rawdata_filedate > run_end_date):
                 self.logger.info(
                     f"{suffix} Date of file ({filename}, date: {rawdata_filedate}) is outside the selected time range"
@@ -148,7 +256,7 @@ class PrepareEddyProFiles:
 
         self.dir_out_run_eddypro_ini = Path(self.settings_dict['_dir_out_run_eddypro_ini'])
         self.dir_out_run_eddypro_bin = Path(self.settings_dict['_dir_out_run_eddypro_bin'])
-        self.path_selected_processing_file = Path(settings_dict['path_selected_eddypro_processing_file'])
+        self.path_selected_processing_file = Path(settings_dict['FLUX_PROCESSING']['EDDYPRO_PROCESSING_FILE'])
 
         self.run()
 
@@ -239,15 +347,12 @@ class PrepareEddyProFiles:
                          f"\n    OLD:  {data_path_old}"
                          f"    NEW:  {data_path_new}")
 
-        # If no file extension was given in setting 'rawdata_filename_datetime_format',
-        # the file extension will default to '.csv'. Otherwise, the given file extension
-        # is used.
-        file_ext = Path(self.settings_dict['rawdata_filename_datetime_format']).suffix
-        file_ext = '.csv' if not file_ext else ''
-
-        prototype_str = f"{self.settings_dict['site']}_" \
-                        f"{self.settings_dict['rawdata_filename_datetime_format']}{file_ext}"
+        # Remove .gzip file extension, EddyPro uses the unzipped files
+        prototype_str = self.settings_dict['RAWDATA']['FILENAME_ID']
+        file_ext = Path(self.settings_dict['RAWDATA']['FILENAME_ID']).suffix
+        prototype_str = prototype_str.replace('.gz', '') if file_ext == '.gz' else prototype_str
         file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
+        # file_prototype_new = f"file_prototype={prototype_str}\n".replace('\\', '/')
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=file_prototype_old, new=file_prototype_new)
         self.logger.info(f"{section_id}"
@@ -255,7 +360,7 @@ class PrepareEddyProFiles:
                          f"\n    OLD:  {file_prototype_old}"
                          f"    NEW:  {file_prototype_new}")
 
-        project_id_new = f"project_id={self.settings_dict['site']}_{Path(self.settings_dict['_run_id'])}\n"
+        project_id_new = f"project_id={self.settings_dict['OUTPUT']['OUTDIR_PREFIX']}_{Path(self.settings_dict['_run_id'])}\n"
         self.update_setting(filepath=self.settings_dict['_path_used_eddypro_processing_file'],
                             old=project_id_old, new=project_id_new)
         self.logger.info(f"{section_id}"
@@ -275,7 +380,7 @@ class PrepareEddyProFiles:
         if os.name == 'nt':
             os_subdir = 'windows'
         else:
-            self.logger(f"(!)ERROR Operating system {os.name} not implemented")
+            self.logger(f"OPERATING SYSTEM {os.name} NOT IMPLEMENTED.")
             sys.exit(-1)
         dir_app = dir_app / os_subdir
 
@@ -293,13 +398,13 @@ class PrepareEddyProFiles:
 
         # Check if files available
         if not Path(self.settings_dict['_path_used_eddypro_app_rp']).is_file():
-            self.logger.info(f"(!)ERROR eddypro_rp.exe was not found "
-                             f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
+            self.logger.info(f"EXECUTABLE eddypro_rp.exe WAS NOT FOUND "
+                             f"IN FOLDER: {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
         if not Path(self.settings_dict['_path_used_eddypro_app_fcc']).is_file():
-            self.logger.info(f"(!)ERROR eddypro_fcc was not found "
-                             f"in folder {self.settings_dict['_dir_out_run_eddypro_bin']}")
+            self.logger.info(f"EXECUTABLE eddypro_fcc.exe WAS NOT FOUND "
+                             f"IN FOLDER: {self.settings_dict['_dir_out_run_eddypro_bin']}")
             sys.exit(-1)
 
     def prepare_processing_file(self):
@@ -330,9 +435,9 @@ class PrepareEddyProFiles:
 
         else:
             self.logger.info(f"{self.section_txt} [METADATA FILE] "
-                             f"(!)ERROR: No *.metadata file with name {required_metadata_filename} was found.")
+                             f"NO *.metadata FILE WITH NAME {required_metadata_filename} WAS FOUND.")
             self.logger.info(f"{self.section_txt} [METADATA FILE] "
-                             f"(!)ERROR: Stopping FluxRun.")
+                             f"STOPPING FLUXRUN.")
             sys.exit()
 
     def search_required_metadata_file(self):
@@ -418,7 +523,7 @@ class ReadEddyProFullOutputFile:
                               na_values=self.DATA_NA_VALUES,
                               encoding='utf-8',
                               delimiter=self.DATA_DELIMITER,
-                              mangle_dupe_cols=True,
+                              # mangle_dupe_cols=True,
                               keep_date_col=False,
                               parse_dates=parse_dates,
                               date_parser=date_parser,
@@ -485,27 +590,48 @@ class ReadEddyProFullOutputFile:
         return run_id
 
 
-def save_settings_to_file(settings_dict: dict, copy_to_outdir=False):
-    """Save settings dict to settings file """
-    old_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settings')
-    new_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
-    with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
-        for line in infile:  # cycle through all lines in settings file
-            if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
-                line_id, line_setting = line.strip().split('=')
-                line = '{}={}\n'.format(line_id, settings_dict[line_id])  # insert setting from dict
-            outfile.write(line)
-    try:
-        os.remove(old_settings_file + 'Old')
-    except:
-        pass
-    os.rename(old_settings_file, old_settings_file + 'Old')
-    os.rename(new_settings_file, old_settings_file)
-
+def save_settings_to_file(filepath_settings: Path, settings: dict, copy_to_outdir: bool = False):
+    """Save settings from the GUI to settings file."""
+    essential_settings = {key: value for key, value in settings.items() if not key.startswith('_')}
+    with open(filepath_settings, "w") as f:
+        cfg = yaml.dump(essential_settings, stream=f, default_flow_style=False, sort_keys=False)
     if copy_to_outdir:
         # Save a copy of the settings file also in the output dir
-        run_settings_file_path = Path(settings_dict['_dir_out_run']) / 'FluxRun.settings'
-        copyfile(old_settings_file, run_settings_file_path)
-        pass
+        run_settings_file_path = Path(settings['_dir_out_run']) / 'fluxrunsettings.yaml'
+        copyfile(filepath_settings, run_settings_file_path)
 
-    # return settings_dict
+# def save_settings_to_file(settings_dict: dict, copy_to_outdir=False):
+#     """Save settings dict to settings file """
+#
+#     # for key, val in settings_dict.items():
+#     #     print(key, val)
+#
+#     with open("config.yaml", "w") as f:
+#         cfg = yaml.dump(
+#             cfg, stream=f, default_flow_style=False, sort_keys=False
+#         )
+#
+#     print(yaml.dump(settings_dict, default_flow_style=True))
+#
+#     old_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settings')
+#     new_settings_file = os.path.join(settings_dict['_dir_settings'], 'FluxRun.settingsTemp')
+#     with open(old_settings_file) as infile, open(new_settings_file, 'w') as outfile:
+#         for line in infile:  # cycle through all lines in settings file
+#             if ('=' in line) and (not line.startswith('#')):  # identify lines that contain setting
+#                 line_id, line_setting = line.strip().split('=')
+#                 line = '{}={}\n'.format(line_id, settings_dict[line_id])  # insert setting from dict
+#             outfile.write(line)
+#     try:
+#         os.remove(old_settings_file + 'Old')
+#     except:
+#         pass
+#     os.rename(old_settings_file, old_settings_file + 'Old')
+#     os.rename(new_settings_file, old_settings_file)
+#
+#     if copy_to_outdir:
+#         # Save a copy of the settings file also in the output dir
+#         run_settings_file_path = Path(settings_dict['_dir_out_run']) / 'FluxRun.settings'
+#         copyfile(old_settings_file, run_settings_file_path)
+#         pass
+#
+#     # return settings_dict

@@ -24,7 +24,7 @@ def validate_args(args):
 
 def get_args():
     """Get args from CLI input"""
-    parser = argparse.ArgumentParser(description="FLUXRUN - Flux calculations with EddyPro",
+    parser = argparse.ArgumentParser(description="fluxrun - flux calculations using EddyPro",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # # Positional args
@@ -36,7 +36,7 @@ def get_args():
                         help="If set, start BICO with GUI, is ignored if FOLDER is given")
     parser.add_argument('-f', '--folder', type=str,
                         help="Path to folder: "
-                             "run FLUXRUN without GUI in the specified FOLDER, needs 'FluxRun.settings' file in FOLDER")
+                             "run FLUXRUN without GUI in the specified FOLDER, needs the file 'fluxrunsettings.yaml' in FOLDER")
     parser.add_argument('-d', '--days', type=int,
                         help="Calculate fluxes for most recent number of DAYS: "
                              "only considered if FOLDER is defined, otherwise the date range given "

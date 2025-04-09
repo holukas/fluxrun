@@ -9,7 +9,7 @@ import pandas as pd
 from matplotlib import dates
 from matplotlib.ticker import MultipleLocator
 
-from ops.file import ReadEddyProFullOutputFile
+from fluxrun.ops.file import ReadEddyProFullOutputFile, read_uncompr_ascii_file
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 15)
@@ -87,7 +87,7 @@ class PlotEddyProFullOutputFile:
             try:
                 y = self.data_df[col].astype(float)
             except ValueError:
-                self.logger.info(f"(!)WARNING: Skipping plotting for {col} because it is not numeric.")
+                self.logger.warning(f"SKIPPING PLOTTING FOR {col} BECAUSE IT IS NOT NUMERIC.")
                 continue
 
             y = sanitize_y(y=y)
@@ -108,9 +108,6 @@ class PlotEddyProFullOutputFile:
 
                 # fig = plt.subplot2grid((3, 3), (0, 0))
 
-                qua1 = y.quantile(0.01)
-                qua2 = y.quantile(0.99)
-
                 # TIME SERIES PLOT
                 ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=2)
                 # y.plot(kind='scatter', x=y.index, y=y, ax=ax1)
@@ -129,6 +126,9 @@ class PlotEddyProFullOutputFile:
                 # plt.setp(ax1.xaxis.get_majorticklabels(), rotation=0)
                 ax1.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
                 # ax1.xaxis.set_major_locator(dates.WeekdayLocator(byweekday=1, interval=1))
+
+                qua1 = y.quantile(0.01)
+                qua2 = y.quantile(0.99)
                 ax1.set_ylim(qua1, qua2)
 
                 # DAILY AVG SCATTER
@@ -166,7 +166,7 @@ class PlotEddyProFullOutputFile:
                     ax2.set_title(f"{var} histogram", size=heading_size, backgroundcolor='#5b9bd5')
                     ax2.tick_params(axis='both', labelsize=label_size)
                 except ValueError as e:
-                    self.logger.info("(!)Error during histogram generation: {}".format(e))
+                    self.logger.error("ERROR DURING HISTOGRAM PLOTTING: {}".format(e))
                     pass
 
                 # CUMULATIVE
@@ -258,7 +258,7 @@ def availability_rawdata(rawdata_found_files_dict, rawdata_file_datefrmt, outdir
     agg_plot_df['month'] = agg_plot_df.index.month
     agg_plot_df['year'] = agg_plot_df.index.year
     agg_plot_df['year-month'] = agg_plot_df.index.strftime('%Y-%m')
-    agg_plot_df = agg_plot_df.pivot("year-month", "day", "filesize")
+    agg_plot_df = agg_plot_df.pivot(index="year-month", columns="day", values="filesize")
     days = [str(xx) for xx in agg_plot_df.columns]
     months = [str(yy) for yy in agg_plot_df.index]
 
@@ -354,7 +354,7 @@ class PlotRawDataFilesAggregates:
 
     def __init__(self, rawdata_found_files_dict, settings_dict, logger, rawdata_file_datefrmt):
         self.rawdata_found_files_dict = rawdata_found_files_dict
-        self.settings_dict = settings_dict
+        self.settings = settings_dict
         self.logger = logger
         self.rawdata_file_datefrmt = rawdata_file_datefrmt
 
@@ -366,43 +366,32 @@ class PlotRawDataFilesAggregates:
         stats_coll_df = pd.DataFrame()
         num_files = len(self.rawdata_found_files_dict)
         for fid, filepath in self.rawdata_found_files_dict.items():
-            filecounter += 1
-            self.file_header_for_log(fid=fid, num_files=num_files, filecounter=filecounter)
-            rawdata_filedate = self.get_filedate(fid)
-            rawdata_df = self.read_uncompr_ascii_file(filepath=filepath)
-            stats_coll_df = self.calc_rawdata_stats(rawdata_df=rawdata_df,
-                                                    rawdata_filedate=rawdata_filedate,
-                                                    stats_coll_df=stats_coll_df,
-                                                    filecounter=filecounter)
+            try:
+                filecounter += 1
+                self.file_header_for_log(fid=fid, num_files=num_files, filecounter=filecounter)
+                rawdata_filedate = self.get_filedate(fid)
+                rawdata_df = read_uncompr_ascii_file(
+                    settings=self.settings,
+                    filepath=filepath,
+                    logger=self.logger,
+                    section_id=self.section_id
+                )
+                stats_coll_df = self.calc_rawdata_stats(rawdata_df=rawdata_df,
+                                                        rawdata_filedate=rawdata_filedate,
+                                                        stats_coll_df=stats_coll_df,
+                                                        filecounter=filecounter)
+            except Exception as e:
+                self.logger.error(e)
+                raise Exception(f"ERROR IN FILE {filepath}: {e}")
+
         self.make_plot(df=stats_coll_df,
-                       outdir=self.settings_dict['_dir_out_run_plots_aggregates_rawdata'])
-        # print(filecounter)
+                       outdir=self.settings['_dir_out_run_plots_aggregates_rawdata'])
 
     def file_header_for_log(self, fid, num_files, filecounter):
         spacer = "=" * 30
         self.logger.info(f"{self.section_id} {spacer}")
         self.logger.info(f"{self.section_id} File {fid} (#{filecounter} of {num_files}) ...")
         self.logger.info(f"{self.section_id} {spacer}")
-
-    def read_uncompr_ascii_file(self, filepath):
-        self.logger.info(f"{self.section_id}    Reading file {filepath} ...")
-        import time
-        tic = time.time()
-        rawdata_df = pd.read_csv(filepath,
-                                 skiprows=None,
-                                 header=[0, 1, 2],
-                                 na_values=-9999,
-                                 encoding='utf-8',
-                                 delimiter=',',
-                                 # keep_date_col=True,
-                                 parse_dates=False,
-                                 # date_parser=None,
-                                 index_col=None,
-                                 dtype=None)
-        time_needed = time.time() - tic
-        self.logger.info(f"{self.section_id}    Finished ({time_needed:.3f}s). "
-                         f"Detected {len(rawdata_df)} rows and {rawdata_df.columns.size} columns.")
-        return rawdata_df
 
     def calc_rawdata_stats(self, rawdata_df, stats_coll_df, rawdata_filedate, filecounter):
         """Calculate stats for raw data"""
@@ -448,12 +437,12 @@ class PlotRawDataFilesAggregates:
 
         # Get only var name, units and instrument from 3-row MultiIndex,
         # this means that the row with agg info is skipped here, but then used later during plotting
-        vars = list(zip(df.columns.get_level_values(0),
-                        df.columns.get_level_values(1),
-                        df.columns.get_level_values(2)))
-        vars = set(vars)
+        _vars = list(zip(df.columns.get_level_values(0),
+                         df.columns.get_level_values(1),
+                         df.columns.get_level_values(2)))
+        _vars = set(_vars)
 
-        for var in vars:
+        for var in _vars:
             self.logger.info(f"{self.section_id}    Plotting {var} ...")
             var_df = df[var].copy()
             gs = gridspec.GridSpec(2, 2)  # rows, cols
@@ -486,7 +475,9 @@ class PlotRawDataFilesAggregates:
             font = {'family': 'sans-serif', 'size': 10}
             ax1.legend(frameon=True, loc='upper right', prop=font).set_zorder(100)
 
-            outfile = outdir / f"{var[0]}_{var[1]}_{var[2]}"
+            outname = f"{var[0]}_{var[1]}_{var[2]}"
+            outname = outname.replace(':', '_')
+            outfile = outdir / outname
             fig.savefig(f"{outfile}.png", format='png', bbox_inches='tight', facecolor='w',
                         transparent=True, dpi=150)
 
