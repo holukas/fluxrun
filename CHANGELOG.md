@@ -21,7 +21,7 @@
 This version enhances its usability for a wider range of eddy covariance (EC) sites beyond
 the [ETH Grassland Sciences group](https://gl.ethz.ch/).
 
-![](images/fluxrun_gui_v2.0.0.png)
+![](images/fluxrun_gui_v2.png)
 
 `fluxrun` can be executed using the GUI or directly from the command line interface.
 
