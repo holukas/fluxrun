@@ -43,8 +43,8 @@ class FluxRunCli:
         _newenddatetime = _newenddatetime.strftime('%Y-%m-%d %H:%M')
 
         # Update dict
-        settings['_rawdata_start_date'] = _newstartdatetime
-        settings['_rawdata_end_date'] = _newenddatetime
+        settings['RAWDATA']['START_DATE'] = _newstartdatetime
+        settings['RAWDATA']['END_DATE'] = _newenddatetime
 
         return settings
 
