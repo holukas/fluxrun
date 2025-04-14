@@ -2,7 +2,7 @@
 
 Python wrapper for EddyPro to calculate eddy covariance (EC) ecosystem fluxes from raw data files.
 
-![](images/fluxrun_gui_v2.0.0.png)
+![](images/fluxrun_gui_v2.png)
 
 `fluxrun` can be executed using the GUI or directly from the command line interface.
 
