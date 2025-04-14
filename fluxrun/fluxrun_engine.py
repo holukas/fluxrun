@@ -155,9 +155,9 @@ class FluxRunEngine:
     def _run_output(self):
         self._plot_summary()
 
-    def _run_afterprocessing(self):
-        if int(self.settings['AFTER PROCESSING']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING']) == 1:
-            self._delete_uncompressed_ascii_files()
+    # def _run_afterprocessing(self):
+    #     if int(self.settings['AFTER PROCESSING']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING']) == 1:
+    #         self._delete_uncompressed_ascii_files()
 
     def _run_finalize(self):
         self.logger.info("\n\n\n")
@@ -171,6 +171,8 @@ class FluxRunEngine:
         if self.settings['FLUX_PROCESSING']['RUN_FLUX_CALCS'] == 1:
             self._run_fluxprocessing()
             self._run_output()
+        if int(self.settings['AFTER PROCESSING']['DELETE_UNCOMPRESSED_ASCII_AFTER_PROCESSING']) == 1:
+            self._delete_uncompressed_ascii_files()
         self._run_finalize()
 
     def _plot_summary(self):
@@ -207,9 +209,10 @@ class FluxRunEngine:
         # Keep the last file
         deletepaths = list(deletepaths)[:-1]
 
-        # Make sure there are CSVs only
+        # Make sure there are uncompressed files only, e.g. CSVs, dat etc, depending on input files
         deletelist = []
-        [deletelist.append(x) for x in deletepaths if x.suffix == '.csv']
+        uncompr_suffix = Path(self.settings['_sitefiles_parse_str_python_uncompr']).suffix
+        [deletelist.append(x) for x in deletepaths if x.suffix == uncompr_suffix]
 
         # Delete files
         for filepath in deletelist:
