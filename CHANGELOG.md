@@ -8,6 +8,7 @@
   `fluxrun.fluxrun_engine.FluxRunEngine.run`)
 - Changed: Deleting uncompressed data files after processing now takes into account the original file suffix of the
   input files (`fluxrun.fluxrun_engine.FluxRunEngine._delete_uncompressed_ascii_files`)
+- Fix date shown in GUI
 
 ## v2.0.0 | 9 Apr 2025
 
