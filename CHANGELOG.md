@@ -2,6 +2,13 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v2.0.1 | 14 Apr 2025
+
+- Bugfix: Deleting umcompressed ASCII files after processing was not executed even when selected (
+  `fluxrun.fluxrun_engine.FluxRunEngine.run`)
+- Changed: Deleting uncompressed data files after processing now takes into account the original file suffix of the
+  input files (`fluxrun.fluxrun_engine.FluxRunEngine._delete_uncompressed_ascii_files`)
+
 ## v2.0.0 | 9 Apr 2025
 
 ### Introducing v2.0.0
