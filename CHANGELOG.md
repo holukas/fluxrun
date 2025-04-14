@@ -2,6 +2,11 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v2.0.2 | 14 Apr 2025
+
+- Bugfix: start and end date from CLI `days` arg did not work
+- Removed left-over main.py
+
 ## v2.0.1 | 14 Apr 2025
 
 - Bugfix: Deleting umcompressed ASCII files after processing was not executed even when selected (
