@@ -3,11 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-import ops.file as file
-import ops.logger as logger
-import ops.setup as setup
-import ops.vis as vis
-from settings import version
+from .ops import file, logger, setup, vis
+from .settings import version
 
 
 class FluxRunEngine:

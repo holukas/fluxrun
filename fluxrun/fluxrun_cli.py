@@ -2,8 +2,11 @@ import datetime as dt
 import os
 from pathlib import Path
 
-from fluxrun.ops.setup import read_settings_file
-from fluxrun_engine import FluxRunEngine
+from . import fluxrun_engine
+from .ops.setup import read_settings_file
+
+# todo testing
+print(f"{__file__}")
 
 
 # -f F:\Sync\luhk_work\CURRENT\FRU_rECord_test\with_cli -d 9999
@@ -64,5 +67,5 @@ class FluxRunCli:
         return filepath_settings
 
     def execute_in_folder(self):
-        _fluxrunengine = FluxRunEngine(settings=self.settings)
+        _fluxrunengine = fluxrun_engine.FluxRunEngine(settings=self.settings)
         _fluxrunengine.run()

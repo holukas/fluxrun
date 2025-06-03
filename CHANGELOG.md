@@ -2,6 +2,12 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v2.1.0 | XX Jun 2025
+
+- Refactored script for better execution as a module
+- Now using relative imports for modules
+- Small change: window title now lowercase
+
 ## v2.0.2 | 14 Apr 2025
 
 - Bugfix: start and end date from CLI `days` arg did not work

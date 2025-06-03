@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+
 import os
 from pathlib import Path
 
@@ -6,12 +8,15 @@ from PyQt6 import QtCore as qtc
 from PyQt6 import QtGui as qtg
 from PyQt6 import QtWidgets as qtw
 
-import gui.gui_elements as ele
-import ops.file as file
-from fluxrun.ops.setup import read_settings_file
-from fluxrun_engine import FluxRunEngine
-from gui.mainwindow import BuildGui
-from settings import version
+from . import fluxrun_engine
+from .gui import gui_elements as ele
+from .gui.mainwindow import BuildGui
+from .ops import file
+from .ops.setup import read_settings_file
+from .settings import version
+
+# todo testing
+print(f"{__file__}")
 
 
 class FluxRunGUI(qtw.QMainWindow, BuildGui):
@@ -20,6 +25,8 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         self.setupUi(self)
 
         # Set filepath to setting YAML
+        # TODO bug: script always loads settings from original script folder
+        # todo I think this is an issue with the __init__.py (no, maybe not...)
         dir_script = os.path.abspath(__file__)  # Dir of this file
         dir_settings = Path(
             os.path.join(os.path.dirname(dir_script))) / 'settings'  # Preload settings dir to load settings file
@@ -38,7 +45,7 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         """Call FluxRunEngine for calculations"""
         self.settings = self.get_settings_from_gui()
 
-        fluxrunengine = FluxRunEngine(settings=self.settings)
+        fluxrunengine = fluxrun_engine.FluxRunEngine(settings=self.settings)
         fluxrunengine.run()
 
     def update_dict_key(self, key, new_val):

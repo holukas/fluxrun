@@ -1,5 +1,7 @@
 import argparse
 
+# todo testing
+print(f"{__file__}")
 
 def validate_args(args):
     """Check validity of optional args"""
