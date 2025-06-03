@@ -9,7 +9,7 @@ import pandas as pd
 from matplotlib import dates
 from matplotlib.ticker import MultipleLocator
 
-from fluxrun.ops.file import ReadEddyProFullOutputFile, read_uncompr_ascii_file
+from .file import ReadEddyProFullOutputFile, read_uncompr_ascii_file
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 15)

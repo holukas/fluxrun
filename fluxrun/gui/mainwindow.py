@@ -3,9 +3,12 @@ from PyQt6 import QtCore as qtc
 from PyQt6 import QtGui as qtg
 from PyQt6 import QtWidgets as qtw
 
-import gui.gui_elements as gui_elements
-from help import tooltips
-from settings import version
+from ..gui import gui_elements
+from ..help import tooltips
+from ..settings import version
+
+# todo testing
+print(f"{__file__}")
 
 
 class BuildGui(object):
@@ -40,7 +43,7 @@ class BuildGui(object):
 
     def setupUi(self, mainwindow):
         # Main window
-        mainwindow.setWindowTitle(f"FluxRun")
+        mainwindow.setWindowTitle(f"fluxrun")
         mainwindow.setWindowIcon(qtg.QIcon('images/logo_FLUXRUN1.png'))
         mainwindow.move(100, 100)
 
