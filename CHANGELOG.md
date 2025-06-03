@@ -2,7 +2,7 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
-## v2.1.0 | XX Jun 2025
+## v2.1.0 | 3 Jun 2025
 
 - Refactored script for better execution as a module
 - Now using relative imports for modules

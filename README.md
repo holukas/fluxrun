@@ -72,13 +72,13 @@ Using [miniconda](https://www.anaconda.com/docs/getting-started/miniconda/instal
 - Activate the created environment: `conda activate fluxrun-env`
 - Now check the fluxrun releases [here](https://github.com/holukas/fluxrun/releases) and decide which version to use
 - Spot the `.tar.gz` file of the desired fluxrun version and use it to directly install from the GitHub repo via pip:
-  `pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.0.0.tar.gz`
+  `pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.1.0.tar.gz`
 - Now all required dependencies are installed in the environment `fluxrun-env`
 - Spot the `.zip` file of the desired fluxrun version and download it from GitHub. Use the same version as for the
-  `.tar.gz` file: https://github.com/holukas/fluxrun/archive/refs/tags/v2.0.0.zip
-- Unzip the zip file to a folder, e.g. `C:\fluxrun-2.0.0`
-- Start GUI: `python C:\fluxrun-2.0.0\fluxrun main.py -g`
-- Start processing with CLI: `python C:\fluxrun-2.0.0\fluxrun main.py -f C:\my_project -d 10`. When using the CLI, you
+  `.tar.gz` file: https://github.com/holukas/fluxrun/archive/refs/tags/v2.1.0.zip
+- Unzip the zip file to a folder, e.g. `C:\fluxrun-2.1.0`
+- Start GUI: `python -m C:\fluxrun-2.1.0\fluxrun.main -g`
+- Start processing with CLI: `python -m C:\fluxrun-2.1.0\fluxrun.main -f C:\my_project -d 10`. When using the CLI, you
   basically point `fluxrun` to a folder and everything it needs to run it searches in that folder. Therefore, the folder
   `C:\my_project` needs to contain the `.eddypro` and `.metadata` files used by EddyPro, and in addition the file
   `fluxrunsettings.yaml`. The parameter `-d 10` means that only fluxes for the last 10 days are calculted. This
