@@ -88,8 +88,13 @@ def validate_numeric_data(settings: dict, found_files: dict, logger):
     for filename, filepath in found_files.items():
         logger.info(f"[VALIDATING NUMERIC DATA] {filename} ...")
         filepath = str(filepath)
-        df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename,
-                                     verbose=False)
+
+        filesize = os.path.getsize(filepath)
+        if filesize > 0:
+            df = read_uncompr_ascii_file(settings=settings, filepath=filepath, logger=logger, section_id=filename,
+                                         verbose=False)
+        else:
+            df = pd.DataFrame()
 
         if df.empty:
             logger.warning(f"{filename} is empty and will be skipped.")
@@ -193,17 +198,31 @@ class SearchAll:
 
     def search_all(self, dir, site_parse_str_py, logger):
         """Search all files that can be parsed with the parsing string."""
+        logger.info(f"{'-' * 20}")
+        logger.info("SEARCH FILES")
+        logger.info(f"{'-' * 20}")
         logger.info(f"Searching for files that fit the pattern {self.site_parse_str_py} ...")
         valid_files_dict = {}
+        empty_files = []
         for root, dirs, found_files in os.walk(dir):
             for idx, file in enumerate(found_files):
                 try:
                     rawdata_filedate = dt.datetime.strptime(file, self.site_parse_str_py)
                     filepath = Path(root) / file
-                    valid_files_dict[file] = filepath
+
+                    # Keep only files with size > 0
+                    filesize = os.path.getsize(filepath)
+                    if filesize > 0:
+                        valid_files_dict[file] = filepath
+                    else:
+                        empty_files.append(filepath)
+
                 except ValueError:
                     continue
         logger.info(f"Found {len(valid_files_dict)} files matching {site_parse_str_py} in {dir}")
+        logger.info(f"Ignored {len(empty_files)} empty files matching {site_parse_str_py} in {dir}")
+        for ef in empty_files:
+            logger.info(f"  [EMPTY FILE] File {ef} is empty")
         return valid_files_dict
 
     @staticmethod
@@ -212,6 +231,7 @@ class SearchAll:
         parsing_string = f"{settings_dict['site']}_" \
                          f"{settings_dict['filename_datetime_parsing_string']}{file_ext}"
         return parsing_string
+
 
     def keep_files_within_timerange(self, site_parse_str_py):
         """Check if file date is within selected time range"""
