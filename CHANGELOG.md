@@ -2,6 +2,10 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## v2.1.1 | 18 Oct 2025
+
+- Empty files are now ignored during file search
+
 ## v2.1.0 | 3 Jun 2025
 
 - Refactored script for better execution as a module
