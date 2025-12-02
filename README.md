@@ -81,3 +81,5 @@ Using [miniconda](https://www.anaconda.com/docs/getting-started/miniconda/instal
   `.eddypro` and `.metadata` files used by EddyPro, and in addition the file `fluxrunsettings.yaml`. The parameter
   `-d 10` means that only fluxes for the last 10 days are calculted. This parameter is useful when running `fluxrun` on
   an automatic schedule.
+- Note: the `-m` parameter means that the script is executed as a module, i.e., the `fluxrun` version installed in the
+  conda environment is called.
