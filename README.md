@@ -74,12 +74,10 @@ Using [miniconda](https://www.anaconda.com/docs/getting-started/miniconda/instal
 - Spot the `.tar.gz` file of the desired fluxrun version and use it to directly install from the GitHub repo via pip:
   `pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.1.0.tar.gz`
 - Now all required dependencies are installed in the environment `fluxrun-env`
-- Spot the `.zip` file of the desired fluxrun version and download it from GitHub. Use the same version as for the
-  `.tar.gz` file: https://github.com/holukas/fluxrun/archive/refs/tags/v2.1.0.zip
-- Unzip the zip file to a folder, e.g. `C:\fluxrun-2.1.0`
-- Start GUI: `python -m C:\fluxrun-2.1.0\fluxrun.main -g`
-- Start processing with CLI: `python -m C:\fluxrun-2.1.0\fluxrun.main -f C:\my_project -d 10`. When using the CLI, you
-  basically point `fluxrun` to a folder and everything it needs to run it searches in that folder. Therefore, the folder
-  `C:\my_project` needs to contain the `.eddypro` and `.metadata` files used by EddyPro, and in addition the file
-  `fluxrunsettings.yaml`. The parameter `-d 10` means that only fluxes for the last 10 days are calculted. This
-  parameter is useful when running `fluxrun` on an automatic schedule.
+- With the `fluxrun-env` activated, to start the GUI (graphical user interface): `python -m fluxrun.main -g`
+- With the `fluxrun-env` activated, to start processing with CLI (command-line interface):
+  `python -m fluxrun.main -f C:\my_project -d 10`. When using the CLI, you basically point `fluxrun` to a folder and
+  everything it needs to run it searches in that folder. Therefore, the folder `C:\my_project` needs to contain the
+  `.eddypro` and `.metadata` files used by EddyPro, and in addition the file `fluxrunsettings.yaml`. The parameter
+  `-d 10` means that only fluxes for the last 10 days are calculted. This parameter is useful when running `fluxrun` on
+  an automatic schedule.
