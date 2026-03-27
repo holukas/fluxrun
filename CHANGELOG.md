@@ -6,6 +6,8 @@
 
 - Raw data files with inconsistent line lengths (e.g. caused by a spurious newline in a record) no longer crash the run;
   affected lines are replaced with -9999 and a warning is logged
+- Summary plots modernized with a new color palette, clean axes, and a fingerprint heatmap (time of day × date) added to
+  each variable plot
 
 ## v2.1.1 | 18 Oct 2025
 
