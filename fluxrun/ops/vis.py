@@ -113,7 +113,7 @@ class PlotEddyProFullOutputFile:
 
         for ix, col in enumerate(self.data_df.columns):
 
-            fig = plt.figure(figsize=(12, 11), dpi=300, facecolor='white')
+            fig = plt.figure(figsize=(12, 11), dpi=150, facecolor='white')
             var = col[0]
             units = col[1]
 
@@ -146,12 +146,12 @@ class PlotEddyProFullOutputFile:
                 fig.suptitle(f"{var}  {units}", fontsize=18, fontweight='bold',
                              color=_P['text'], x=0.02, ha='left', va='top', y=0.99)
 
-                qua1 = y.quantile(0.01)
-                qua2 = y.quantile(0.99)
+                qs = y.quantile([0.01, 0.05, 0.50, 0.95, 0.99])
+                qua1, qua2 = qs[0.01], qs[0.99]
 
                 # TIME SERIES
                 ax1 = plt.subplot2grid((6, 4), (0, 0), colspan=4, rowspan=2)
-                ax1.fill_between(y.index, y.quantile(0.05), y.quantile(0.95),
+                ax1.fill_between(y.index, qs[0.05], qs[0.95],
                                  color=_P['ts_band'], alpha=0.7, label='5–95th pct', zorder=1)
                 ax1.plot(y.index, y, color=_P['ts'], linewidth=0.35, alpha=0.9, zorder=2)
                 _style_ax(ax1)
@@ -164,8 +164,9 @@ class PlotEddyProFullOutputFile:
 
                 # DAILY MEAN
                 ax4 = plt.subplot2grid((6, 4), (2, 0), colspan=2)
-                daily_avg = y.resample('D').mean()
-                daily_std = y.resample('D').std()
+                _daily = y.resample('D')
+                daily_avg = _daily.mean()
+                daily_std = _daily.std()
                 ax4.fill_between(daily_avg.index, daily_avg - daily_std, daily_avg + daily_std,
                                  color=_P['daily'], alpha=0.18, zorder=1)
                 ax4.scatter(daily_avg.index, daily_avg,
@@ -207,8 +208,9 @@ class PlotEddyProFullOutputFile:
 
                 # DIURNAL CYCLE
                 ax6 = plt.subplot2grid((6, 4), (3, 2), colspan=1)
-                hourly_avg = y.groupby(y.index.hour).mean()
-                hourly_std = y.groupby(y.index.hour).std()
+                _hourly = y.groupby(y.index.hour)
+                hourly_avg = _hourly.mean()
+                hourly_std = _hourly.std()
                 ax6.fill_between(hourly_avg.index, hourly_avg - hourly_std, hourly_avg + hourly_std,
                                  color=_P['diurnal_band'], alpha=0.9, zorder=1)
                 ax6.plot(hourly_avg.index, hourly_avg, color=_P['diurnal'], linewidth=1.2, zorder=2)
@@ -227,9 +229,9 @@ class PlotEddyProFullOutputFile:
                     f"n      {info_dict['count']:.0f}",
                     f"mean   {info_dict['mean']:.4g}",
                     f"std    {info_dict['std']:.4g}",
-                    f"p05    {y.quantile(0.05):.4g}",
-                    f"p50    {info_dict['50%']:.4g}",
-                    f"p95    {y.quantile(0.95):.4g}",
+                    f"p05    {qs[0.05]:.4g}",
+                    f"p50    {qs[0.50]:.4g}",
+                    f"p95    {qs[0.95]:.4g}",
                     f"min    {info_dict['min']:.4g}",
                     f"max    {info_dict['max']:.4g}",
                 ]
@@ -282,13 +284,7 @@ class PlotEddyProFullOutputFile:
                 ax_fp.set_ylabel("date", size=ls)
                 ax_fp.set_title(f"{var}  ·  fingerprint",
                                 size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
-                ax_fp.spines['top'].set_visible(False)
-                ax_fp.spines['right'].set_visible(False)
-                ax_fp.spines['left'].set_color(_P['spine'])
-                ax_fp.spines['bottom'].set_color(_P['spine'])
-                ax_fp.tick_params(colors=_P['subtext'], labelsize=ls, length=3, width=0.7)
-                ax_fp.xaxis.label.set_color(_P['subtext'])
-                ax_fp.yaxis.label.set_color(_P['subtext'])
+                _style_ax(ax_fp)
 
                 plt.tight_layout(pad=1.2, rect=[0, 0, 1, 0.97])
                 plot_name = os.path.join(self.plot_folder, plot_name)
@@ -313,11 +309,15 @@ def availability_rawdata(rawdata_found_files_dict, rawdata_file_datefrmt, outdir
     logger.info("Plotting availability heatmap ...")
 
     # Prepare data for plot
-    plot_df = pd.DataFrame()
+    records = []
     for rawdata_file, rawdata_filepath in rawdata_found_files_dict.items():
         rawdata_filebin_filedate = dt.datetime.strptime(rawdata_filepath.name, rawdata_file_datefrmt)
-        plot_df.loc[rawdata_filebin_filedate, 'date'] = rawdata_filebin_filedate.date()
-        plot_df.loc[rawdata_filebin_filedate, 'filesize'] = os.path.getsize(rawdata_filepath) / 1000000  # in MB
+        records.append({
+            'datetime': rawdata_filebin_filedate,
+            'date': rawdata_filebin_filedate.date(),
+            'filesize': os.path.getsize(rawdata_filepath) / 1_000_000,  # in MB
+        })
+    plot_df = pd.DataFrame(records).set_index('datetime')
 
     agg_plot_df = plot_df.groupby('date').agg('sum')
     agg_plot_df.index = pd.to_datetime(agg_plot_df.index)
