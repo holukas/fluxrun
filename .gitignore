@@ -3,6 +3,7 @@ dist/
 /.idea/
 /_tests/
 /_raw_photoshop/
+/.claude/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
