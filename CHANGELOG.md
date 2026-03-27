@@ -4,7 +4,8 @@
 
 ## v2.2.0 | 27 Mar 2026
 
-- Raw data files with inconsistent line lengths (e.g. caused by a spurious newline in a record) no longer crash the run; affected lines are replaced with -9999 and a warning is logged
+- Raw data files with inconsistent line lengths (e.g. caused by a spurious newline in a record) no longer crash the run;
+  affected lines are replaced with -9999 and a warning is logged
 
 ## v2.1.1 | 18 Oct 2025
 
