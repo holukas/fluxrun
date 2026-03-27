@@ -9,11 +9,49 @@ import pandas as pd
 from matplotlib import dates
 from matplotlib.ticker import MultipleLocator
 
-from .file import ReadEddyProFullOutputFile, read_uncompr_ascii_file
+try:
+    from .file import ReadEddyProFullOutputFile, read_uncompr_ascii_file
+except ImportError:
+    from file import ReadEddyProFullOutputFile, read_uncompr_ascii_file
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 15)
 pd.set_option('display.max_rows', 20)
+
+_P = {
+    'ts':           '#3B82F6',  # blue        – time series line
+    'ts_band':      '#DBEAFE',  # blue-100    – 5–95th percentile fill
+    'daily':        '#F59E0B',  # amber       – daily mean/std
+    'hist':         '#6366F1',  # indigo      – histogram bars
+    'cumul':        '#10B981',  # emerald     – cumulative sum
+    'cumul_fill':   '#D1FAE5',  # emerald-100 – cumulative fill
+    'diurnal':      '#EC4899',  # pink        – diurnal cycle
+    'diurnal_band': '#FCE7F3',  # pink-100    – diurnal std fill
+    'agg_med':      '#334155',  # slate-700   – median line
+    'agg_band':     '#BAE6FD',  # sky-200     – percentile fill
+    'count':        '#64748B',  # slate-500   – count line
+    'zero':         '#94A3B8',  # slate-400   – zero reference
+    'text':         '#1E293B',  # slate-900   – titles / labels
+    'subtext':      '#64748B',  # slate-500   – axis tick labels
+    'spine':        '#CBD5E1',  # slate-300   – axis spines
+    'grid':         '#F8FAFC',  # slate-50    – grid lines
+    'statsbox':     '#F1F5F9',  # slate-100   – stats background
+}
+
+
+def _style_ax(ax, fontsize=7):
+    """Apply clean, modern styling to an axis."""
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_color(_P['spine'])
+    ax.spines['bottom'].set_color(_P['spine'])
+    ax.yaxis.grid(True, color=_P['grid'], linewidth=0.8, zorder=0)
+    ax.xaxis.grid(False)
+    ax.set_axisbelow(True)
+    ax.set_facecolor('white')
+    ax.tick_params(colors=_P['subtext'], labelsize=fontsize, length=3, width=0.7)
+    ax.xaxis.label.set_color(_P['subtext'])
+    ax.yaxis.label.set_color(_P['subtext'])
 
 
 def sanitize_y(y):
@@ -75,7 +113,7 @@ class PlotEddyProFullOutputFile:
 
         for ix, col in enumerate(self.data_df.columns):
 
-            fig = plt.figure(figsize=(11.69, 6.58), dpi=300)
+            fig = plt.figure(figsize=(12, 11), dpi=300, facecolor='white')
             var = col[0]
             units = col[1]
 
@@ -100,130 +138,162 @@ class PlotEddyProFullOutputFile:
                 y = y[qc]
                 quality_controlled = 1
 
-            if not y.empty:  # and len(unique_values) > 1:
+            if not y.empty:
 
-                heading_size = 8
-                label_size = 7
-                text_size = 8
+                hs = 8   # heading size
+                ls = 7   # label size
 
-                # fig = plt.subplot2grid((3, 3), (0, 0))
-
-                # TIME SERIES PLOT
-                ax1 = plt.subplot2grid((4, 4), (0, 0), colspan=4, rowspan=2)
-                # y.plot(kind='scatter', x=y.index, y=y, ax=ax1)
-                # y.plot(c='#5f87ae', linewidth=0.3)  # green=#bdd442
-                # plt.scatter(y.index, y, c='#5f87ae', edgecolor='#5f87ae', alpha=1, s=1)
-                # ax1.plot_date(y.index.to_pydatetime(), y, 'o-', color='#5f87ae', linewidth=0.2, markersize=3, markeredgecolor='#5f87ae')  # http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot_date
-                ax1.plot_date(y.index.to_pydatetime(), y, '-', color='#5f87ae',
-                              linewidth=0.3)  # http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot_date
-                ax1.axhline(y.quantile(0.05), color='red', alpha=0.25)
-                ax1.axhline(y.quantile(0.95), color='red', alpha=0.25)
-                ax1.set_xlabel("DAY/MONTH", size=label_size)
-                ax1.set_ylabel(units, size=label_size)
-                ax1.set_title(f"{var} time series with 5/95 percentiles", size=heading_size,
-                              backgroundcolor='#5f87ae')
-                ax1.tick_params(axis='both', labelsize=label_size)
-                # plt.setp(ax1.xaxis.get_majorticklabels(), rotation=0)
-                ax1.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
-                # ax1.xaxis.set_major_locator(dates.WeekdayLocator(byweekday=1, interval=1))
+                fig.suptitle(f"{var}  {units}", fontsize=18, fontweight='bold',
+                             color=_P['text'], x=0.02, ha='left', va='top', y=0.99)
 
                 qua1 = y.quantile(0.01)
                 qua2 = y.quantile(0.99)
+
+                # TIME SERIES
+                ax1 = plt.subplot2grid((6, 4), (0, 0), colspan=4, rowspan=2)
+                ax1.fill_between(y.index, y.quantile(0.05), y.quantile(0.95),
+                                 color=_P['ts_band'], alpha=0.7, label='5–95th pct', zorder=1)
+                ax1.plot(y.index, y, color=_P['ts'], linewidth=0.35, alpha=0.9, zorder=2)
+                _style_ax(ax1)
+                ax1.set_xlabel("date", size=ls)
+                ax1.set_ylabel(units, size=ls)
+                ax1.set_title(f"{var}  ·  time series  (shading: 5–95th percentile)",
+                              size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
+                ax1.xaxis.set_major_formatter(dates.DateFormatter("%d %b"))
                 ax1.set_ylim(qua1, qua2)
 
-                # DAILY AVG SCATTER
-                ax4 = plt.subplot2grid((4, 4), (2, 0), colspan=2)
-                daily_count = y.resample('D').count()
+                # DAILY MEAN
+                ax4 = plt.subplot2grid((6, 4), (2, 0), colspan=2)
                 daily_avg = y.resample('D').mean()
                 daily_std = y.resample('D').std()
-                # daily_avg = daily_avg[daily_count > 10]
-                # daily_std = daily_std[daily_count > 10]
-                ax4.scatter(daily_avg.index.to_pydatetime(), daily_avg, c='#f78b31', edgecolor='#f78b31', alpha=1, s=4)
-                ax4.errorbar(daily_avg.index.to_pydatetime(), daily_avg, alpha=0.2, yerr=daily_std, capsize=0,
-                             ls='none',
-                             color='#f78b31', elinewidth=2)
-                # plt.fill_between(daily_std.index, daily_avg - daily_std, daily_avg + daily_std, color='k', alpha=0.1)
-                ax4.axhline(0, color='grey', alpha=0.5)
-                ax4.set_xlabel("DAY/MONTH", size=label_size)
-                ax4.set_ylabel(units, size=label_size)
-                ax4.set_title(f"{var} daily average with std", size=heading_size,
-                              backgroundcolor='#f78b31')
-                ax4.tick_params(axis='both', labelsize=label_size)
-                plt.setp(ax4.xaxis.get_majorticklabels(), rotation=0)
-                ax4.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
+                ax4.fill_between(daily_avg.index, daily_avg - daily_std, daily_avg + daily_std,
+                                 color=_P['daily'], alpha=0.18, zorder=1)
+                ax4.scatter(daily_avg.index, daily_avg,
+                            color=_P['daily'], s=8, zorder=3, edgecolors='none')
+                ax4.axhline(0, color=_P['zero'], linewidth=0.7, alpha=0.6)
+                _style_ax(ax4)
+                ax4.set_xlabel("date", size=ls)
+                ax4.set_ylabel(units, size=ls)
+                ax4.set_title(f"{var}  ·  daily mean ± std",
+                              size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
+                ax4.xaxis.set_major_formatter(dates.DateFormatter("%d %b"))
                 ax4.set_ylim(qua1, qua2)
-                # plt.ylim(-10, 10)
 
                 # HISTOGRAM
                 try:
-                    ax2 = plt.subplot2grid((4, 4), (3, 0), colspan=2)
-                    # y.hist(color='#5b9bd5', bins=10)
-                    # y_hist = y[y > qua1]
-                    ax2.hist(y, bins=10, range=(qua1, qua2), color='#5b9bd5', edgecolor='#497CDD')
-                    # plt.xlim(qua1, qua2)
-                    ax2.set_xlabel(units, size=label_size)
-                    ax2.set_ylabel("counts", size=label_size)
-                    ax2.set_title(f"{var} histogram", size=heading_size, backgroundcolor='#5b9bd5')
-                    ax2.tick_params(axis='both', labelsize=label_size)
+                    ax2 = plt.subplot2grid((6, 4), (3, 0), colspan=2)
+                    ax2.hist(y, bins=30, range=(qua1, qua2),
+                             color=_P['hist'], edgecolor='white', linewidth=0.3, alpha=0.85)
+                    _style_ax(ax2)
+                    ax2.set_xlabel(units, size=ls)
+                    ax2.set_ylabel("count", size=ls)
+                    ax2.set_title(f"{var}  ·  distribution",
+                                  size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
                 except ValueError as e:
-                    self.logger.error("ERROR DURING HISTOGRAM PLOTTING: {}".format(e))
-                    pass
+                    self.logger.error(f"ERROR DURING HISTOGRAM PLOTTING: {e}")
 
                 # CUMULATIVE
-                ax5 = plt.subplot2grid((4, 4), (2, 2), colspan=2)
-                # y.cumsum().plot(c='#ed3744', linewidth=0.6)
-                ax5.plot_date(y.index.to_pydatetime(), y.cumsum(), '-', color='#ed3744', linewidth=0.6)
-                ax5.set_xlabel("day/month", size=label_size)
-                ax5.set_ylabel(units, size=label_size)
-                ax5.set_title(f"{var} cumulative", size=heading_size, backgroundcolor='#ed3744')
-                ax5.tick_params(axis='both', labelsize=label_size)
-                plt.setp(ax5.xaxis.get_majorticklabels(), rotation=0)
-                ax5.xaxis.set_major_formatter(dates.DateFormatter("%d/%m"))
-                # ax5.xaxis.set_major_locator(dates.MonthLocator())
-                ax5.yaxis.grid()
-                ax5.axhline(0, color='black', alpha=0.8)
+                ax5 = plt.subplot2grid((6, 4), (2, 2), colspan=2)
+                cumsum = y.cumsum()
+                ax5.fill_between(y.index, cumsum, alpha=0.15, color=_P['cumul'], zorder=1)
+                ax5.plot(y.index, cumsum, color=_P['cumul'], linewidth=0.8, zorder=2)
+                ax5.axhline(0, color=_P['zero'], linewidth=0.7, alpha=0.6)
+                _style_ax(ax5)
+                ax5.set_xlabel("date", size=ls)
+                ax5.set_ylabel(units, size=ls)
+                ax5.set_title(f"{var}  ·  cumulative sum",
+                              size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
+                ax5.xaxis.set_major_formatter(dates.DateFormatter("%d %b"))
 
-                # HOURLY AVERAGE
-                ax6 = plt.subplot2grid((4, 4), (3, 2), colspan=1, rowspan=1)
+                # DIURNAL CYCLE
+                ax6 = plt.subplot2grid((6, 4), (3, 2), colspan=1)
                 hourly_avg = y.groupby(y.index.hour).mean()
                 hourly_std = y.groupby(y.index.hour).std()
-                ax6.plot(hourly_avg)
-                ax6.fill_between(hourly_avg.index, hourly_avg - hourly_std, hourly_avg + hourly_std, color='k',
-                                 alpha=0.1)
-                # hourly_avg.plot()
-                # plt.fill_between(hourly_avg.index, hourly_avg - hourly_std, hourly_avg + hourly_std, color='k',
-                #                  alpha=0.1)
-                ax6.set_xlabel("hour", size=label_size)
-                ax6.set_ylabel(units, size=label_size)
-                ax6.set_title(f"{var} diurnal cycle with std", size=heading_size,
-                              backgroundcolor='#ffc532')
-                ax6.tick_params(axis='both', labelsize=label_size)
-                plt.setp(ax6.xaxis.get_majorticklabels(), rotation=0)
-                ax6.axhline(0, color='black', alpha=0.8)
+                ax6.fill_between(hourly_avg.index, hourly_avg - hourly_std, hourly_avg + hourly_std,
+                                 color=_P['diurnal_band'], alpha=0.9, zorder=1)
+                ax6.plot(hourly_avg.index, hourly_avg, color=_P['diurnal'], linewidth=1.2, zorder=2)
+                ax6.axhline(0, color=_P['zero'], linewidth=0.7, alpha=0.6)
+                _style_ax(ax6)
+                ax6.set_xlabel("hour (UTC)", size=ls)
+                ax6.set_ylabel(units, size=ls)
+                ax6.set_title(f"{var}  ·  diurnal cycle",
+                              size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
                 ax6.set_xlim(0, 23)
-                if hourly_avg.min() < 0:
-                    factor = 1.2
-                else:
-                    factor = 0.8
-                ax6.set_ylim(hourly_avg.min() * factor, hourly_avg.max() * 1.2)
-                majorLocator = MultipleLocator(2)
-                ax6.xaxis.set_major_locator(majorLocator)
+                ax6.xaxis.set_major_locator(MultipleLocator(6))
 
-                # TEXT INFO OUTPUT
-                info_dict = y.describe().to_dict()
-                info_txt = "\nSTATS\n"
-                for key, val in info_dict.items():
-                    cur_info = f"{key}: {val}\n"
-                    info_txt += cur_info
+                # STATS BOX
+                info_dict = y.describe()
+                lines = [
+                    f"n      {info_dict['count']:.0f}",
+                    f"mean   {info_dict['mean']:.4g}",
+                    f"std    {info_dict['std']:.4g}",
+                    f"p05    {y.quantile(0.05):.4g}",
+                    f"p50    {info_dict['50%']:.4g}",
+                    f"p95    {y.quantile(0.95):.4g}",
+                    f"min    {info_dict['min']:.4g}",
+                    f"max    {info_dict['max']:.4g}",
+                ]
+                if quality_controlled:
+                    lines.append(f"\nQC filtered  (qc < 2)")
 
-                fig.text(0.8, 0.05, info_txt, size=text_size, backgroundcolor='#CCCCCC')
-                if quality_controlled == 1:
-                    plt.figtext(0.84, 0.97, f"quality controlled using {qc_col}", color='red', size=text_size)
+                ax_s = plt.subplot2grid((6, 4), (3, 3))
+                ax_s.axis('off')
+                ax_s.text(0.08, 0.95, "\n".join(lines),
+                          transform=ax_s.transAxes, fontsize=6.5,
+                          verticalalignment='top', fontfamily='monospace',
+                          color=_P['text'],
+                          bbox=dict(boxstyle='round,pad=0.5', facecolor=_P['statsbox'],
+                                    edgecolor=_P['spine'], linewidth=0.8))
 
-                plt.tight_layout()
+                # FINGERPRINT HEATMAP
+                ax_fp = plt.subplot2grid((6, 4), (4, 0), colspan=4, rowspan=2)
+                fp = y.copy().to_frame(name='v')
+                fp['date'] = fp.index.date
+                fp['slot'] = fp.index.hour * 2 + fp.index.minute // 30  # 0–47 half-hour slots
+                fp_pivot = fp.pivot_table(index='date', columns='slot', values='v', aggfunc='mean')
+
+                im = ax_fp.pcolormesh(
+                    np.arange(fp_pivot.shape[1] + 1),
+                    np.arange(fp_pivot.shape[0] + 1),
+                    np.ma.masked_invalid(fp_pivot.values),
+                    cmap='RdYlBu_r',
+                    vmin=qua1, vmax=qua2,
+                    shading='flat',
+                )
+                cbar = fig.colorbar(im, ax=ax_fp, pad=0.01, fraction=0.015, aspect=40)
+                cbar.ax.tick_params(labelsize=6)
+                cbar.set_label(units, size=ls)
+
+                # X-axis: every 2 hours
+                x_ticks = list(range(0, 48, 4))
+                ax_fp.set_xticks([s + 0.5 for s in x_ticks])
+                ax_fp.set_xticklabels(
+                    [f"{s // 2:02d}:{(s % 2) * 30:02d}" for s in x_ticks], size=ls)
+
+                # Y-axis: dates, thinned to ~15 labels max
+                n_dates = fp_pivot.shape[0]
+                step = max(1, n_dates // 15)
+                y_ticks = list(range(0, n_dates, step))
+                ax_fp.set_yticks([p + 0.5 for p in y_ticks])
+                ax_fp.set_yticklabels(
+                    [str(fp_pivot.index[p]) for p in y_ticks], size=ls)
+
+                ax_fp.set_xlabel("time (UTC)", size=ls)
+                ax_fp.set_ylabel("date", size=ls)
+                ax_fp.set_title(f"{var}  ·  fingerprint",
+                                size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
+                ax_fp.spines['top'].set_visible(False)
+                ax_fp.spines['right'].set_visible(False)
+                ax_fp.spines['left'].set_color(_P['spine'])
+                ax_fp.spines['bottom'].set_color(_P['spine'])
+                ax_fp.tick_params(colors=_P['subtext'], labelsize=ls, length=3, width=0.7)
+                ax_fp.xaxis.label.set_color(_P['subtext'])
+                ax_fp.yaxis.label.set_color(_P['subtext'])
+
+                plt.tight_layout(pad=1.2, rect=[0, 0, 1, 0.97])
                 plot_name = os.path.join(self.plot_folder, plot_name)
                 self.logger.info(f"    --> Saving plot {plot_name} ...")
-                plt.savefig(plot_name + '.png', dpi=150)
+                plt.savefig(plot_name + '.png', dpi=150, facecolor='white')
                 plt.close(fig)
 
             else:
@@ -445,35 +515,42 @@ class PlotRawDataFilesAggregates:
         for var in _vars:
             self.logger.info(f"{self.section_id}    Plotting {var} ...")
             var_df = df[var].copy()
-            gs = gridspec.GridSpec(2, 2)  # rows, cols
-            gs.update(wspace=0.1, hspace=0, left=0.03, right=0.99, top=0.99, bottom=0.01)
+            gs = gridspec.GridSpec(2, 1, hspace=0.08, left=0.05, right=0.99, top=0.96, bottom=0.06)
             fig = plt.Figure(facecolor='white', figsize=(32, 9))
-            ax1 = fig.add_subplot(gs[0, 0])
-            ax2 = fig.add_subplot(gs[1, 0])
+            ax1 = fig.add_subplot(gs[0])
+            ax2 = fig.add_subplot(gs[1])
 
-            ax1.plot_date(var_df.index, var_df['median'], alpha=.5, c='#455A64', label='median')
-            ax1.fill_between(x=var_df.index, y1=var_df['q95'], y2=var_df['q05'],
-                             alpha=.2, color='#5f87ae', label='5-95th percentile')
+            ax1.fill_between(x=var_df.index, y1=var_df['q05'], y2=var_df['q95'],
+                             alpha=0.25, color=_P['agg_band'], label='5–95th percentile', zorder=1)
+            ax1.plot(var_df.index, var_df['median'],
+                     alpha=0.8, color=_P['agg_med'], linewidth=0.8, label='median', zorder=3)
             ax1.errorbar(var_df.index, var_df['mean'], var_df['std'],
-                         marker='o', mec='black', mfc='None', color='black', capsize=0,
-                         label='mean +/- std', alpha=.2)
+                         marker='o', mec=_P['daily'], mfc='none', color=_P['daily'],
+                         capsize=0, label='mean ± std', alpha=0.4, markersize=3,
+                         linewidth=0, elinewidth=1.2, zorder=2)
             try:
                 ax1.set_ylim(var_df['q01'].min(), var_df['q99'].max())
             except ValueError:
                 pass
-            ax2.plot_date(var_df.index, var_df['count'], alpha=1, c='#37474F', label='count')
 
-            text_args = dict(verticalalignment='top',
-                             size=14, color='black', backgroundcolor='none', zorder=100)
-            ax1.text(0.01, 0.96, f"{var[0]} {var[1]} {var[2]}", transform=ax1.transAxes, horizontalalignment='left',
-                     **text_args)
+            ax2.fill_between(var_df.index, var_df['count'],
+                             alpha=0.3, color=_P['count'], zorder=1)
+            ax2.plot(var_df.index, var_df['count'],
+                     alpha=0.9, color=_P['count'], linewidth=0.8, zorder=2)
 
-            _default_format(ax=ax1, width=1, length=2, txt_ylabel=var[0], txt_ylabel_units=var[1])
-            _default_format(ax=ax2, width=1, length=2, txt_ylabel='counts')
+            ax1.text(0.005, 0.97, f"{var[0]}  {var[1]}  {var[2]}",
+                     transform=ax1.transAxes, horizontalalignment='left',
+                     verticalalignment='top', size=13, color=_P['text'],
+                     fontweight='bold', backgroundcolor='none', zorder=100)
 
-            # ahx.axhline(0, color='black', ls='-', lw=1, zorder=1)
+            _style_ax(ax1, fontsize=11)
+            _style_ax(ax2, fontsize=11)
+            ax1.set_ylabel(f"{var[0]}  {var[1]}", color=_P['subtext'], fontsize=11)
+            ax2.set_ylabel("count", color=_P['subtext'], fontsize=11)
+            ax2.set_xlabel("file date", color=_P['subtext'], fontsize=11)
+
             font = {'family': 'sans-serif', 'size': 10}
-            ax1.legend(frameon=True, loc='upper right', prop=font).set_zorder(100)
+            ax1.legend(frameon=False, loc='upper right', prop=font).set_zorder(100)
 
             outname = f"{var[0]}_{var[1]}_{var[2]}"
             outname = outname.replace(':', '_')
@@ -498,3 +575,47 @@ class PlotRawDataFilesAggregates:
 
     def q99(self, x):
         return x.quantile(0.99)
+
+
+if __name__ == '__main__':
+    import logging
+    import tempfile
+    from pathlib import Path
+
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s %(message)s')
+    _logger = logging.getLogger('vis_test')
+
+    _outdir = Path(tempfile.mkdtemp())
+    print(f"Output directory: {_outdir}")
+
+    # 30 days of 30-minute data
+    _dates = pd.date_range('2025-06-01', periods=30 * 48, freq='30T')
+    _rng = np.random.default_rng(42)
+    _n = len(_dates)
+    _hour = _dates.hour + _dates.minute / 60
+
+    # Diurnal patterns with noise
+    _co2 = -8 * np.sin(np.pi * (_hour - 6) / 12) + _rng.normal(0, 1.5, _n)
+    _h = 250 * np.sin(np.pi * (_hour - 6) / 12) + _rng.normal(0, 20, _n)
+    _qc_co2 = _rng.choice([0, 1, 2], size=_n, p=[0.7, 0.2, 0.1])
+
+    _cols = pd.MultiIndex.from_tuples([
+        ('co2_flux', '[µmolm-2s-1]'),
+        ('qc_co2_flux', '[#]'),
+        ('H', '[Wm-2]'),
+    ])
+    _dummy_df = pd.DataFrame(
+        np.column_stack([_co2, _qc_co2, _h]),
+        index=_dates,
+        columns=_cols,
+    )
+
+    _plotter = PlotEddyProFullOutputFile(
+        file_to_plot=None,
+        destination_folder=_outdir,
+        logger=_logger,
+    )
+    _plotter.data_df = _dummy_df
+    _columns_names, _columns_count = _plotter.col_info()
+    _plotter.plot_full_output(_columns_count, _columns_names)
+    print(f"Done. Plots saved to: {_outdir}")
