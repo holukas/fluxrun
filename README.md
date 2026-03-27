@@ -191,13 +191,15 @@ One plot per variable across all raw data files:
 
 ### EddyPro Summary Plots (`{ix}_{variable}_{units}.png`)
 
-One 6-panel plot per variable from the EddyPro `_full_output_` file:
-1. **Time series** — line plot with 5th/95th percentile markers
-2. **Daily average** — scatter with error bars (±std)
+One plot per variable from the EddyPro `_full_output_` file, with the variable name shown large at the top.
+Seven panels per plot:
+1. **Time series** — line plot with 5th–95th percentile shading
+2. **Daily mean** — scatter with ±std fill
 3. **Histogram** — value distribution
 4. **Cumulative sum** — over the full period
-5. **Diurnal cycle** — hourly average with std band
+5. **Diurnal cycle** — hourly mean with std band
 6. **Statistics box** — count, mean, std, min, max, percentiles
+7. **Fingerprint heatmap** — time of day (x) × date (y), color-coded by value
 
 If a `qc_{variable}` column is present, only quality flags 0 and 1 are shown (quality 2 excluded).
 
@@ -209,6 +211,7 @@ If a `qc_{variable}` column is present, only quality flags 0 and 1 are shown (qu
 |-----------|----------|
 | File is 0 bytes | Skipped automatically, logged as `[EMPTY FILE]` |
 | File is `.gz` compressed | Auto-decompressed to run folder before processing |
+| Lines with inconsistent field count | Replaced with `-9999` values, logged as `[LINE FIX]` |
 | Non-numeric values in data | Replaced with `-9999` |
 | Special missing value codes (`-9999`, `-6999`, `Infinity`, `#N/A`, `#NV`) | Treated as missing, not flagged |
 | File outside date range | Skipped, logged as `[FILE TIME RANGE CHECK]` |
@@ -240,7 +243,7 @@ conda create -n fluxrun-env python=3.11
 conda activate fluxrun-env
 
 # Install from GitHub (replace with desired version)
-pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.1.1.tar.gz
+pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.2.0.tar.gz
 ```
 
 All required dependencies are installed automatically.
