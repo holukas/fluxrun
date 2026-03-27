@@ -31,7 +31,7 @@ def read_uncompr_ascii_file(settings, filepath, logger, section_id, verbose: boo
     if verbose:
         logger.info(f"{section_id}    Reading file {filepath} ...")
 
-    tic = time.time()
+    tic = time.time()   
 
     # Check header format
     if settings['RAWDATA']['HEADER_FORMAT'] == '3-row header (bico files)':
@@ -41,17 +41,32 @@ def read_uncompr_ascii_file(settings, filepath, logger, section_id, verbose: boo
     else:
         raise NotImplementedError(f"{settings['RAWDATA']['HEADER_FORMAT']} is not implemented.")
 
-    df = pd.read_csv(filepath,
-                     skiprows=skiprows,
-                     header=[0, 1, 2],
-                     na_values=-9999,
-                     encoding='utf-8',
-                     delimiter=',',
-                     # keep_date_col=True,
-                     parse_dates=False,
-                     # date_parser=None,
-                     index_col=None,
-                     dtype=None)
+    read_csv_kwargs = dict(
+        skiprows=skiprows,
+        header=[0, 1, 2],
+        na_values=-9999,
+        encoding='utf-8',
+        delimiter=',',
+        parse_dates=False,
+        index_col=None,
+        dtype=None,
+    )
+
+    try:
+        df = pd.read_csv(filepath, **read_csv_kwargs)
+    except pd.errors.ParserError as e:
+        header_df = pd.read_csv(filepath, **read_csv_kwargs, nrows=0)
+        n_cols = len(header_df.columns)
+
+        def _replace_bad(bad_line):
+            return ['-9999'] * n_cols
+
+        logger.warning(
+            f"[LINE FIX] {section_id}: Inconsistent line(s) detected ({e}). "
+            f"Bad lines replaced with -9999."
+        )
+        df = pd.read_csv(filepath, **read_csv_kwargs, on_bad_lines=_replace_bad, engine='python')
+
     time_needed = time.time() - tic
     if verbose:
         logger.info(f"{section_id}    Finished ({time_needed:.3f}s). "
