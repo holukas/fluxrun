@@ -342,6 +342,11 @@ class PlotEddyProFullOutputFile:
             quantiles = y.quantile([0.01, 0.05, 0.50, 0.95, 0.99])
             q_min, q_max = quantiles[0.01], quantiles[0.99]
 
+            # Skip columns with invalid quantiles (all NaN or Inf values)
+            if np.isnan(q_min) or np.isnan(q_max) or np.isinf(q_min) or np.isinf(q_max):
+                self.logger.debug(f"Skipping {var} — no valid data for plotting (all NaN or Inf)")
+                continue
+
             # Create subplot axes
             ax1 = plt.subplot2grid((6, 4), (0, 0), colspan=4, rowspan=2)
             ax2 = plt.subplot2grid((6, 4), (3, 0), colspan=2)
