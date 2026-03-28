@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: FluxRun
+message: "If you use this software, please cite it using the metadata from this file."
+authors:
+  - family-names: Holukas
+    given-names: Lukas
+    affiliation: "Swiss Federal Research Institute WSL"
+version: 2.2.0
+date-released: 2026-03-28
+repository-code: "https://github.com/holukas/fluxrun"
+license: MIT
+keywords:
+  - eddy covariance
+  - flux measurements
+  - data processing
+  - EddyPro
