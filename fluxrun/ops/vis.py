@@ -474,25 +474,6 @@ def _default_format(ax, fontsize=12, label_color='black',
         ax.set_ylabel(f'{txt_ylabel}', color=label_color, fontsize=fontsize, fontweight='bold')
 
 
-def _format_plot(self, ax, title, show_legend=True):
-    # Automatic tick locations and formats
-    locator = mdates.AutoDateLocator(minticks=5, maxticks=20)
-    formatter = mdates.ConciseDateFormatter(locator)
-    ax.xaxis.set_major_locator(locator)
-    ax.xaxis.set_major_formatter(formatter)
-
-    _default_format(ax=ax, label_color='black', fontsize=12,
-                    txt_xlabel='file date', txt_ylabel='covariance', txt_ylabel_units='')
-
-    font = {'family': 'sans-serif', 'color': 'black', 'weight': 'bold', 'size': 12, 'alpha': 1}
-    ax.set_title(title, fontdict=font, loc='left', pad=12)
-
-    ax.axhline(0, color='black', ls='-', lw=1, zorder=1)
-    font = {'family': 'sans-serif', 'size': 10}
-    if show_legend:
-        ax.legend(frameon=True, loc='upper right', prop=font).set_zorder(100)
-
-
 class PlotRawDataFilesAggregates:
     section_id = "[PLOT RAW DATA FILE AGGREGATES]"
 

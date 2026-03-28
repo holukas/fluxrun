@@ -213,7 +213,7 @@ class FluxRunEngine:
 
         # Delete files
         for filepath in deletelist:
-            self.logger.info(f"Deleting uncompressed (unzipped) ASCII file: {filepath}) ...")
+            self.logger.info(f"Deleting uncompressed (unzipped) ASCII file: {filepath} ...")
             os.remove(filepath)
 
     def run_eddypro_cmd(self, cmd: str):
