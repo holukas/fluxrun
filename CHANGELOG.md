@@ -18,6 +18,10 @@
 - Bugfix: Removed orphaned function `_format_plot()` in `vis.py` that could cause runtime errors
 - Refactored GUI code in `fluxrun/gui/`: new `settings_manager.py` with centralized constants, added type hints, removed
   debug statements and dead code, consolidated duplicated sync logic, improved error handling for dialogs
+- Bugfix: Settings persistence now works for file/folder paths selected via dialogs (added QLabel widget support to
+  settings save/load handlers)
+- Bugfix: Logger now creates log directory before writing files, preventing FileNotFoundError with new output directories
+- Bugfix: Summary plot generation now gracefully skips columns with NaN or infinite quantiles instead of crashing
 
 ## v2.1.1 | 18 Oct 2025
 
