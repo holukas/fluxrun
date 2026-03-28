@@ -5,9 +5,6 @@ from pathlib import Path
 from . import fluxrun_engine
 from .ops.setup import read_settings_file
 
-# todo testing
-print(f"{__file__}")
-
 
 # -f F:\Sync\luhk_work\CURRENT\FRU_rECord_test\with_cli -d 9999
 
