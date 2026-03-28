@@ -11,6 +11,9 @@
 - Fixed pandas FutureWarning for deprecated frequency alias (`freq='T'` changed to `freq='min'` in date range generation)
 - Logger output improved: reduced clutter by consolidating verbose messages, using DEBUG level for per-item progress,
   and providing cleaner summary messages
+- Code refactoring in `fluxrun/ops/vis.py`: centralized 40+ magic numbers in PlotConfig class, extracted 17 helper methods,
+  removed dead code, and renamed variables for clarity; main plotting methods now 64-70% more concise while maintaining
+  full backward compatibility
 
 ## v2.1.1 | 18 Oct 2025
 
