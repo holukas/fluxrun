@@ -639,7 +639,7 @@ if __name__ == '__main__':
     _logger = logging.getLogger('vis_test')
 
     _outdir = Path(tempfile.mkdtemp())
-    print(f"Output directory: {_outdir}")
+    _logger.info(f"Output directory: {_outdir}")
 
     # 30 days of 30-minute data
     _dates = pd.date_range('2025-06-01', periods=30 * 48, freq='30min')
@@ -671,4 +671,4 @@ if __name__ == '__main__':
     _plotter.data_df = _dummy_df
     _columns_names, _columns_count = _plotter.col_info()
     _plotter.plot_full_output(_columns_count, _columns_names)
-    print(f"Done. Plots saved to: {_outdir}")
+    _logger.info(f"✓ Plots successfully saved to: {_outdir}")

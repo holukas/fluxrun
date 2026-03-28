@@ -55,6 +55,61 @@ def setup_logger(settings: dict,
 
     return logger
 
+
+def log_section_start(logger: logging.Logger, section_name: str) -> None:
+    """Log the start of a major processing section with visual separator.
+
+    Args:
+        logger: Logger instance to write to.
+        section_name: Name of the section being started.
+    """
+    logger.info("")  # Blank line for readability
+    logger.info("=" * 80)
+    logger.info(section_name)
+    logger.info("=" * 80)
+
+
+def log_subsection_start(logger: logging.Logger, subsection_name: str) -> None:
+    """Log the start of a subsection with dash separator.
+
+    Args:
+        logger: Logger instance to write to.
+        subsection_name: Name of the subsection being started.
+    """
+    logger.info("-" * 40)
+    logger.info(subsection_name)
+    logger.info("-" * 40)
+
+
+def log_eddypro_output(logger: logging.Logger, line: str, command: str) -> None:
+    """Log EddyPro subprocess output with consistent formatting.
+
+    Detects flux averaging period markers and formats them distinctly.
+
+    Args:
+        logger: Logger instance to write to.
+        line: Output line from EddyPro subprocess.
+        command: Name of the EddyPro command being executed.
+    """
+    if 'processing new flux averaging period' in line.lower():
+        logger.info("-" * 60)
+    else:
+        logger.info(f"[EDDYPRO] [{command}] {line}")
+
+
+def log_completion(logger: logging.Logger, operation_name: str, success: bool = True) -> None:
+    """Log successful or failed completion of an operation.
+
+    Args:
+        logger: Logger instance to write to.
+        operation_name: Name of the operation being completed.
+        success: Whether the operation succeeded (default: True).
+    """
+    symbol = "✓" if success else "✗"
+    status = "completed successfully" if success else "failed"
+    logger.info(f"{symbol} {operation_name} {status}")
+
+
 # def setup_logger(settings_dict):
 #     logfile_name = f"{settings_dict['_run_id']}.log"
 #     logfile_path = settings_dict['_dir_out_run_log'] / logfile_name

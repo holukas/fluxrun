@@ -35,7 +35,12 @@ class FluxRunEngine:
         self.settings['_dir_root'] = Path(self.settings['_dir_script']).parents[1]
         self.settings = setup.set_outdirs(settings_dict=self.settings)
         self._make_parsing_strings_python()
-        setup.make_outdirs(settings_dict=self.settings)
+
+        # Create logger early so setup operations can use it
+        self.logger = logger.setup_logger(settings=self.settings)
+
+        # Now create output directories with logger support
+        setup.make_outdirs(settings_dict=self.settings, logger=self.logger)
         self.set_dir_eddypro_rawdata()
 
     def _make_parsing_strings_python(self) -> None:
@@ -52,10 +57,10 @@ class FluxRunEngine:
         self.settings['_sitefiles_parse_str_python_uncompr'] = _parsing_str_py_uncompr  # For uncompressed files
 
     def _run_setup(self):
-        # Logger
-        self.logger = logger.setup_logger(settings=self.settings)
-        self.logger.info(f"\n\nRun ID: {self.settings['_run_id']}")
-        self.logger.info(f"fluxrun version: {version.__version__} / {version.__date__}\n\n")
+        # Logger already created in update_settings(), just log initialization info
+        logger.log_section_start(self.logger, "RUN INITIALIZATION")
+        self.logger.info(f"Run ID: {self.settings['_run_id']}")
+        self.logger.info(f"fluxrun version: {version.__version__} / {version.__date__}")
 
         self.settings = file.PrepareEddyProFiles(settings_dict=self.settings, logger=self.logger).get()
         file.save_settings_to_file(filepath_settings=self.filepath_settings,
@@ -65,15 +70,9 @@ class FluxRunEngine:
         self._log_extended_settings()
 
     def _log_extended_settings(self):
-        self.logger.info("")
-        self.logger.info(f"{'=' * 80}")
-        self.logger.info("")
-        self.logger.info(f"SETTINGS (EXTENDED)")
-        self.logger.info("")
-        self.logger.info(f"{'=' * 80}")
+        logger.log_section_start(self.logger, "SETTINGS (EXTENDED)")
         for k, v in self.settings.items():
             self.logger.info(f"{k}: {v}")
-        self.logger.info("")
         self.logger.info("")
 
     def _run_rawdata_uncompress(self) -> dict:
@@ -140,7 +139,6 @@ class FluxRunEngine:
         if found_full_output:
             self.logger.warning("EDDYPRO RP ALREADY GENERATED A FULL_OUTPUT FILE. "
                                 "FCC WILL BE SKIPPED.")
-            self.logger.warning("RP = Raw data processing, FCC = flux computation and correction")
             self.logger.warning("RP = Raw data processing, FCC = flux computation and correction")
             self.logger.warning("This is not necessarily an error. If the spectral correction "
                                 "is purely analytical (or no spectral correction is applied), "
