@@ -14,6 +14,8 @@
 - Code refactoring in `fluxrun/ops/vis.py`: centralized 40+ magic numbers in PlotConfig class, extracted 17 helper methods,
   removed dead code, and renamed variables for clarity; main plotting methods now 64-70% more concise while maintaining
   full backward compatibility
+- Bugfix: Fixed critical string formatting error in `fluxrun_engine.py` that would crash file deletion after processing
+- Bugfix: Removed orphaned function `_format_plot()` in `vis.py` with invalid signature that could cause runtime errors
 
 ## v2.1.1 | 18 Oct 2025
 
