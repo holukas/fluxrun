@@ -89,27 +89,26 @@ class PlotEddyProFullOutputFile:
         # look at what date range of 30min data we have
         first_date = df.index[0]  # first entry
         last_date = df.index[-1]  # last entry
-        self.logger.info("found first date: " + str(first_date))
         if last_date.day - first_date.day < 5:  # if we have less than 5 days of data add dates to avoid problems with results plotting
             last_date = last_date + pd.offsets.Day(20)
-            self.logger.info("found last date (extended by 20 days for plotting): " + str(last_date))
+            self.logger.debug(f"Date range: {first_date} to {last_date} (extended +20 days for plotting)")
         else:
-            self.logger.info("found last date: " + str(last_date))
+            self.logger.debug(f"Date range: {first_date} to {last_date}")
         # generate continuous date range and re-index data
-        filled_date_range = pd.date_range(first_date, last_date, freq='30T')
+        filled_date_range = pd.date_range(first_date, last_date, freq='30min')
         df = df.reindex(filled_date_range, fill_value=-9999)  # apply new continuous index to data
         return df
 
     def col_info(self):
         # read columns names from file, count columns in file
         columns_names = self.data_df.columns
-        self.logger.info(columns_names)
         columns_count = len(self.data_df.columns)
-        self.logger.info("number of columns: " + str(columns_count))
+        self.logger.debug(f"Found {columns_count} columns to process")
         return columns_names, columns_count
 
     def plot_full_output(self, columns_count, columns_names):
         """Assemble PNG output"""
+        self.logger.info(f"Generating plots for {columns_count} columns...")
 
         for ix, col in enumerate(self.data_df.columns):
 
@@ -117,7 +116,7 @@ class PlotEddyProFullOutputFile:
             var = col[0]
             units = col[1]
 
-            self.logger.info(f"Working on: {col} (column #{ix} of {columns_count}) ...")
+            self.logger.debug(f"Processing column {ix + 1}/{columns_count}: {var}")
             plot_name = f"{ix}_{var}_{units}"
             plot_name = plot_name.replace('*', 'star')
             plot_name = plot_name.replace('/', '_over_')
@@ -125,7 +124,7 @@ class PlotEddyProFullOutputFile:
             try:
                 y = self.data_df[col].astype(float)
             except ValueError:
-                self.logger.warning(f"SKIPPING PLOTTING FOR {col} BECAUSE IT IS NOT NUMERIC.")
+                self.logger.warning(f"Skipping {var} — not numeric")
                 continue
 
             y = sanitize_y(y=y)
@@ -216,7 +215,7 @@ class PlotEddyProFullOutputFile:
                 ax6.plot(hourly_avg.index, hourly_avg, color=_P['diurnal'], linewidth=1.2, zorder=2)
                 ax6.axhline(0, color=_P['zero'], linewidth=0.7, alpha=0.6)
                 _style_ax(ax6)
-                ax6.set_xlabel("hour (UTC)", size=ls)
+                ax6.set_xlabel("hour", size=ls)
                 ax6.set_ylabel(units, size=ls)
                 ax6.set_title(f"{var}  ·  diurnal cycle",
                               size=hs, fontweight='bold', color=_P['text'], loc='left', pad=6)
@@ -288,14 +287,14 @@ class PlotEddyProFullOutputFile:
 
                 plt.tight_layout(pad=1.2, rect=[0, 0, 1, 0.97])
                 plot_name = os.path.join(self.plot_folder, plot_name)
-                self.logger.info(f"    --> Saving plot {plot_name} ...")
+                self.logger.debug(f"Saving plot: {plot_name}.png")
                 plt.savefig(plot_name + '.png', dpi=150, facecolor='white')
                 plt.close(fig)
 
             else:
-                self.logger.info(f"Data for {col} are empty --> no plot")
+                self.logger.debug(f"No data for {var} — skipped plot")
 
-        self.logger.info("Finished full_output plots!")
+        self.logger.info("Summary plots generation complete")
 
 
 def availability_rawdata(rawdata_found_files_dict, rawdata_file_datefrmt, outdir, logger):
@@ -458,14 +457,10 @@ class PlotRawDataFilesAggregates:
                        outdir=self.settings['_dir_out_run_plots_aggregates_rawdata'])
 
     def file_header_for_log(self, fid, num_files, filecounter):
-        spacer = "=" * 30
-        self.logger.info(f"{self.section_id} {spacer}")
-        self.logger.info(f"{self.section_id} File {fid} (#{filecounter} of {num_files}) ...")
-        self.logger.info(f"{self.section_id} {spacer}")
+        self.logger.debug(f"Processing file {filecounter}/{num_files}: {fid}")
 
     def calc_rawdata_stats(self, rawdata_df, stats_coll_df, rawdata_filedate, filecounter):
         """Calculate stats for raw data"""
-        self.logger.info(f"{self.section_id}    Calculating file stats ...")
 
         if rawdata_df.empty:
             # In case there are no data, create df with one row of NaNs
@@ -500,7 +495,7 @@ class PlotRawDataFilesAggregates:
 
     def make_plot(self, df, outdir):
         """Plot aggregated values for each file"""
-        self.logger.info(f"{self.section_id} Plotting aggregated data ...")
+        self.logger.debug("Generating aggregate plots...")
         df.replace(-9999, np.nan, inplace=True)
         df.sort_index(axis=1, inplace=True)  # lexsort for better performance
         df.sort_index(axis=0, inplace=True)
@@ -513,7 +508,7 @@ class PlotRawDataFilesAggregates:
         _vars = set(_vars)
 
         for var in _vars:
-            self.logger.info(f"{self.section_id}    Plotting {var} ...")
+            self.logger.debug(f"Plotting {var[0]}")
             var_df = df[var].copy()
             gs = gridspec.GridSpec(2, 1, hspace=0.08, left=0.05, right=0.99, top=0.96, bottom=0.06)
             fig = plt.Figure(facecolor='white', figsize=(32, 9))
@@ -561,7 +556,7 @@ class PlotRawDataFilesAggregates:
     def get_filedate(self, fid):
         """Get filedate from filename"""
         rawdata_filedate = dt.datetime.strptime(fid, self.rawdata_file_datefrmt)
-        self.logger.info(f"{self.section_id}    Filedate for {fid}: {rawdata_filedate}")
+        self.logger.debug(f"Filedate: {rawdata_filedate}")
         return rawdata_filedate
 
     def q01(self, x):
@@ -589,7 +584,7 @@ if __name__ == '__main__':
     print(f"Output directory: {_outdir}")
 
     # 30 days of 30-minute data
-    _dates = pd.date_range('2025-06-01', periods=30 * 48, freq='30T')
+    _dates = pd.date_range('2025-06-01', periods=30 * 48, freq='30min')
     _rng = np.random.default_rng(42)
     _n = len(_dates)
     _hour = _dates.hour + _dates.minute / 60
