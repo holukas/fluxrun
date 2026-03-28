@@ -4,11 +4,10 @@ message: "If you use this software, please cite it using the metadata from this 
 authors:
   - family-names: Holukas
     given-names: Lukas
-    affiliation: "Swiss Federal Research Institute WSL"
 version: 2.2.0
 date-released: 2026-03-28
 repository-code: "https://github.com/holukas/fluxrun"
-license: MIT
+license:  GPL-3.0 license
 keywords:
   - eddy covariance
   - flux measurements
