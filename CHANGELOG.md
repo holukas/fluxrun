@@ -2,24 +2,16 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
-## v2.2.0 | 27 Mar 2026
+## v2.2.0 | 28 Mar 2026
 
-- Raw data files with inconsistent line lengths (e.g. caused by a spurious newline in a record) no longer crash the run;
-  affected lines are replaced with -9999 and a warning is logged
-- Summary plots modernized with a new color palette, clean axes, and a fingerprint heatmap (time of day × date) added to
-  each variable plot
-- Fixed pandas FutureWarning for deprecated frequency alias (`freq='T'` changed to `freq='min'` in date range generation)
-- Logger output improved: reduced clutter by consolidating verbose messages, using DEBUG level for per-item progress,
-  and providing cleaner summary messages
-- Code refactoring in `fluxrun/ops/vis.py`: centralized 40+ magic numbers in PlotConfig class, extracted 17 helper methods,
-  removed dead code, and renamed variables for clarity; main plotting methods now 64-70% more concise while maintaining
-  full backward compatibility
-- Bugfix: Fixed critical string formatting error in `fluxrun_engine.py` that would crash file deletion after processing
-- Bugfix: Removed orphaned function `_format_plot()` in `vis.py` with invalid signature that could cause runtime errors
-- GUI code refactoring in `fluxrun/gui/`: created new `settings_manager.py` with centralized SettingsKeys constants,
-  added complete type hints for all functions, removed debug statements and dead code, consolidated duplicated settings
-  sync logic (50+ lines eliminated), improved error handling for dialog cancellations, and fixed path handling with
-  pathlib.Path; codebase is now more maintainable, testable, and safer from settings key typos
+- Raw data files with inconsistent line lengths (e.g. caused by spurious newlines) no longer crash the run; affected lines are replaced with -9999
+- Summary plots modernized: new color palette, clean axes, and fingerprint heatmap (time of day × date) added for each variable
+- Fixed pandas FutureWarning for deprecated frequency alias (`freq='T'` → `freq='min'`)
+- Logger output improved: reduced clutter, using DEBUG level for per-item progress, cleaner summary messages
+- Refactored `fluxrun/ops/vis.py`: centralized 40+ magic numbers in PlotConfig class, extracted 17 helper methods, removed dead code, renamed variables for clarity
+- Bugfix: Fixed critical string formatting error in `fluxrun_engine.py` that would crash file deletion
+- Bugfix: Removed orphaned function `_format_plot()` in `vis.py` that could cause runtime errors
+- Refactored GUI code in `fluxrun/gui/`: new `settings_manager.py` with centralized constants, added type hints, removed debug statements and dead code, consolidated duplicated sync logic, improved error handling for dialogs
 
 ## v2.1.1 | 18 Oct 2025
 
