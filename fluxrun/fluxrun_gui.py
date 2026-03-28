@@ -125,6 +125,8 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
         """
         if isinstance(widget, qtw.QLineEdit):
             widget.setText(str(value or ''))
+        elif isinstance(widget, qtw.QLabel):
+            widget.setText(str(value or ''))
         elif isinstance(widget, qtw.QComboBox):
             ele.set_gui_combobox(combobox=widget, find_text=str(value or ''))
         elif isinstance(widget, qtw.QCheckBox):
@@ -146,6 +148,8 @@ class FluxRunGUI(qtw.QMainWindow, BuildGui):
             Value in appropriate format for settings dictionary.
         """
         if isinstance(widget, qtw.QLineEdit):
+            return widget.text()
+        elif isinstance(widget, qtw.QLabel):
             return widget.text()
         elif isinstance(widget, qtw.QComboBox):
             return widget.currentText()
