@@ -8,16 +8,10 @@ from . import fluxrun_cli
 from . import fluxrun_gui
 from .cli import cli
 
-print(f"{__file__}")
-
 
 def main(args):
-    abspath = Path(os.path.abspath(__file__)).parent  # directory of bico.py
+    abspath = Path(os.path.abspath(__file__)).parent  # directory of fluxrun module
     os.chdir(abspath)
-    wd = os.getcwd()
-    print(f"Working directory: {wd}")
-
-    print(f"{__file__}")
 
     # Run FLUXRUN w/o GUI
     # Example: main.py -f F:\Sync\luhk_work\CURRENT\FRU_rECord_test\with_cli -d 2
