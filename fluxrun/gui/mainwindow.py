@@ -7,9 +7,6 @@ from ..gui import gui_elements
 from ..help import tooltips
 from ..settings import version
 
-# todo testing
-print(f"{__file__}")
-
 
 class BuildGui(object):
     """
