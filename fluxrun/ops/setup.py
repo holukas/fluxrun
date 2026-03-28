@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from pathlib import Path
@@ -47,20 +48,30 @@ def set_outdirs(settings_dict: dict) -> dict:
     return settings_dict
 
 
-def make_outdirs(settings_dict):
-    """Create output folders"""
+def make_outdirs(settings_dict, logger=None):
+    """Create output folders.
+
+    Args:
+        settings_dict: Dictionary containing output directory paths.
+        logger: Optional logger instance. If not provided, logging will be skipped.
+
+    Returns:
+        The updated settings dictionary.
+    """
+    if logger is None:
+        logger = logging.getLogger(__name__)
 
     # Create general run output folder that contains all other folders
     _dir_out_run = Path(settings_dict['_dir_out_run'])
     if not Path.is_dir(_dir_out_run):
-        print(f"Creating folder {_dir_out_run} ...")
+        logger.info(f"Creating output directory: {_dir_out_run}")
         os.makedirs(_dir_out_run)
 
     # Make subfolders
     for key, val in settings_dict.items():
         if str(key).startswith('_dir_out_'):
             if not Path.is_dir(settings_dict[key]):
-                print(f"Creating folder {settings_dict[key]} ...")
+                logger.debug(f"Creating subdirectory: {settings_dict[key]}")
                 os.makedirs(settings_dict[key])
 
     return settings_dict
