@@ -16,6 +16,10 @@
   full backward compatibility
 - Bugfix: Fixed critical string formatting error in `fluxrun_engine.py` that would crash file deletion after processing
 - Bugfix: Removed orphaned function `_format_plot()` in `vis.py` with invalid signature that could cause runtime errors
+- GUI code refactoring in `fluxrun/gui/`: created new `settings_manager.py` with centralized SettingsKeys constants,
+  added complete type hints for all functions, removed debug statements and dead code, consolidated duplicated settings
+  sync logic (50+ lines eliminated), improved error handling for dialog cancellations, and fixed path handling with
+  pathlib.Path; codebase is now more maintainable, testable, and safer from settings key typos
 
 ## v2.1.1 | 18 Oct 2025
 
