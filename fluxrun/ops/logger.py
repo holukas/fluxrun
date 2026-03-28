@@ -1,5 +1,6 @@
 import logging
 import sys
+from pathlib import Path
 
 
 def setup_logger(settings: dict,
@@ -28,6 +29,9 @@ def setup_logger(settings: dict,
     # Warnings logfile
     warnings_logfile = f"{settings['_run_id']}_warnings_errors.log"
     warnings_logfile_path = settings['_dir_out_run_log'] / warnings_logfile
+
+    # Ensure log directory exists before creating file handlers
+    Path(settings['_dir_out_run_log']).mkdir(parents=True, exist_ok=True)
 
     # Create logger
     logger = logging.getLogger(__name__)
