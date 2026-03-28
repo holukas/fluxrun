@@ -8,6 +8,9 @@
   affected lines are replaced with -9999 and a warning is logged
 - Summary plots modernized with a new color palette, clean axes, and a fingerprint heatmap (time of day × date) added to
   each variable plot
+- Fixed pandas FutureWarning for deprecated frequency alias (`freq='T'` changed to `freq='min'` in date range generation)
+- Logger output improved: reduced clutter by consolidating verbose messages, using DEBUG level for per-item progress,
+  and providing cleaner summary messages
 
 ## v2.1.1 | 18 Oct 2025
 
