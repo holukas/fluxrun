@@ -1,5 +1,5 @@
 __version__ = "2.2.0"
-__date__ = "27 Mar 2026"
+__date__ = "28 Mar 2026"
 __link_source_code__ = "https://github.com/holukas/fluxrun"
 __link_releases__ = "https://github.com/holukas/fluxrun/releases"
 __link_changelog__ = "https://github.com/holukas/fluxrun/blob/master/CHANGELOG.md"
