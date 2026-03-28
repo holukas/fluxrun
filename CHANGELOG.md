@@ -9,9 +9,13 @@
 - Summary plots modernized: new color palette, clean axes, and fingerprint heatmap (time of day × date) added for each
   variable
 - Fixed pandas FutureWarning for deprecated frequency alias (`freq='T'` → `freq='min'`)
+<<<<<<< HEAD
 - Logger output improved: eliminated all print statements, added structured formatting helpers (section/subsection
   headers, completion messages), moved logger initialization earlier to capture all setup messages, standardized log
   output for better readability
+=======
+- Logger output improved: reduced clutter, using DEBUG level for per-item progress, cleaner summary messages
+>>>>>>> 0a6a8cae926c5fa606196d1b0e3d0f3645b18290
 - Refactored `fluxrun/ops/vis.py`: centralized 40+ magic numbers in PlotConfig class, extracted 17 helper methods,
   removed dead code, renamed variables for clarity
 - Bugfix: Fixed critical string formatting error in `fluxrun_engine.py` that would crash file deletion
