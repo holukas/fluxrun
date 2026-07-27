@@ -247,7 +247,7 @@ version:
 
 ```bash
 uv venv --python 3.12
-uv pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.2.0.tar.gz
+uv pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.3.0.tar.gz
 ```
 
 `uv venv` creates the `.venv` folder, `uv pip install` adds `fluxrun` and all its dependencies. To switch to another

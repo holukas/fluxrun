@@ -2,7 +2,7 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
-## Unreleased
+## v2.3.0 | 27 Jul 2026
 
 - Now using `uv` as dependency manager, replacing `poetry`; `poetry.lock` was removed and replaced by `uv.lock`
 - Build backend changed from `poetry-core` to `hatchling`

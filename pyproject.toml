@@ -1,6 +1,6 @@
 [project]
 name = "fluxrun"
-version = "v2.2.0"
+version = "v2.3.0"
 description = "Python wrapper for EddyPro flux calculations"
 authors = [
     {name = "Lukas Hörtnagl",email = "holukas@ethz.ch"}
