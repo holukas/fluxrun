@@ -2,6 +2,15 @@
 
 ![](images/logo_FLUXRUN1_256px.png)
 
+## Unreleased
+
+- Now using `uv` as dependency manager, replacing `poetry`; `poetry.lock` was removed and replaced by `uv.lock`
+- Build backend changed from `poetry-core` to `hatchling`
+- `fluxrun` now requires Python version `3.12` (previously `3.11`); the version is pinned in the new `.python-version`
+  file
+- Updated installation instructions in `README.md` to use `uv` instead of conda and `pip`
+- Removed `setup.cfg`, a leftover from the `setuptools` era that is not used anymore
+
 ## v2.2.0 | 28 Mar 2026
 
 - Raw data files with inconsistent line lengths (e.g. caused by spurious newlines) no longer crash the run; affected

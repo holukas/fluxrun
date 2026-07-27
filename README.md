@@ -229,36 +229,63 @@ If a `qc_{variable}` column is present, only quality flags 0 and 1 are shown (qu
 | `matplotlib` | ≥3.10.1, <4.0.0 | Plot generation |
 | `pyyaml` | ≥6.0.2, <7.0.0 | Settings file parsing |
 
-Requires **Python ≥3.11, <3.12**.
+Requires **Python ≥3.12, <3.13**.
+
+Dependencies are managed with [uv](https://docs.astral.sh/uv/). The exact resolved versions are pinned in `uv.lock`.
 
 ---
 
 ## Installation
 
-Using [miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install#quickstart-install-instructions):
+[uv](https://docs.astral.sh/uv/getting-started/installation/) is the only prerequisite, it also takes care of
+installing Python 3.12 if the computer does not have it.
+
+### Option 1: Install a release (recommended, no `git` needed)
+
+Run both commands in the folder where the environment should live, e.g. `C:\fluxrun`. Replace the tag with the desired
+version:
 
 ```bash
-# Create and activate environment
-conda create -n fluxrun-env python=3.11
-conda activate fluxrun-env
-
-# Install from GitHub (replace with desired version)
-pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.2.0.tar.gz
+uv venv --python 3.12
+uv pip install https://github.com/holukas/fluxrun/archive/refs/tags/v2.2.0.tar.gz
 ```
 
-All required dependencies are installed automatically.
+`uv venv` creates the `.venv` folder, `uv pip install` adds `fluxrun` and all its dependencies. To switch to another
+version later, repeat the second command with a different tag. Start `fluxrun` with:
 
-**Start the GUI:**
 ```bash
-python -m fluxrun.main -g
+.venv\Scripts\python.exe -m fluxrun.main -g
+.venv\Scripts\python.exe -m fluxrun.main -f C:\my_project -d 10
 ```
 
-**Start CLI processing:**
+### Option 2: Clone the repository (for development)
+
 ```bash
-python -m fluxrun.main -f C:\my_project -d 10
+git clone https://github.com/holukas/fluxrun.git
+cd fluxrun
+uv sync
 ```
 
-The `-d 10` parameter limits processing to the most recent 10 days — useful for scheduled/automated runs.
+`uv sync` creates the `.venv` folder and installs the exact dependency versions pinned in `uv.lock`, which
+`uv pip install` does not use. Start `fluxrun` with:
+
+```bash
+uv run python -m fluxrun.main -g
+uv run python -m fluxrun.main -f C:\my_project -d 10
+```
+
+### Running fluxrun
+
+The `-g` flag starts the GUI, `-f` runs the CLI on the given project folder. The optional `-d 10` limits processing to
+the most recent 10 days — useful for scheduled/automated runs.
+
+The environment does not have to be activated, calling its `python.exe` with the full path is enough. This works in a
+batch file or a Windows scheduled task:
+
+```bat
+@echo off
+C:\fluxrun\.venv\Scripts\python.exe -m fluxrun.main -g
+```
 
 ### CLI Project Folder Requirements
 
@@ -269,5 +296,3 @@ C:\my_project\
 ├── my_settings.eddypro        # EddyPro processing settings
 └── my_settings.metadata       # EddyPro metadata (same base name as .eddypro)
 ```
-
-The `-m` flag tells Python to run `fluxrun` as an installed module from the active conda environment.

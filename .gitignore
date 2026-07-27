@@ -86,7 +86,7 @@ profile_default/
 ipython_config.py
 
 # pyenv
-.python-version
+# .python-version is tracked: it pins the Python version used by uv
 
 # celery beat schedule file
 celerybeat-schedule
