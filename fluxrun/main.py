@@ -18,18 +18,16 @@ def main(args):
     if args.folder:
         days = args.days if args.days else None
         _fluxruncli = fluxrun_cli.FluxRunCli(folder=args.folder, days=days)
-        # _fluxruncli = fluxruncli(folder=args.folder, days=days)
         _fluxruncli.run()
 
     # Run FLUXRUN with GUI
     if args.gui:
         app = qtw.QApplication(sys.argv)
         _fluxrungui = fluxrun_gui.FluxRunGUI()
-        # _fluxrungui = fluxrungui()
         _fluxrungui.show()
         app.exec()
 
-    else:
+    elif not args.folder:
         print("Please add arg how fluxrun should be executed. Add '-h' for help.")
 
 
