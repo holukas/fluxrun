@@ -269,7 +269,6 @@ class FluxRunEngine:
         _parsing_string = _parsing_string.replace('dd', '%d')
         _parsing_string = _parsing_string.replace('HH', '%H')
         _parsing_string = _parsing_string.replace('MM', '%M')
-        # _parsing_string = f"{self.settings_dict['site']}_{_parsing_string}"  # Add site id
         return _parsing_string
 
     def set_dir_eddypro_rawdata(self):

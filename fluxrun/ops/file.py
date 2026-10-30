@@ -240,18 +240,8 @@ class SearchAll:
             logger.info(f"  [EMPTY FILE] File {ef} is empty")
         return valid_files_dict
 
-    @staticmethod
-    def make_parsing_string(settings_dict, file_ext):
-        """Add site id and extension to parsing string"""
-        parsing_string = f"{settings_dict['site']}_" \
-                         f"{settings_dict['filename_datetime_parsing_string']}{file_ext}"
-        return parsing_string
-
-
     def keep_files_within_timerange(self, site_parse_str_py):
         """Check if file date is within selected time range"""
-
-        # site_parse_str = self.make_parsing_string(settings_dict=self.settings_dict)
 
         suffix = "[FILE TIME RANGE CHECK]"
         run_start_date = dt.datetime.strptime(self.rawdata_start_date, '%Y-%m-%d %H:%M')
